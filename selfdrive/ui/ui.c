@@ -268,7 +268,7 @@ static void set_brightness(UIState *s, int brightness) {
 static void set_awake(UIState *s, bool awake) {
   if (awake) {
     // 30 second timeout at 30 fps
-      s->awake_timeout = 5*30;
+      s->awake_timeout = 10*30;
   }
   if (s->awake != awake) {
     s->awake = awake;
