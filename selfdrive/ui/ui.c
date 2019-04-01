@@ -267,19 +267,21 @@ static void set_brightness(UIState *s, int brightness) {
 
 static void set_awake(UIState *s, bool awake) {
   if (awake) {
-    // 30 second timeout at 60 fps
-      s->awake_timeout = 15*60;
+    // 30 second timeout at 30 fps
+      s->awake_timeout = 5*30;
   }
+  if (s->awake != awake) {
     s->awake = awake;
 
-  if (awake) {
-    LOG("awake normal");
-    set_brightness(s, 150);
-    framebuffer_set_power(s->fb, HWC_POWER_MODE_NORMAL);
-  } else {
-    LOG("awake off");
-    set_brightness(s, 0);
-    framebuffer_set_power(s->fb, HWC_POWER_MODE_OFF);
+    if (awake) {
+      LOG("awake normal");
+      set_brightness(s, 150);
+      framebuffer_set_power(s->fb, HWC_POWER_MODE_NORMAL);
+    } else {
+      LOG("awake off");
+      set_brightness(s, 0);
+      framebuffer_set_power(s->fb, HWC_POWER_MODE_OFF);
+    }
   }
 }
 
