@@ -271,6 +271,7 @@ class LongitudinalMpc(object):
 
     return round(TR, 2)
 
+
   def generate_cost(self, distance):
     x = [.9, 1.8, 2.7]
     y = [1.0, .1, .05]
