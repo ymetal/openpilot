@@ -186,8 +186,8 @@ class LongitudinalMpc(object):
       x_lead = lead.dRel
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
-      self.relative_velocity = v_lead
-      self.relative_distance = x_lead
+      self.relative_velocity = lead.vRel
+      self.relative_distance = lead.dRel
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0
