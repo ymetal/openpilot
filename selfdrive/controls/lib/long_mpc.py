@@ -1,11 +1,12 @@
 import numpy as np
-
 import selfdrive.messaging as messaging
 from selfdrive.swaglog import cloudlog
 from common.realtime import sec_since_boot
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
+from scipy import interpolate
+from common.numpy_fast import interp
 
 
 class LongitudinalMpc(object):
@@ -178,13 +179,6 @@ class LongitudinalMpc(object):
   def update(self, CS, lead, v_cruise_setpoint):
     v_ego = CS.carState.vEgo
 
-    try:
-      self.relative_velocity = lead.vRel
-      self.relative_distance = lead.dRel
-    except:  # if no lead car
-      self.relative_velocity = None
-      self.relative_distance = None
-
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
@@ -192,6 +186,8 @@ class LongitudinalMpc(object):
       x_lead = lead.dRel
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
+      self.relative_velocity = v_lead
+      self.relative_distance = x_lead
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0
@@ -208,6 +204,8 @@ class LongitudinalMpc(object):
       self.cur_state[0].x_l = x_lead
       self.cur_state[0].v_l = v_lead
     else:
+      self.relative_velocity = None
+      self.relative_distance = None
       self.prev_lead_status = False
       # Fake a fast lead car, so mpc keeps running
       self.cur_state[0].x_l = 50.0
