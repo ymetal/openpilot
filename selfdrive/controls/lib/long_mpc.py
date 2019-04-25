@@ -137,8 +137,7 @@ class LongitudinalMpc(object):
     x = [.9, 1.8, 2.7]
     y = [1.0, .1, .05]
     if v_ego != 0:
-      real_TR = self.relative_distance / float(
-        v_ego)  # switched to cost generation using actual distance from lead car; should be safer
+      real_TR = self.relative_distance / float(v_ego)  # switched to cost generation using actual distance from lead car; should be safer
       if abs(real_TR - TR) >= .25:  # use real TR if diff is greater than x safety threshold
         TR = real_TR
 
@@ -179,6 +178,13 @@ class LongitudinalMpc(object):
   def update(self, CS, lead, v_cruise_setpoint):
     v_ego = CS.carState.vEgo
 
+    try:
+      self.relative_velocity = lead.vRel
+      self.relative_distance = lead.dRel
+    except:
+      self.relative_velocity = None
+      self.relative_distance = None
+
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
@@ -186,8 +192,6 @@ class LongitudinalMpc(object):
       x_lead = lead.dRel
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
-      self.relative_velocity = lead.vRel
-      self.relative_distance = lead.dRel
 
       if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
         v_lead = 0.0
@@ -204,8 +208,7 @@ class LongitudinalMpc(object):
       self.cur_state[0].x_l = x_lead
       self.cur_state[0].v_l = v_lead
     else:
-      self.relative_velocity = None
-      self.relative_distance = None
+
       self.prev_lead_status = False
       # Fake a fast lead car, so mpc keeps running
       self.cur_state[0].x_l = 50.0
