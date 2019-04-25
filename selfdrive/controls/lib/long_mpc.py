@@ -7,6 +7,7 @@ from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 from scipy import interpolate
 from common.numpy_fast import interp
+import math
 
 
 class LongitudinalMpc(object):
@@ -189,7 +190,7 @@ class LongitudinalMpc(object):
     self.cur_state[0].x_ego = 0.0
 
     if lead is not None and lead.status:
-      x_lead = lead.dRel
+      x_lead = max(0, lead.dRel - 1)
       v_lead = max(0.0, lead.vLead)
       a_lead = lead.aLeadK
 
@@ -197,7 +198,7 @@ class LongitudinalMpc(object):
         v_lead = 0.0
         a_lead = 0.0
 
-      self.a_lead_tau = lead.aLeadTau
+      self.a_lead_tau = max(lead.aLeadTau, (a_lead ** 2 * math.pi) / (2 * (v_lead + 0.01) ** 2))
       self.new_lead = False
       if not self.prev_lead_status or abs(x_lead - self.prev_lead_x) > 2.5:
         self.libmpc.init_with_simulation(self.v_mpc, x_lead, v_lead, a_lead, self.a_lead_tau)
