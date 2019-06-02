@@ -278,6 +278,7 @@ struct ThermalData {
   thermalStatus @14 :ThermalStatus;
   chargingError @17 :Bool;
   chargingDisabled @18 :Bool;
+  remoteUpdate @19 :Bool;
 
   enum ThermalStatus {
     green @0;   # all processes run
