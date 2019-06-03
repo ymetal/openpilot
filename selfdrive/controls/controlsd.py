@@ -217,7 +217,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc):
+                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -272,7 +272,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
 
-  '''v_ego_scale = [0.0, 29.51362419128418]
+  v_ego_scale = [0.0, 29.51362419128418]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
   v_lead_scale = [0.0, 91.02222442626953]
   x_lead_scale = [1.5199999809265137, 138.67999267578125]
@@ -283,13 +283,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   except:
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
-  actuators.gas = max(model_output, 0.0)
-  actuators.brake = -min(model_output, 0.0)
+  #actuators.gas = max(model_output, 0.0)
+  #actuators.brake = -min(model_output, 0.0)
 
   with open("/data/pred", "a") as f:
     f.write(str(model_output) + "\n")
-  with open("/data/aego", "a") as f:
-    f.write(str(CS.aEgo)+"\n")'''
 
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
@@ -569,7 +567,7 @@ def controlsd_thread(gctx=None, rate=100):
     actuators, v_cruise_kph, driver_status, angle_model_bias, v_acc, a_acc, lac_log = \
       state_control(rcv_times, plan.plan, path_plan.pathPlan, CS, CP, state, events, v_cruise_kph,
                     v_cruise_kph_last, AM, rk, driver_status,
-                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc)
+                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc)
 
     prof.checkpoint("State Control")
 
