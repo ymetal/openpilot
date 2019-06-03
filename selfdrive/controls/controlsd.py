@@ -291,7 +291,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
       x_lead = lead_1.dRel
       v_lead = max(0.0, lead_1.vLead)
       a_lead = lead_1.aLeadK
-      with open("cdata", "a") as f:
+      with open("/data/cdata", "a") as f:
         f.write(str(x_lead)+" "+str(v_lead)+" "+str(a_lead))
 
   try:
