@@ -269,8 +269,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  '''actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
+  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
 
   v_ego_scale = [0.0, 29.51362419128418]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
@@ -278,13 +278,24 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   x_lead_scale = [1.5199999809265137, 138.67999267578125]
   a_lead_scale = [-3.0579869747161865, 25.991727828979492]
 
+  live20 = messaging.recv_one_or_none(live20_sock)
+  lead_1 = live20.live20.leadOne
+  if live20 is not None and lead_1.status:
+    x_lead = lead_1.dRel
+    v_lead = max(0.0, lead_1.vLead)
+    a_lead = lead_1.aLeadK
+  else:
+    v_lead = 20.0
+    x_lead = 12.0
+    a_lead = 0.0
+
   try:
-    model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(0.0, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale)))
+    model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
   except:
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
-  actuators.gas = max(model_output, 0.0)
-  actuators.brake = -min(model_output, 0.0)
+  '''actuators.gas = max(model_output, 0.0)
+  actuators.brake = -min(model_output, 0.0)'''
 
   with open("/data/pred", "a") as f:
     f.write(str(model_output) + "\n")
