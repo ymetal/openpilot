@@ -271,6 +271,9 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   # Gas/Brake PID loop
   actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
+  
+  with open("/data/act", "a") as f:
+    f.write(str(actuators.gas) + " " + str(actuators.brake) + "\n")
 
   v_ego_scale = [0.0, 29.51362419128418]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
