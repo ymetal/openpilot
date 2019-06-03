@@ -5,7 +5,7 @@ import json
 from collections import defaultdict
 
 from cereal import car, log
-from common.numpy_fast import clip, interp
+from common.numpy_fast import clip
 from common.realtime import sec_since_boot, set_realtime_priority, Ratekeeper
 from common.profiler import Profiler
 from common.params import Params
@@ -28,21 +28,10 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.controls.lib.driver_monitor import DriverStatus
 from selfdrive.controls.lib.planner import _DT_MPC
 from selfdrive.locationd.calibration_helpers import Calibration, Filter
-from selfdrive.df import lib_main
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.Live100Data.ControlState
 
-ffi, libmpc = lib_main.get_libmpc()
-libmpc.init_model()
-
-def norm(data, min_max=[]):
-  if min_max==[]:
-    d_min = min(data)
-    d_max = max(data)
-    return [(i - d_min) / (d_max - d_min) for i in data], [d_min, d_max]
-  else:
-    return (data - min_max[0]) / (min_max[1] - min_max[0])
 
 def isActive(state):
   """Check if the actuators are enabled"""
@@ -272,32 +261,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  '''actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
-
-  v_ego_scale = [0.0, 29.51362419128418]
-  a_ego_scale = [-3.0412862300872803, 2.78971791267395]
-  v_lead_scale = [0.0, 91.02222442626953]
-  x_lead_scale = [1.5199999809265137, 138.67999267578125]
-  a_lead_scale = [-3.0579869747161865, 25.991727828979492]
-
-  '''if live20 is not None:
-    lead_1 = live20.live20.leadOne
-    if lead_1.status:
-      model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(lead_1.vLead, v_lead_scale), norm(lead_1.dRel, x_lead_scale), norm(lead_1.aLeadK, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])
-    else:
-      model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])
-  else:
-    model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])'''
-
-  model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale)))
-  model_output = (model_output - 0.5) * 2.0
-  actuators.gas = max(model_output, 0.0)
-  actuators.brake = -min(model_output, 0.0)
-
-  with open("/data/pred", "a") as f:
-    f.write(str(model_output) + "\n")
-
+  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
                                                               CS.steeringPressed, CP, VM, path_plan)
@@ -469,7 +434,6 @@ def controlsd_thread(gctx=None, rate=100):
   plan_sock = messaging.sub_sock(context, service_list['plan'].port, conflate=True, poller=poller)
   path_plan_sock = messaging.sub_sock(context, service_list['pathPlan'].port, conflate=True, poller=poller)
   logcan = messaging.sub_sock(context, service_list['can'].port)
-  live20_sock = messaging.sub_sock(context, service_list['live20'].port, conflate=True, poller=poller)
 
   CC = car.CarControl.new_message()
   CI, CP = get_car(logcan, sendcan, 1.0 if passive else None)
