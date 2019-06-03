@@ -11,7 +11,6 @@ if not os.path.isfile('/data/openpilot/selfdrive/df/d_f.so'):
 def get_libmpc():
     libmpc_fn = "/data/openpilot/selfdrive/df/d_f.so"
 
-
     ffi = FFI()
     ffi.cdef("""
     typedef struct {
