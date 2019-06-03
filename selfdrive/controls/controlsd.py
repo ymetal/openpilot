@@ -298,7 +298,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   except:
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
-  actuators.gas = 0.4
+  actuators.gas = 0.95
   actuators.brake = 0.0
 
   with open("/data/pred", "a") as f:
