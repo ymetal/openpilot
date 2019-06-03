@@ -70,6 +70,12 @@ class LongitudinalMpc(object):
         v_lead = 0.0
         a_lead = 0.0
 
+      try:
+        with open("/data/df-data", "a") as f:
+          f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake]) + "\n")
+      except:
+        pass
+
       self.a_lead_tau = lead.aLeadTau
       self.new_lead = False
       if not self.prev_lead_status or abs(x_lead - self.prev_lead_x) > 2.5:
