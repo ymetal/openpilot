@@ -269,8 +269,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  '''actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
+  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
 
   v_ego_scale = [0.0, 29.51362419128418]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
@@ -298,8 +298,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   except:
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
-  actuators.gas = 0.95
-  actuators.brake = 0.0
+  #actuators.gas = 0.95
+  #actuators.brake = 0.0
 
   with open("/data/pred", "a") as f:
     f.write(str(model_output) + "\n")
