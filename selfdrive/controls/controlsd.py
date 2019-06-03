@@ -32,8 +32,6 @@ from selfdrive.df import lib_main
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.Live100Data.ControlState
-#ffi, libmpc = lib_main.get_libmpc()
-#libmpc.init_model()
 
 def norm(data, min_max=None):
   if min_max==None:
@@ -528,6 +526,8 @@ def controlsd_thread(gctx=None, rate=100):
       pass
 
   prof = Profiler(False)  # off by default
+  ffi, libmpc = lib_main.get_libmpc()
+  #libmpc.init_model()
 
   while True:
     start_time = sec_since_boot()
