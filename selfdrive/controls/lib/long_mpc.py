@@ -61,12 +61,32 @@ class LongitudinalMpc(object):
     # Setup current mpc state
     self.cur_state[0].x_ego = 0.0
 
-    self.prev_lead_status = False
-    # Fake a fast lead car, so mpc keeps running
-    self.cur_state[0].x_l = 50.0
-    self.cur_state[0].v_l = v_ego + 10.0
-    a_lead = 0.0
-    self.a_lead_tau = _LEAD_ACCEL_TAU
+    if lead is not None and lead.status:
+      x_lead = lead.dRel
+      v_lead = max(0.0, lead.vLead)
+      a_lead = lead.aLeadK
+
+      if (v_lead < 0.1 or -a_lead / 2.0 > v_lead):
+        v_lead = 0.0
+        a_lead = 0.0
+
+      self.a_lead_tau = lead.aLeadTau
+      self.new_lead = False
+      if not self.prev_lead_status or abs(x_lead - self.prev_lead_x) > 2.5:
+        self.libmpc.init_with_simulation(self.v_mpc, x_lead, v_lead, a_lead, self.a_lead_tau)
+        self.new_lead = True
+
+      self.prev_lead_status = True
+      self.prev_lead_x = x_lead
+      self.cur_state[0].x_l = x_lead
+      self.cur_state[0].v_l = v_lead
+    else:
+      self.prev_lead_status = False
+      # Fake a fast lead car, so mpc keeps running
+      self.cur_state[0].x_l = 50.0
+      self.cur_state[0].v_l = v_ego + 10.0
+      a_lead = 0.0
+      self.a_lead_tau = _LEAD_ACCEL_TAU
 
     # Calculate mpc
     t = sec_since_boot()
