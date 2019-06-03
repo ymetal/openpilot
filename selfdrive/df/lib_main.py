@@ -1,7 +1,8 @@
 from cffi import FFI
 import os
+from common.basedir import BASEDIR
 
-if not os.path.isfile('/data/openpilot/selfdrive/df/d_f.so'):
+if not os.path.isfile('/data/openpilot/selfdrive/df/d_f.so') and BASEDIR == "/data/openpilot":
     Makefile = "/data/openpilot/selfdrive/df/Makefile.sh"
     os.chmod(Makefile, 0775)
     os.system("exec " + Makefile)
