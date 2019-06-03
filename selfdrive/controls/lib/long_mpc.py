@@ -73,7 +73,7 @@ class LongitudinalMpc(object):
         a_lead = 0.0
 
       try:
-        with open("/data/df-data", "a") as f:
+        with open("/data/df-data.1", "a") as f:
           f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake]) + "\n")
       except:
         pass
