@@ -32,7 +32,7 @@ from selfdrive.df import lib_main
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.Live100Data.ControlState
-ffi, libmpc = lib_main.get_libmpc()
+#ffi, libmpc = lib_main.get_libmpc()
 #libmpc.init_model()
 
 def norm(data, min_max=None):
