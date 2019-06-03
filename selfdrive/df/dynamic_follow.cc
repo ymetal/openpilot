@@ -21,7 +21,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/model.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/model.2.dlc");
   printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
