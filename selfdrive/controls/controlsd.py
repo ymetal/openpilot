@@ -527,7 +527,7 @@ def controlsd_thread(gctx=None, rate=100):
 
   prof = Profiler(False)  # off by default
   ffi, libmpc = lib_main.get_libmpc()
-  #libmpc.init_model()
+  libmpc.init_model()
 
   while True:
     start_time = sec_since_boot()
