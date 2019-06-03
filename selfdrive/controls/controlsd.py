@@ -217,7 +217,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc):
+                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20_sock):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -524,6 +524,8 @@ def controlsd_thread(gctx=None, rate=100):
       pass
 
   prof = Profiler(False)  # off by default
+
+  live20_sock = messaging.sub_sock(context, service_list['live20'].port, conflate=True, poller=poller)
   ffi, libmpc = lib_main.get_libmpc()
   libmpc.init_model()
 
@@ -567,7 +569,7 @@ def controlsd_thread(gctx=None, rate=100):
     actuators, v_cruise_kph, driver_status, angle_model_bias, v_acc, a_acc, lac_log = \
       state_control(rcv_times, plan.plan, path_plan.pathPlan, CS, CP, state, events, v_cruise_kph,
                     v_cruise_kph_last, AM, rk, driver_status,
-                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc)
+                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20_sock)
 
     prof.checkpoint("State Control")
 
