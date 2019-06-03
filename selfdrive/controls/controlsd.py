@@ -88,7 +88,7 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
     elif socket is path_plan_sock:
       path_plan = msg
     elif socket is live20_sock:
-      live20 = messaging.recv_one(socket)
+      live20 = msg
 
   if td is not None:
     overtemp = td.thermal.thermalStatus >= ThermalStatus.red
@@ -284,19 +284,22 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   x_lead_scale = [1.5199999809265137, 138.67999267578125]
   a_lead_scale = [-3.0579869747161865, 25.991727828979492]
 
-  if live20 is not None:
+  '''if live20 is not None:
     lead_1 = live20.live20.leadOne
     if lead_1.status:
       model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(lead_1.vLead, v_lead_scale), norm(lead_1.dRel, x_lead_scale), norm(lead_1.aLeadK, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])
     else:
       model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])
   else:
-    model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])
+    model_output = interp(float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))), [0.0, 1.0], [-1.0, 1.0])'''
+
+  model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale)))
+  model_output = (model_output - 0.5) * 2.0
   actuators.gas = max(model_output, 0.0)
   actuators.brake = -min(model_output, 0.0)
 
   with open("/data/pred", "a") as f:
-    f.write(str(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(20.0, v_lead_scale), norm(12, x_lead_scale), norm(0.0, a_lead_scale))) + "\n")
+    f.write(str(model_output) + "\n")
 
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
