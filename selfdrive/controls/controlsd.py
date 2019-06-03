@@ -305,9 +305,6 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   with open("/data/pred", "a") as f:
     f.write(str(model_output) + "\n")
 
-  with open("/data/pred", "a") as f:
-    f.write(str(model_output) + "\n")
-
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
                                                               CS.steeringPressed, CP, VM, path_plan)
