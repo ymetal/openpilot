@@ -23,7 +23,6 @@ def upload_data():
 
     ftp = ftplib.FTP("smiskol.com")
     ftp.login("eon", "87pYEYF4vFpwvgXU")
-    print "STOR /{}/{}".format(username, filename)
     try:
       ftp.mkd("/{}".format(username))
     except:
