@@ -1,4 +1,3 @@
-CC = clang
 CXX = clang++
 
 PHONELIBS = ../../phonelibs
@@ -37,7 +36,6 @@ $(OUTPUT): $(OBJS)
            -Iinclude -I.. -I../.. \
            $(SNPE_FLAGS) \
            -c -o '$@' '$<'
-
 
 .PHONY: clean
 clean:
