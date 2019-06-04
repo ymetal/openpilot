@@ -6,6 +6,9 @@ import ntpath
 import os
 
 def upload_data():
+  filepath = "/data/openpilot/selfdrive/df/gathered_data/df-data"
+  if not os.path.exists(filepath):
+    return True
   try:
     try:
       with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
@@ -18,7 +21,6 @@ def upload_data():
     except:
       username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
 
-    filepath = "/data/openpilot/selfdrive/df/gathered_data/df-data"
     filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,10000))
 
     ftp = ftplib.FTP("smiskol.com")
