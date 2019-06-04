@@ -10,10 +10,8 @@ zdl::DlSystem::Runtime_t checkRuntime()
     static zdl::DlSystem::Runtime_t Runtime;
     std::cout << "SNPE Version: " << Version.asString().c_str() << std::endl; //Print Version number
     if (zdl::SNPE::SNPEFactory::isRuntimeAvailable(zdl::DlSystem::Runtime_t::GPU)) {
-        printf("Using GPU\n");
         Runtime = zdl::DlSystem::Runtime_t::GPU;
     } else {
-        printf("Using CPU\n");
         Runtime = zdl::DlSystem::Runtime_t::CPU;
     }
     return Runtime;
@@ -22,17 +20,14 @@ zdl::DlSystem::Runtime_t checkRuntime()
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
   container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/model.3.dlc");
-  printf("loaded model\n");
+  //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
-  printf("we are here\n");
   snpe = snpeBuilder.setOutputLayers({})
                       .setRuntimeProcessor(runtime)
                       .setUseUserSuppliedBuffers(false)
                       .setPerformanceProfile(zdl::DlSystem::PerformanceProfile_t::HIGH_PERFORMANCE)
                       .build();
-  printf("we are not here\n");
-
 }
 
 
