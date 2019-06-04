@@ -6,7 +6,7 @@ import ntpath
 import os
 
 def upload_data():
-  filepath = "/data/openpilot/selfdrive/df/gathered_data/df-data"
+  filepath = "/data/openpilot/selfdrive/df/df-data"
   if not os.path.exists(filepath):
     return True
   try:

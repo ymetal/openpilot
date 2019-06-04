@@ -24,9 +24,6 @@ class LongitudinalMpc(object):
     self.new_lead = False
 
     self.last_cloudlog_t = 0.0
-    if self.mpc_id == 1:
-      if not os.path.exists("/data/openpilot/selfdrive/df/gathered_data"):
-        os.makedirs("/data/openpilot/selfdrive/df/gathered_data")
 
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
@@ -79,7 +76,7 @@ class LongitudinalMpc(object):
 
       if self.mpc_id == 1:
         try:
-          with open("/data/openpilot/selfdrive/df/gathered_data/df-data", "a") as f:
+          with open("/data/openpilot/selfdrive/df/df-data", "a") as f:
             f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()]) + "\n")
         except:
           pass
