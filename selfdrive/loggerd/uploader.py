@@ -15,7 +15,7 @@ import subprocess
 from collections import Counter
 from selfdrive.swaglog import cloudlog
 from selfdrive.loggerd.config import ROOT
-from selfdrive.df import df_uploader
+#from selfdrive.df import df_uploader
 
 from common.params import Params
 from common.api import api_get
@@ -258,18 +258,18 @@ def uploader_fn(exit_event):
   uploader = Uploader(dongle_id, access_token, ROOT)
 
   backoff = 0.1
-  try:
+  '''try:
     with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
       last_df = f.read()
   except:
-    last_df = ""
+    last_df = ""'''
   while True:
     allow_cellular = (params.get("IsUploadVideoOverCellularEnabled") != "0")
     on_hotspot = is_on_hotspot()
     on_wifi = is_on_wifi()
     should_upload = allow_cellular or (on_wifi and not on_hotspot)
 
-    try:
+    '''try:
       with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
         this_df = f.read()
       if this_df == last_df:
@@ -282,7 +282,7 @@ def uploader_fn(exit_event):
       with open("/data/openpilot/selfdrive/df/df-data", "r") as f:
         last_df = f.read()
     except:
-      last_df = ""
+      last_df = ""'''
 
     if exit_event.is_set():
       return
