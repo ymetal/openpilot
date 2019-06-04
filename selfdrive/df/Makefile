@@ -110,7 +110,7 @@ else
 endif
 
 OBJS = dynamic_follow.o
-OUTPUT = visiond
+OUTPUT = dynamic_follow.so
 
 .PHONY: all
 all: $(OUTPUT)
