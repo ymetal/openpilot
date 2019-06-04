@@ -17,12 +17,6 @@ $(OUTPUT): $(OBJS)
 	$(CXX) -fPIC -o -shared '$@' $^ \
         $(SNPE_LIBS)
 
-%.so: %.cc
-	@echo "[ CXX ] $@"
-	$(CXX) $(CXXFLAGS) -MMD \
-           -Iinclude -I.. -I../.. \
-           $(SNPE_FLAGS) \
-           -c -o '$@' '$<'
 %.o: %.cc
 	@echo "[ CXX ] $@"
 	$(CXX) $(CXXFLAGS) -MMD \
