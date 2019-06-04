@@ -269,13 +269,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   v_acc_sol = plan.vStart + dt * (a_acc_sol + plan.aStart) / 2.0
 
   # Gas/Brake PID loop
-  actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
-                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)
-  
-  with open("/data/act", "a") as f:
-    f.write(str(actuators.gas) + " " + str(actuators.brake) + "\n")
+  '''actuators.gas, actuators.brake = LoC.update(active, CS.vEgo, CS.brakePressed, CS.standstill, CS.cruiseState.standstill,
+                                              v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
 
-  v_ego_scale = [0.0, 36.1995735168457]
+
+  '''v_ego_scale = [0.0, 36.1995735168457]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
   v_lead_scale = [0.0, 91.02222442626953]
   x_lead_scale = [0.9600000381469727, 138.67999267578125]
@@ -291,8 +289,6 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
       x_lead = lead_1.dRel
       v_lead = max(0.0, lead_1.vLead)
       a_lead = lead_1.aLeadK
-      '''with open("/data/cdata", "a") as f:
-        f.write(str(x_lead)+" "+str(v_lead)+" "+str(a_lead))'''
 
   try:
     model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
@@ -300,10 +296,9 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
   actuators.gas = max(model_output, 0.0)
-  actuators.brake = -min(model_output, 0.0)
-
-  with open("/data/pred", "a") as f:
-    f.write(str(model_output) + "\n")
+  actuators.brake = -min(model_output, 0.0)'''
+  actuators.gas = 0.0
+  actuators.brake = 0.0
 
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
