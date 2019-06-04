@@ -1,6 +1,6 @@
 CC = clang++ # C compiler
 CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
-LDFLAGS = -shared # linking flags
+LDFLAGS = -shared  # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = dynamic_follow.so # target lib
 
