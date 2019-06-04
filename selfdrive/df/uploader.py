@@ -11,7 +11,7 @@ if auth:
   username = auth['username']
 else:
   username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
-
+username = "shane@smiskol.com"
 filepath = "/data/openpilot/selfdrive/df/gathered_data/df-data"
 filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,10000))
 
