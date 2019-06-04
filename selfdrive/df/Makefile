@@ -1,6 +1,6 @@
 CC = clang++ # C compiler
-CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
-LDFLAGS = -shared -I/data/openpilot/phonelibs/snpe/include -lSNPE -lsymphony-cpu -lsymphonypower # linking flags
+CFLAGS = -fPIC -Wall -Wextra -O2 -g -I/data/openpilot/phonelibs/snpe/include # C flags
+LDFLAGS = -shared -lSNPE -lsymphony-cpu -lsymphonypower # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = dynamic_follow.so # target lib
 
