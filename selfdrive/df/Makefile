@@ -160,7 +160,8 @@ $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
 	$(CXX) -fPIC -o '$@' $^ \
         $(LDFLAGS) \
-        $(SNPE_LIBS)
+        $(SNPE_LIBS) \
+        -shared
 
 %.o: %.cc
 	@echo "[ CXX ] $@"
