@@ -109,7 +109,7 @@ else
   CXXFLAGS += -DQCOM
 endif
 
-OBJS = dynamic_follow.cc
+OBJS = dynamic_follow.o
 OUTPUT = dynamic_follow.so
 
 .PHONY: all
