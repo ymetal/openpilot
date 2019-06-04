@@ -7,14 +7,14 @@ SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 
 OBJS = dynamic_follow.o
 
-all: d_f.so
+all: d_f.o
 
 $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
 	$(CXX) -fPIC -o '$@' $^ \
         $(SNPE_LIBS)
 
-%.so: %.cc
+%.o: %.cc
 	@echo "[ CXX ] $@"
 	$(CXX) $(CXXFLAGS) -MMD \
            -Iinclude -I.. -I../.. \
