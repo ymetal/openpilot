@@ -283,7 +283,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
 
   live20 = messaging.recv_one_or_none(live20_sock)
   v_lead = 20.0
-  x_lead = 12.0
+  x_lead = 20.0
   a_lead = 0.0
   if live20 is not None:
     lead_1 = live20.live20.leadOne
@@ -291,8 +291,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
       x_lead = lead_1.dRel
       v_lead = max(0.0, lead_1.vLead)
       a_lead = lead_1.aLeadK
-      with open("/data/cdata", "a") as f:
-        f.write(str(x_lead)+" "+str(v_lead)+" "+str(a_lead))
+      '''with open("/data/cdata", "a") as f:
+        f.write(str(x_lead)+" "+str(v_lead)+" "+str(a_lead))'''
 
   try:
     model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
