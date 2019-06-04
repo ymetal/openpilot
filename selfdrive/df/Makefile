@@ -8,7 +8,7 @@ SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 
 OBJS = dynamic_follow.o
 
-all: dynamic_follow.cc
+all: dynamic_follow.so
 	clang++ -c dynamic_follow.cc
 
 $(OUTPUT): $(OBJS)
