@@ -10,11 +10,7 @@ def get_libmpc():
     libmpc_fn = "/data/openpilot/selfdrive/df/dynamic_follow.so"
 
     ffi = FFI()
-    ffi.cdef("""
-    typedef struct {
-      float testvar;
-    } testvar_t;
-    
+    ffi.cdef("""    
     float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead);
     void init_model();
     """)
