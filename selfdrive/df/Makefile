@@ -1,8 +1,9 @@
 CXX = clang++
 
 CXXFLAGS = -std=c++14 -fPIC -shared
-SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
 
+PHONELIBS = /data/openpilot/phonelibs
+SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
 SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 
 OBJS = dynamic_follow.o
