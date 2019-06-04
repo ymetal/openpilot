@@ -13,7 +13,7 @@ def upload_data():
         auth = json.loads(f.read())
       auth = json.loads(auth['commaUser'])
       if auth:
-        username = auth['username']
+        username = str(auth['username'])
       else:
         username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
     except:
@@ -34,3 +34,4 @@ def upload_data():
     return True
   except:
     return False
+upload_data()
