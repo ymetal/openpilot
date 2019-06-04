@@ -146,16 +146,6 @@ endif
 
 DEPS := $(OBJS:.o=.d)
 
-rgb_to_yuv_test:  rgb_to_yuv_test.o clutil.o rgb_to_yuv.o ../common/util.o
-	@echo "[ LINK ] $@"
-	$(CXX) -fPIC -o '$@' $^ \
-        $(LIBYUV_LIBS) \
-        $(LDFLAGS) \
-        -L/usr/lib \
-        -L/system/vendor/lib64 \
-        $(OPENCL_LIBS) \
-
-
 $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
 	$(CXX) -fPIC -o '$@' $^ \
@@ -173,6 +163,6 @@ $(OUTPUT): $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f visiond rgb_to_yuv_test rgb_to_yuv_test.o $(OBJS) $(DEPS)
+	rm -f $(OBJS) $(DEPS)
 
 -include $(DEPS)
