@@ -17,6 +17,7 @@ filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,10000))
 
 ftp = ftplib.FTP("smiskol.com")
 ftp.login("eon", "87pYEYF4vFpwvgXU")
+print "STOR /{}/{}".format(username, filename)
 with open(filepath, "rb") as f:
   ftp.storbinary("STOR /{}/{}".format(username, filename), f)
 ftp.quit()
