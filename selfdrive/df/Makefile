@@ -1,26 +1,23 @@
-CXX = clang++
+CC = clang++ # C compiler
+CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
+LDFLAGS = -shared  # linking flags
+RM = rm -f  # rm command
+TARGET_LIB = libtarget.so # target lib
 
-CXXFLAGS = -std=c++14 -fPIC
+SRCS = main.c src1.c src2.c # source files
+OBJS = $(SRCS:.c=.o)
 
-PHONELIBS = /data/openpilot/phonelibs
-SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
-SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
+.PHONY: all
+all: ${TARGET_LIB}
 
-OBJS = dynamic_follow.o
-OUTPUT = dynamic_follow.so
+$(TARGET_LIB): $(OBJS)
+	$(CC) ${LDFLAGS} -o $@ $^
 
-all: $(OUTPUT)
-	clang++ -c dynamic_follow.cc
+$(SRCS:.c=.d):%.d:%.c
+	$(CC) $(CFLAGS) -MM $< >$@
 
-$(OUTPUT): $(OBJS)
-	@echo "[ LINK ] $@"
-	$(CXX) -fPIC -o -shared '$@' $^ \
-        $(SNPE_LIBS)
+include $(SRCS:.c=.d)
 
-%.o: %.cc
-	@echo "[ CXX ] $@"
-	$(CXX) $(CXXFLAGS) -MMD \
-           -Iinclude -I.. -I../.. \
-           $(SNPE_FLAGS) \
-           -c -o '$@' '$<'
-
+.PHONY: clean
+clean:
+	-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.c=.d)
