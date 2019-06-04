@@ -275,11 +275,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   with open("/data/act", "a") as f:
     f.write(str(actuators.gas) + " " + str(actuators.brake) + "\n")
 
-  v_ego_scale = [0.0, 29.51362419128418]
+  v_ego_scale = [0.0, 36.1995735168457]
   a_ego_scale = [-3.0412862300872803, 2.78971791267395]
   v_lead_scale = [0.0, 91.02222442626953]
-  x_lead_scale = [1.5199999809265137, 138.67999267578125]
-  a_lead_scale = [-3.0579869747161865, 25.991727828979492]
+  x_lead_scale = [0.9600000381469727, 138.67999267578125]
+  a_lead_scale = [-3.909122943878174, 25.991727828979492]
 
   live20 = messaging.recv_one_or_none(live20_sock)
   v_lead = 20.0
