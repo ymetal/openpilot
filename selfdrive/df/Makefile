@@ -158,7 +158,7 @@ rgb_to_yuv_test:  rgb_to_yuv_test.o clutil.o rgb_to_yuv.o ../common/util.o
 
 $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
-	$(CXX) -fPIC -o -shared '$@' $^ \
+	$(CXX) -fPIC -o '$@' $^ \
         $(LDFLAGS) \
         $(SNPE_LIBS)
 
