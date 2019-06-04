@@ -7,8 +7,9 @@ SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
 SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 
 OBJS = dynamic_follow.o
+OUTPUT = dynamic_follow.so
 
-all: dynamic_follow.so
+all: $(OUTPUT)
 	clang++ -c dynamic_follow.cc
 
 $(OUTPUT): $(OBJS)
