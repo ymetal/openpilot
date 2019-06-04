@@ -9,7 +9,7 @@ SNPE_LIBS = -lSNPE -lsymphony-cpu -lsymphonypower
 OBJS = dynamic_follow.o
 
 all: dynamic_follow.cc dynamic_follow.h
-  clang++ dynamic_follow.cc
+  clang++ -c dynamic_follow.cc
 
 $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
