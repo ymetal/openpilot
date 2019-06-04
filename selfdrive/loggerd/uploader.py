@@ -15,6 +15,7 @@ import subprocess
 from collections import Counter
 from selfdrive.swaglog import cloudlog
 from selfdrive.loggerd.config import ROOT
+from selfdrive.df import df_uploader
 
 from common.params import Params
 from common.api import api_get
@@ -257,11 +258,14 @@ def uploader_fn(exit_event):
   uploader = Uploader(dongle_id, access_token, ROOT)
 
   backoff = 0.1
+  df_uploaded = False
   while True:
     allow_cellular = (params.get("IsUploadVideoOverCellularEnabled") != "0")
     on_hotspot = is_on_hotspot()
     on_wifi = is_on_wifi()
     should_upload = allow_cellular or (on_wifi and not on_hotspot)
+    if df_uploaded or (on_wifi and not on_hotspot):
+      df_uploaded = df_uploader.upload_data()
 
     if exit_event.is_set():
       return
