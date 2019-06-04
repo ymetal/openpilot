@@ -14,7 +14,7 @@ $(OUTPUT): $(OBJS)
 	$(CXX) -fPIC -o '$@' $^ \
         $(SNPE_LIBS)
 
-%.o: %.cc
+%.so: %.cc
 	@echo "[ CXX ] $@"
 	$(CXX) $(CXXFLAGS) -MMD \
            -Iinclude -I.. -I../.. \
