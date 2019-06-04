@@ -1,10 +1,10 @@
 CC = clang++ # C compiler
 CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
-LDFLAGS = -shared  # linking flags
+LDFLAGS = -shared -lSNPE -lsymphony-cpu -lsymphonypower -I/data/openpilot/phonelibs/snpe/include # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = dynamic_follow.so # target lib
 
-SRCS = dynamic_follow.cc -I/data/openpilot/phonelibs/snpe/include # source files
+SRCS = dynamic_follow.cc # source files
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
