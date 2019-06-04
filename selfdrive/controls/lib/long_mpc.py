@@ -74,12 +74,12 @@ class LongitudinalMpc(object):
         v_lead = 0.0
         a_lead = 0.0
 
-      '''if self.mpc_id == 1:
+      if self.mpc_id == 1:
         try:
           with open("/data/openpilot/selfdrive/df/df-data", "a") as f:
             f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()]) + "\n")
         except:
-          pass'''
+          pass
 
       self.a_lead_tau = lead.aLeadTau
       self.new_lead = False
