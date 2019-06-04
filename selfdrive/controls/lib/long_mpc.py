@@ -6,6 +6,7 @@ from common.realtime import sec_since_boot
 from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
+import os
 
 
 class LongitudinalMpc(object):
@@ -23,6 +24,10 @@ class LongitudinalMpc(object):
     self.new_lead = False
 
     self.last_cloudlog_t = 0.0
+    if self.mpc_id == 1:
+      if not os.path.exists("/data/openpilot/selfdrive/df/gathered_data"):
+        os.makedirs("/data/openpilot/selfdrive/df/gathered_data")
+
 
   def send_mpc_solution(self, qp_iterations, calculation_time):
     qp_iterations = max(0, qp_iterations)
@@ -72,11 +77,12 @@ class LongitudinalMpc(object):
         v_lead = 0.0
         a_lead = 0.0
 
-      try:
-        with open("/data/df-data.1", "a") as f:
-          f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake]) + "\n")
-      except:
-        pass
+      if self.mpc_id == 1:
+        try:
+          with open("/data/openpilot/selfdrive/df/gathered_data/df-data", "a") as f:
+            f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake]) + "\n")
+        except:
+          pass
 
       self.a_lead_tau = lead.aLeadTau
       self.new_lead = False
