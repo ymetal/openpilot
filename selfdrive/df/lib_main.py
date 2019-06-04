@@ -1,13 +1,10 @@
 from cffi import FFI
 import os
-from common.basedir import BASEDIR
+import subprocess
 
-if not os.path.isfile('/data/openpilot/selfdrive/df/d_f.so') and BASEDIR == "/data/openpilot":
-    Makefile = "/data/openpilot/selfdrive/df/Makefile.sh"
-    os.chmod(Makefile, 0775)
-    os.system("exec " + Makefile)
+Makefile = "/data/openpilot/selfdrive/df/Makefile"
 
-#subprocess.check_call(["make", "-j4"], cwd=mpc_dir)
+subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/df")
 
 def get_libmpc():
     libmpc_fn = "/data/openpilot/selfdrive/df/d_f.so"
