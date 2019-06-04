@@ -4,8 +4,8 @@ LDFLAGS = -shared  # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = libtarget.so # target lib
 
-SRCS = main.c src1.c src2.c # source files
-OBJS = $(SRCS:.c=.o)
+SRCS = dynamic_follow.cc # source files
+OBJS = $(SRCS:.cc=.o)
 
 .PHONY: all
 all: ${TARGET_LIB}
@@ -13,11 +13,11 @@ all: ${TARGET_LIB}
 $(TARGET_LIB): $(OBJS)
 	$(CC) ${LDFLAGS} -o $@ $^
 
-$(SRCS:.c=.d):%.d:%.c
+$(SRCS:.cc=.d):%.d:%.cc
 	$(CC) $(CFLAGS) -MM $< >$@
 
-include $(SRCS:.c=.d)
+include $(SRCS:.cc=.d)
 
 .PHONY: clean
 clean:
-	-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.c=.d)
+	-${RM} ${TARGET_LIB} ${OBJS} $(SRCS:.cc=.d)
