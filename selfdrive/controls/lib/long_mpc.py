@@ -7,7 +7,7 @@ from selfdrive.controls.lib.radar_helpers import _LEAD_ACCEL_TAU
 from selfdrive.controls.lib.longitudinal_mpc import libmpc_py
 from selfdrive.controls.lib.drive_helpers import MPC_COST_LONG
 import os
-
+import time
 
 class LongitudinalMpc(object):
   def __init__(self, mpc_id, live_longitudinal_mpc):
@@ -80,7 +80,7 @@ class LongitudinalMpc(object):
       if self.mpc_id == 1:
         try:
           with open("/data/openpilot/selfdrive/df/gathered_data/df-data", "a") as f:
-            f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake]) + "\n")
+            f.write(str([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()]) + "\n")
         except:
           pass
 
