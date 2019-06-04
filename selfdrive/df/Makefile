@@ -1,6 +1,6 @@
 CXX = clang++
 
-CXXFLAGS = -std=c++14 -fPIC -shared
+CXXFLAGS = -std=c++14 -fPIC
 
 PHONELIBS = /data/openpilot/phonelibs
 SNPE_FLAGS = -I$(PHONELIBS)/snpe/include/
@@ -14,7 +14,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(OBJS)
 	@echo "[ LINK ] $@"
-	$(CXX) -fPIC -o '$@' $^ \
+	$(CXX) -fPIC -o -shared '$@' $^ \
         $(SNPE_LIBS)
 
 %.so: %.cc
