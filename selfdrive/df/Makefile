@@ -2,7 +2,7 @@ CC = clang++ # C compiler
 CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
 LDFLAGS = -shared  # linking flags
 RM = rm -f  # rm command
-TARGET_LIB = libtarget.so # target lib
+TARGET_LIB = dynamic_follow.so # target lib
 
 SRCS = dynamic_follow.cc # source files
 OBJS = $(SRCS:.cc=.o)
