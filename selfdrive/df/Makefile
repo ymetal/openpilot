@@ -4,7 +4,7 @@ LDFLAGS = -shared  # linking flags
 RM = rm -f  # rm command
 TARGET_LIB = dynamic_follow.so # target lib
 
-SRCS = dynamic_follow.cc # source files
+SRCS = dynamic_follow.cc -I/data/openpilot/phonelibs/snpe/include # source files
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
