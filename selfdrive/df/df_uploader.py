@@ -34,4 +34,3 @@ def upload_data():
     return True
   except:
     return False
-upload_data()
