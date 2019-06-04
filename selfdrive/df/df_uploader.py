@@ -7,8 +7,6 @@ import os
 
 def upload_data():
   filepath = "/data/openpilot/selfdrive/df/df-data"
-  if not os.path.exists(filepath):
-    return True
   try:
     try:
       with open("/data/data/ai.comma.plus.offroad/files/persistStore/persist-auth", "r") as f:
@@ -25,11 +23,11 @@ def upload_data():
 
     ftp = ftplib.FTP("smiskol.com")
     ftp.login("eon", "87pYEYF4vFpwvgXU")
-    try:
-      ftp.mkd("/{}".format(username))
-    except:
-      pass
     with open(filepath, "rb") as f:
+      try:
+        ftp.mkd("/{}".format(username))
+      except:
+        pass
       ftp.storbinary("STOR /{}/{}".format(username, filename), f)
     ftp.quit()
     os.remove(filepath)
