@@ -19,7 +19,7 @@ def upload_data():
       username = ''.join([random.choice(string.lowercase+string.uppercase+string.digits) for i in range(15)])
 
     filepath = "/data/openpilot/selfdrive/df/df-data"
-    filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,10000))
+    filename = ntpath.basename(filepath) + ".{}".format(random.randint(1,99999))
 
     ftp = ftplib.FTP("smiskol.com")
     ftp.login("eon", "87pYEYF4vFpwvgXU")
