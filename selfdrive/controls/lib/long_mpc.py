@@ -84,7 +84,7 @@ class LongitudinalMpc(object):
         with open("/data/cs", "a") as f:
           f.write("can't get cruisestate.enabled\n")
 
-      if self.mpc_id == 1 and CS.cruiseState.enabled:
+      if self.mpc_id == 1:
         self.df_data.append([v_ego, a_ego, v_lead, x_lead, a_lead, gas, brake, time.time()])
         if self.mpc_frames >= 400:  # every 10 seconds, write to file
           try:
