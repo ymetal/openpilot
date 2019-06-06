@@ -273,11 +273,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
 
 
-  '''v_ego_scale = [0.0, 36.1995735168457]
-  a_ego_scale = [-3.0412862300872803, 2.78971791267395]
-  v_lead_scale = [0.0, 91.02222442626953]
-  x_lead_scale = [0.9600000381469727, 138.67999267578125]
-  a_lead_scale = [-3.909122943878174, 25.991727828979492]
+  v_ego_scale = [0.0, 36.066749572753906]
+  a_ego_scale = [-2.8605620861053467, 2.758664131164551]
+  v_lead_scale = [0.0, 31.918716430664062]
+  x_lead_scale = [0.9800000190734863, 138.60000610351562]
+  a_lead_scale = [-3.6919500827789307, 3.077996253967285]
 
   live20 = messaging.recv_one_or_none(live20_sock)
   v_lead = 20.0
@@ -296,7 +296,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
     model_output = 0.5
   model_output = (model_output - 0.5) * 2.0
   actuators.gas = max(model_output, 0.0)
-  actuators.brake = -min(model_output, 0.0)'''
+  actuators.brake = -min(model_output, 0.0)
   actuators.gas = 0.0
   actuators.brake = 0.0
 
