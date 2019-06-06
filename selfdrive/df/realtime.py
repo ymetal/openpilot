@@ -10,6 +10,7 @@ clear = '\x08'* len_to_clear
 print 'Progress in percent:'+' '*(len_to_clear),
 for i in range(123):
     print clear+f % (i*100//123),
+    sys.stdout.flush()
     time.sleep(0.4)
 raw_input('\nDone')
 
