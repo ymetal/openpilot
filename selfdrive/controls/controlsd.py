@@ -273,11 +273,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
 
 
-  v_ego_scale = [0.0, 36.066749572753906]
-  a_ego_scale = [-2.8605620861053467, 2.758664131164551]
-  v_lead_scale = [0.0, 31.918716430664062]
-  x_lead_scale = [0.9800000190734863, 138.60000610351562]
-  a_lead_scale = [-3.6919500827789307, 3.077996253967285]
+  v_ego_scale = [0, 30.99752426147461]
+  a_ego_scale = [-1.9706720113754272, 2.239650249481201]
+  v_lead_scale = [0.0, 31.220565795898438]
+  x_lead_scale = [1.25, 137.875]
+  a_lead_scale = [-3.302361011505127, 3.0574848651885986]
 
   live20 = messaging.recv_one_or_none(live20_sock)
   v_lead = 20.0
