@@ -127,6 +127,8 @@ class CarController(object):
   def update(self, sendcan, enabled, CS, frame, actuators,
              pcm_cancel_cmd, hud_alert, audible_alert, forwarding_camera,
              left_line, right_line, lead, left_lane_depart, right_lane_depart):
+    with open("leadtest", "a") as f:
+      f.write(str(lead.dRel))
 
     # *** compute control surfaces ***
 
