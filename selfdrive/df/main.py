@@ -7,7 +7,7 @@ start = time.time()
 model_output = libmpc.run_model(0.8653078153514447,
  0.46805728618371273,
  0.8591260060867878,
- 0.6495882891125343,
+ 0.5032021957913998,
  0.5192517358961403)
 #print(time.time() - start)
 print(model_output)
