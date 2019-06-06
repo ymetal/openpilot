@@ -1681,7 +1681,7 @@ struct KalmanOdometry {
 
 struct DynamicFollowData {
   gas @0 :Float32;
-  brake @0 :Float32;
+  brake @1 :Float32;
 }
 
 struct Event {
