@@ -32,6 +32,7 @@ from selfdrive.df import lib_main
 
 ThermalStatus = log.ThermalData.ThermalStatus
 State = log.Live100Data.ControlState
+last_live20 = None
 
 def norm(data, min_max=None):
   if min_max==None:
@@ -57,6 +58,7 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
   """Receive data from sockets and create events for battery, temperature and disk space"""
 
   # Update carstate from CAN and create events
+  global last_live20
   CS = CI.update(CC)
   events = list(CS.events)
   enabled = isEnabled(state)
@@ -86,6 +88,10 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
       path_plan = msg
     elif socket is live20_sock:
       live20 = msg
+      last_live20 = live20
+
+  if live20 is None:
+    live20 = last_live20
 
   if td is not None:
     overtemp = td.thermal.thermalStatus >= ThermalStatus.red
@@ -302,17 +308,12 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
     actuators.brake = -min(model_output, 0.0)
     data = messaging.new_message()
     data.init('dynamicFollowData')
-    data.dynamicFollowData.gas = model_output
-    data.dynamicFollowData.brake = 1
+    data.dynamicFollowData.gas = max(model_output, 0.0)
+    data.dynamicFollowData.brake = -min(model_output, 0.0)
     dynamic_follow_sock.send(data.to_bytes())
   else:
     actuators.gas = 0.0
     actuators.brake = 0.0
-    data = messaging.new_message()
-    data.init('dynamicFollowData')
-    data.dynamicFollowData.gas = 99.0
-    data.dynamicFollowData.brake = 99.0
-    dynamic_follow_sock.send(data.to_bytes())
 
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
