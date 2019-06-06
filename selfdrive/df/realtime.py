@@ -1,4 +1,3 @@
-from __future__ import print_function
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 import zmq
