@@ -8,16 +8,14 @@ context = zmq.Context()
 poller = zmq.Poller()
 dynamic_follow_sock = messaging.sub_sock(context, service_list['dynamicFollowData'].port, conflate=True, poller=poller)
 counter = 0
-c=0
 while True:
   dynData = messaging.recv_one(dynamic_follow_sock)
   if dynData is not None:
-    c+=1
-    if counter == 40:
+    if counter == 30:
       counter = 0
       gas = dynData.dynamicFollowData.gas
       brake = dynData.dynamicFollowData.brake
-      output = "Gas: {}  Brake: {}".format(c, brake)
+      output = "Gas: {}  Brake: {}".format(gas, brake)
       len_to_clear = len(output)+1
       clear = '\x08'* len_to_clear
       print clear+output,
