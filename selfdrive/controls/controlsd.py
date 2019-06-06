@@ -302,16 +302,16 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
     actuators.brake = -min(model_output, 0.0)
     data = messaging.new_message()
     data.init('dynamicFollowData')
-    data.dynamicFollowData.gas = max(model_output, 0.0)
-    data.dynamicFollowData.brake = -min(model_output, 0.0)
+    data.dynamicFollowData.gas = model_output
+    data.dynamicFollowData.brake = 1
     dynamic_follow_sock.send(data.to_bytes())
   else:
     actuators.gas = 0.0
     actuators.brake = 0.0
     data = messaging.new_message()
     data.init('dynamicFollowData')
-    data.dynamicFollowData.gas = 0.0
-    data.dynamicFollowData.brake = 0.0
+    data.dynamicFollowData.gas = 99.0
+    data.dynamicFollowData.brake = 99.0
     dynamic_follow_sock.send(data.to_bytes())
 
   # Steering PID loop and lateral MPC
