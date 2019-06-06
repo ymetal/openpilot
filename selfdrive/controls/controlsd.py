@@ -53,7 +53,7 @@ def isEnabled(state):
 
 def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibration, health, driver_monitor,
                 poller, cal_status, cal_perc, overtemp, free_space, low_battery,
-                driver_status, state, mismatch_counter, params, plan, path_plan):
+                driver_status, state, mismatch_counter, params, plan, path_plan, live20_sock):
   """Receive data from sockets and create events for battery, temperature and disk space"""
 
   # Update carstate from CAN and create events
@@ -66,6 +66,7 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
   cal = None
   hh = None
   dm = None
+  live20 = None
 
   for socket, event in poller.poll(0):
     msg = messaging.recv_one(socket)
@@ -83,6 +84,8 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
       plan = msg
     elif socket is path_plan_sock:
       path_plan = msg
+    elif socket is live20_sock:
+      live20 = msg
 
   if td is not None:
     overtemp = td.thermal.thermalStatus >= ThermalStatus.red
@@ -126,7 +129,7 @@ def data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, calibrati
   if dm is not None:
     driver_status.get_pose(dm.driverMonitoring, params)
 
-  return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan
+  return CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan, live20
 
 
 def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM):
@@ -217,7 +220,7 @@ def state_transition(CS, CP, state, events, soft_disable_timer, v_cruise_kph, AM
 
 
 def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kph, v_cruise_kph_last, AM, rk,
-                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20_sock, dynamic_follow_sock):
+                  driver_status, LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20, dynamic_follow_sock):
   """Given the state, this function returns an actuators packet"""
 
   actuators = car.CarControl.Actuators.new_message()
@@ -279,7 +282,6 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   x_lead_scale = [1.25, 137.875]
   a_lead_scale = [-3.302361011505127, 3.0574848651885986]
 
-  live20 = messaging.recv_one_or_none(live20_sock)
   v_lead = 20.0
   x_lead = 20.0
   a_lead = 0.0
@@ -291,8 +293,8 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
       v_lead = max(0.0, lead_1.vLead)
       a_lead = lead_1.aLeadK
       has_lead = True
-      '''with open("/data/haslead", "a") as f:
-        f.write("{}".format(lead_1.dRel))'''
+      with open("/data/haslead", "a") as f:
+        f.write("{}".format(lead_1.dRel))
 
   try:
     model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
@@ -487,6 +489,8 @@ def controlsd_thread(gctx=None, rate=100):
   plan_sock = messaging.sub_sock(context, service_list['plan'].port, conflate=True, poller=poller)
   path_plan_sock = messaging.sub_sock(context, service_list['pathPlan'].port, conflate=True, poller=poller)
   logcan = messaging.sub_sock(context, service_list['can'].port)
+  live20_sock = messaging.sub_sock(context, service_list['live20'].port, conflate=True, poller=poller)
+  dynamic_follow_sock = messaging.pub_sock(context, service_list['dynamicFollowData'].port)
 
   CC = car.CarControl.new_message()
   CI, CP = get_car(logcan, sendcan, 1.0 if passive else None)
@@ -552,8 +556,6 @@ def controlsd_thread(gctx=None, rate=100):
 
   prof = Profiler(False)  # off by default
 
-  live20_sock = messaging.sub_sock(context, service_list['live20'].port, conflate=True, poller=poller)
-  dynamic_follow_sock = messaging.pub_sock(context, service_list['dynamicFollowData'].port)
   ffi, libmpc = lib_main.get_libmpc()
   libmpc.init_model()
 
@@ -562,10 +564,10 @@ def controlsd_thread(gctx=None, rate=100):
     prof.checkpoint("Ratekeeper", ignore=True)
 
     # Sample data and compute car events
-    CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan  =\
+    CS, events, cal_status, cal_perc, overtemp, free_space, low_battery, mismatch_counter, plan, path_plan, live20  =\
       data_sample(rcv_times, CI, CC, plan_sock, path_plan_sock, thermal, cal, health, driver_monitor,
                   poller, cal_status, cal_perc, overtemp, free_space, low_battery, driver_status,
-                  state, mismatch_counter, params, plan, path_plan)
+                  state, mismatch_counter, params, plan, path_plan, live20_sock)
     prof.checkpoint("Sample")
 
     # Create alerts
@@ -597,7 +599,7 @@ def controlsd_thread(gctx=None, rate=100):
     actuators, v_cruise_kph, driver_status, angle_model_bias, v_acc, a_acc, lac_log = \
       state_control(rcv_times, plan.plan, path_plan.pathPlan, CS, CP, state, events, v_cruise_kph,
                     v_cruise_kph_last, AM, rk, driver_status,
-                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20_sock, dynamic_follow_sock)
+                    LaC, LoC, VM, angle_model_bias, passive, is_metric, cal_perc, libmpc, live20, dynamic_follow_sock)
 
     prof.checkpoint("State Control")
 
