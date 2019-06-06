@@ -12,6 +12,7 @@ while True:
   dynData = messaging.recv_one(dynamic_follow_sock)
   if dynData is not None:
     if counter == 20:
+      counter = 0
       gas = dynData.dynamicFollowData.gas
       brake = dynData.dynamicFollowData.brake
       output = "Gas: {}  Brake: {}".format(counter, brake)
