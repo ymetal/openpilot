@@ -1,6 +1,7 @@
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 import zmq
+from __future__ import print_function
 
 context = zmq.Context()
 poller = zmq.Poller()
@@ -8,5 +9,4 @@ dynamic_follow_sock = messaging.sub_sock(context, service_list['dynamicFollowDat
 while True:
   dynData = messaging.recv_one(dynamic_follow_sock)
   if dynData is not None:
-    print("Gas: {}".format(dynData.dynamicFollowData.gas))
-    print("Brake: {}".format(dynData.dynamicFollowData.brake))
+    print("Gas: {}\nBrake: {}".format(dynData.dynamicFollowData.gas, dynData.dynamicFollowData.brake), end="\r")
