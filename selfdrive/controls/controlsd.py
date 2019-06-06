@@ -300,10 +300,19 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   if has_lead:
     actuators.gas = max(model_output, 0.0)
     actuators.brake = -min(model_output, 0.0)
-    dynamic_follow_sock
+    data = messaging.new_message()
+    data.init('dynamicFollowData')
+    data.phantomData.gas = max(model_output, 0.0)
+    data.phantomData.brake = -min(model_output, 0.0)
+    dynamic_follow_sock.send(data.to_bytes())
   else:
     actuators.gas = 0.0
     actuators.brake = 0.0
+    data = messaging.new_message()
+    data.init('dynamicFollowData')
+    data.phantomData.gas = 0.0
+    data.phantomData.brake = 0.0
+    dynamic_follow_sock.send(data.to_bytes())
 
   # Steering PID loop and lateral MPC
   actuators.steer, actuators.steerAngle, lac_log = LaC.update(active, CS.vEgo, CS.steeringAngle, CS.steeringRate,
