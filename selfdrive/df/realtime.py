@@ -20,6 +20,12 @@ dynamic_follow_sock = messaging.sub_sock(context, service_list['dynamicFollowDat
 while True:
   dynData = messaging.recv_one(dynamic_follow_sock)
   if dynData is not None:
+    gas = dynData.dynamicFollowData.gas
+    brake = dynData.dynamicFollowData.brake
+    output = "Gas: {}\nBrake: {}".format(gas, brake)
+    len_to_clear = len(output)+1
+    clear = '\x08'* len_to_clear
+    print clear+output,
     #print("Gas: {}\nBrake: {}".format(dynData.dynamicFollowData.gas, dynData.dynamicFollowData.brake), end="\r")
-    #sys.stdout.flush()
-    pass
+    sys.stdout.flush()
+    
