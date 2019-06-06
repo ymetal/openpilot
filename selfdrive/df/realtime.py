@@ -9,5 +9,5 @@ def start():
   while True:
     dynData = messaging.recv_one(dynamic_follow_sock)
     if dynData is not None:
-      print("Gas: {}".format(dynData.gas))
-      print("Brake: {}".format(dynData.brake))
+      print("Gas: {}".format(dynData.dynamicFollowData.gas))
+      print("Brake: {}".format(dynData.dynamicFollowData.brake))
