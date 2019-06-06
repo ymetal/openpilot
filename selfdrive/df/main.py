@@ -4,6 +4,6 @@ ffi, libmpc = lib_main.get_libmpc()
 libmpc.init_model()
 start = time.time()
 #for i in range(50):
-model_output = libmpc.run_model(0.8735901 , 0.60731104, 0.91117012, 0.25800549, 0.4598458)
+model_output = libmpc.run_model(0.01942212, 0.47561208, 0.03928652, 0.01829826, 0.52718099)
 #print(time.time() - start)
 print(model_output)
