@@ -283,10 +283,10 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
 
 
   v_ego_scale = [-0.0802173912525177, 34.75202941894531]
-  a_ego_scale = [-4.493537902832031, 3.710982322692871]
+  #a_ego_scale = [-4.493537902832031, 3.710982322692871]
   v_lead_scale = [0.0, 35.17692947387695]
   x_lead_scale = [0.375, 138.625]
-  a_lead_scale = [-4.288643836975098, 4.948787212371826]
+  #a_lead_scale = [-4.288643836975098, 4.948787212371826]
 
   v_lead = 20.0
   x_lead = 20.0
