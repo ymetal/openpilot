@@ -1,10 +1,10 @@
 from cffi import FFI
 import os
 import subprocess
-
-Makefile = "/data/openpilot/selfdrive/df/Makefile"
-
-subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/df")
+try:
+    subprocess.check_call(["make", "-j4"], cwd="/data/openpilot/selfdrive/df")
+except:
+    pass
 
 def get_libmpc():
     libmpc_fn = "/data/openpilot/selfdrive/df/dynamic_follow.so"
