@@ -282,11 +282,11 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
                                               v_cruise_kph, v_acc_sol, plan.vTargetFuture, a_acc_sol, CP)'''
 
 
-  v_ego_scale = [-0.08337350934743881, 34.75202941894531]
+  v_ego_scale = [-0.09130645543336868, 41.05433654785156]
   #a_ego_scale = [-4.493537902832031, 3.710982322692871]
-  v_lead_scale = [-18.007680892944336, 16.128822207450867]  # actually v_rel
-  x_lead_scale = [0.375, 138.625]
-  a_lead_scale = [-4.949233531951904, 4.973185062408447]
+  v_lead_scale = [0.0, 48.66924285888672]
+  x_lead_scale = [0.125, 138.625]
+  a_lead_scale = [-4.993380546569824, 4.991139888763428]
 
   v_lead = 20.0
   x_lead = 20.0
@@ -301,7 +301,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
       has_lead = True
 
   #model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(CS.aEgo, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-  model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm((v_lead - CS.vEgo), v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
+  model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
 
   model_output = (model_output - 0.5) * 2.0
   #if has_lead:
