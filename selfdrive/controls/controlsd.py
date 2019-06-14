@@ -304,7 +304,7 @@ def state_control(rcv_times, plan, path_plan, CS, CP, state, events, v_cruise_kp
   model_output = float(libmpc.run_model(norm(CS.vEgo, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
 
   model_output = (model_output - 0.5) * 2.0
-  model_output = (model_output - 0.15) * 1.5
+  model_output = (model_output - 0.05) * 1.5
   #if has_lead:
   actuators.gas = max(model_output, 0.0)
   actuators.brake = -min(model_output, 0.0)
