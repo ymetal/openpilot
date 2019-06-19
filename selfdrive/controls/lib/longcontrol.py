@@ -1,6 +1,9 @@
 from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
+from selfdrive.df import df_wrapper
+model_wrapper = df_wrapper.get_wrapper()
+model_wrapper.init_model()
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -19,6 +22,13 @@ _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this
 
 RATE = 100.0
 
+def norm(data, min_max=None):
+  if min_max==None:
+    d_min = min(data)
+    d_max = max(data)
+    return [(i - d_min) / (d_max - d_min) for i in data], [d_min, d_max]
+  else:
+    return (data - min_max[0]) / (min_max[1] - min_max[0])
 
 def long_control_state_trans(active, long_control_state, v_ego, v_target, v_pid,
                              output_gb, brake_pressed, cruise_standstill):
@@ -66,14 +76,35 @@ class LongControl(object):
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
+  def df(self, live20, v_ego):
+    v_ego_scale = [-0.09130645543336868, 41.05433654785156]
+    #a_ego_scale = [-4.493537902832031, 3.710982322692871]
+    v_lead_scale = [0.0, 48.66924285888672]
+    x_lead_scale = [0.125, 138.625]
+    a_lead_scale = [-4.993380546569824, 4.991139888763428]
+
+    if live20 is not None:
+      lead_1 = live20.live20.leadOne
+      if lead_1 is not None and lead_1.status:
+        x_lead = lead_1.dRel
+        v_lead = lead_1.vLead
+        a_lead = lead_1.aLeadK
+        model_output = float(model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
+        return [True, clip((model_output - 0.575) * 3.5, -1.0, 1.0)]
+
+    return [False]
+
+
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, live20):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
+    if self.df(live20, v_ego)[0]:
+      return
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 

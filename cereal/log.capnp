@@ -1682,6 +1682,11 @@ struct KalmanOdometry {
   rotStd @3 :List(Float32); # std rad/s in device frame
 }
 
+struct DynamicFollowData {
+  gas @0 :Float32;
+  brake @1 :Float32;
+}
+
 struct Event {
   # in nanoseconds?
   logMonoTime @0 :UInt64;
@@ -1752,5 +1757,6 @@ struct Event {
     cameraOdometry @63 :CameraOdometry;
     pathPlan @64 :PathPlan;
     kalmanOdometry @65 :KalmanOdometry;
+    dynamicFollowData @66 :DynamicFollowData;
   }
 }
