@@ -76,15 +76,15 @@ class LongControl(object):
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
-  def df(self, live20, v_ego):
+  def df(self, radar_state, v_ego):
     v_ego_scale = [-0.09130645543336868, 41.05433654785156]
     #a_ego_scale = [-4.493537902832031, 3.710982322692871]
     v_lead_scale = [0.0, 48.66924285888672]
     x_lead_scale = [0.125, 138.625]
     a_lead_scale = [-4.993380546569824, 4.991139888763428]
 
-    if live20 is not None:
-      lead_1 = live20.live20.leadOne
+    if radar_state is not None:
+      lead_1 = radar_state.radarState.leadOne
       if lead_1 is not None and lead_1.status:
         x_lead = lead_1.dRel
         v_lead = lead_1.vLead
@@ -100,11 +100,13 @@ class LongControl(object):
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, live20):
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, radar_state):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    if self.df(live20, v_ego)[0]:
-      return
+    df_output = self.df(radar_state, v_ego)
+    if df_output[0]:
+      return max(df_output[1], 0.0), -min(df_output, 0.0)
+
     gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
