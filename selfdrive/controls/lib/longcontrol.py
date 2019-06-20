@@ -77,9 +77,9 @@ class LongControl(object):
     self.model_wrapper.init_model()
 
   def df(self, radar_state, v_ego):
-    v_ego_scale = [-0.09130645543336868, 41.05433654785156]
+    v_ego_scale = [-0.11468476802110672, 41.05433654785156]
     #a_ego_scale = [-4.493537902832031, 3.710982322692871]
-    v_lead_scale = [0.0, 48.66924285888672]
+    v_lead_scale = [0.0, 48.58272933959961]
     x_lead_scale = [0.125, 138.625]
     a_lead_scale = [-4.993380546569824, 4.991139888763428]
 
@@ -90,7 +90,7 @@ class LongControl(object):
         v_lead = lead_1.vLead
         a_lead = lead_1.aLeadK
         model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-        return [True, clip((model_output - 0.55) * 4.0, -1.0, 1.0)]
+        return [True, clip((model_output - 0.5) * 2.0, -1.0, 1.0)]
 
     return [False]
 
