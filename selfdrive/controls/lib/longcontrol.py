@@ -2,8 +2,6 @@ from cereal import log
 from common.numpy_fast import clip, interp
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.df import df_wrapper
-model_wrapper = df_wrapper.get_wrapper()
-model_wrapper.init_model()
 
 LongCtrlState = log.ControlsState.LongControlState
 
@@ -75,6 +73,8 @@ class LongControl(object):
                             convert=compute_gb)
     self.v_pid = 0.0
     self.last_output_gb = 0.0
+    self.model_wrapper = df_wrapper.get_wrapper()
+    self.model_wrapper.init_model()
 
   def df(self, radar_state, v_ego):
     v_ego_scale = [-0.09130645543336868, 41.05433654785156]
@@ -89,7 +89,7 @@ class LongControl(object):
         x_lead = lead_1.dRel
         v_lead = lead_1.vLead
         a_lead = lead_1.aLeadK
-        model_output = float(model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
+        model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
         return [True, clip((model_output - 0.575) * 3.5, -1.0, 1.0)]
 
     return [False]
