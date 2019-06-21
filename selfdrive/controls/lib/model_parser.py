@@ -1,13 +1,19 @@
 from common.numpy_fast import interp
 from selfdrive.controls.lib.latcontrol_helpers import model_polyfit, calc_desired_path, compute_path_pinv
+<<<<<<< HEAD
 import selfdrive.kegman_conf as kegman
 import numpy as np
 
 CAMERA_OFFSET = float(kegman.conf['cameraOffset'])  # m from center car to camera
+=======
+
+CAMERA_OFFSET = 0.06  # m from center car to camera
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class ModelParser(object):
   def __init__(self):
+<<<<<<< HEAD
     self.lane_width_array = np.zeros(50)
     self.lane_width_array_counter = 0
     self.fullarray = False
@@ -15,14 +21,24 @@ class ModelParser(object):
     self.c_poly = [0., 0., 0., 0.]
     self.r_poly = [0., 0., 0., 0.]
     self.l_poly = [0., 0., 0., 0.]
+=======
+    self.d_poly = [0., 0., 0., 0.]
+    self.c_poly = [0., 0., 0., 0.]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.c_prob = 0.
     self.last_model = 0.
     self.lead_dist, self.lead_prob, self.lead_var = 0, 0, 1
     self._path_pinv = compute_path_pinv()
 
+<<<<<<< HEAD
     self.lane_width_estimate = 2.85
     self.lane_width_certainty = 1.0
     self.lane_width = 2.85
+=======
+    self.lane_width_estimate = 3.7
+    self.lane_width_certainty = 1.0
+    self.lane_width = 3.7
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.l_prob = 0.
     self.r_prob = 0.
 
@@ -44,6 +60,7 @@ class ModelParser(object):
       lr_prob = l_prob * r_prob
       self.lane_width_certainty += 0.05 * (lr_prob - self.lane_width_certainty)
       current_lane_width = abs(l_poly[3] - r_poly[3])
+<<<<<<< HEAD
       self.lane_width_array[self.lane_width_array_counter] = current_lane_width
       self.lane_width_array_counter = (self.lane_width_array_counter + 1 ) % 50
       if self.lane_width_array_counter == 0 and self.fullarray == False:
@@ -66,6 +83,17 @@ class ModelParser(object):
       elif abs(self.l_poly[3] - self.c_poly[3]) - abs(self.r_poly[3] - self.c_poly[3]) > 0.3 and \
          abs(self.l_poly[3] - l_poly[3]) > abs(self.r_poly[3] - r_poly[3]):
         l_prob *= lane_prob      
+=======
+      self.lane_width_estimate += 0.005 * (current_lane_width - self.lane_width_estimate)
+      speed_lane_width = interp(v_ego, [0., 31.], [3., 3.8])
+      self.lane_width = self.lane_width_certainty * self.lane_width_estimate + \
+                        (1 - self.lane_width_certainty) * speed_lane_width
+
+      lane_width_diff = abs(self.lane_width - current_lane_width)
+      lane_r_prob = interp(lane_width_diff, [0.3, 1.0], [1.0, 0.0])
+
+      r_prob *= lane_r_prob
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
       self.lead_dist = md.model.lead.dist
       self.lead_prob = md.model.lead.prob

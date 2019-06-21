@@ -7,13 +7,22 @@ MAX_RATE_UP = 10
 MAX_RATE_DOWN = 25
 MAX_TORQUE = 1500
 
+<<<<<<< HEAD
 MAX_ACCEL = 3500
 MIN_ACCEL = -4000
+=======
+MAX_ACCEL = 1500
+MIN_ACCEL = -3000
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 MAX_RT_DELTA = 375
 RT_INTERVAL = 250000
 
+<<<<<<< HEAD
 MAX_TORQUE_ERROR = 1350
+=======
+MAX_TORQUE_ERROR = 350
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 IPAS_OVERRIDE_THRESHOLD = 200
 
@@ -119,13 +128,35 @@ class TestToyotaSafety(unittest.TestCase):
     to_send[0].RDLR = (a & 0xFF) << 8 | (a >> 8)
     return to_send
 
+<<<<<<< HEAD
   def _gas_msg(self, gas):
+=======
+  def _send_gas_msg(self, gas):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     to_send = libpandasafety_py.ffi.new('CAN_FIFOMailBox_TypeDef *')
     to_send[0].RIR = 0x200 << 21
     to_send[0].RDLR = gas
 
     return to_send
 
+<<<<<<< HEAD
+=======
+  def _send_interceptor_msg(self, gas, addr):
+    to_send = libpandasafety_py.ffi.new('CAN_FIFOMailBox_TypeDef *')
+    to_send[0].RIR = addr << 21
+    to_send[0].RDTR = 6
+    to_send[0].RDLR = ((gas & 0xff) << 8) | ((gas & 0xff00) >> 8)
+
+    return to_send
+
+  def _pcm_cruise_msg(self, cruise_on, gas_pressed):
+    to_send = libpandasafety_py.ffi.new('CAN_FIFOMailBox_TypeDef *')
+    to_send[0].RIR = 0x1D2 << 21
+    to_send[0].RDLR = (cruise_on << 5) | ((not gas_pressed) << 4 )
+
+    return to_send
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def test_default_controls_not_allowed(self):
     self.assertFalse(self.safety.get_controls_allowed())
 
@@ -134,6 +165,7 @@ class TestToyotaSafety(unittest.TestCase):
     self.assertTrue(self.safety.get_controls_allowed())
 
   def test_enable_control_allowed_from_cruise(self):
+<<<<<<< HEAD
     to_push = libpandasafety_py.ffi.new('CAN_FIFOMailBox_TypeDef *')
     to_push[0].RIR = 0x1D2 << 21
     to_push[0].RDLR = 0x20
@@ -160,6 +192,86 @@ class TestToyotaSafety(unittest.TestCase):
         else:
           send = accel == 0
         self.assertEqual(send, self.safety.toyota_tx_hook(self._accel_msg(accel)))
+=======
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, False))
+    self.assertFalse(self.safety.get_controls_allowed())
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(True, False))
+    self.assertTrue(self.safety.get_controls_allowed())
+
+  def test_disable_control_allowed_from_cruise(self):
+    self.safety.set_controls_allowed(1)
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, False))
+    self.assertFalse(self.safety.get_controls_allowed())
+
+  def test_prev_gas(self):
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, False))
+    self.assertFalse(self.safety.get_toyota_gas_prev())
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, True))
+    self.assertTrue(self.safety.get_toyota_gas_prev())
+
+  def test_prev_gas_interceptor(self):
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0x0, 0x201))
+    self.assertFalse(self.safety.get_gas_interceptor_prev())
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0x1000, 0x201))
+    self.assertTrue(self.safety.get_gas_interceptor_prev())
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0x0, 0x201))
+    self.safety.set_gas_interceptor_detected(False)
+
+  def test_disengage_on_gas(self):
+    for long_controls_allowed in [0, 1]:
+      self.safety.set_long_controls_allowed(long_controls_allowed)
+      self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, False))
+      self.safety.toyota_rx_hook(self._pcm_cruise_msg(True, False))
+      self.assertTrue(self.safety.get_controls_allowed())
+      self.safety.toyota_rx_hook(self._pcm_cruise_msg(True, True))
+      if long_controls_allowed:
+        self.assertFalse(self.safety.get_controls_allowed())
+      else:
+        self.assertTrue(self.safety.get_controls_allowed())
+    self.safety.set_long_controls_allowed(True)
+
+  def test_allow_engage_with_gas_pressed(self):
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(False, True))
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(True, True))
+    self.assertTrue(self.safety.get_controls_allowed())
+    self.safety.toyota_rx_hook(self._pcm_cruise_msg(True, True))
+    self.assertTrue(self.safety.get_controls_allowed())
+
+  def test_disengage_on_gas_interceptor(self):
+    for long_controls_allowed in [0, 1]:
+      self.safety.set_long_controls_allowed(long_controls_allowed)
+      self.safety.toyota_rx_hook(self._send_interceptor_msg(0, 0x201))
+      self.safety.set_controls_allowed(1)
+      self.safety.toyota_rx_hook(self._send_interceptor_msg(0x1000, 0x201))
+      if long_controls_allowed:
+        self.assertFalse(self.safety.get_controls_allowed())
+      else:
+        self.assertTrue(self.safety.get_controls_allowed())
+      self.safety.toyota_rx_hook(self._send_interceptor_msg(0, 0x201))
+      self.safety.set_gas_interceptor_detected(False)
+    self.safety.set_long_controls_allowed(True)
+
+  def test_allow_engage_with_gas_interceptor_pressed(self):
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0x1000, 0x201))
+    self.safety.set_controls_allowed(1)
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0x1000, 0x201))
+    self.assertTrue(self.safety.get_controls_allowed())
+    self.safety.toyota_rx_hook(self._send_interceptor_msg(0, 0x201))
+    self.safety.set_gas_interceptor_detected(False)
+
+  def test_accel_actuation_limits(self):
+    for long_controls_allowed in [0, 1]:
+      self.safety.set_long_controls_allowed(long_controls_allowed)
+      for accel in np.arange(MIN_ACCEL - 1000, MAX_ACCEL + 1000, 100):
+        for controls_allowed in [True, False]:
+          self.safety.set_controls_allowed(controls_allowed)
+          if controls_allowed and long_controls_allowed:
+            send = MIN_ACCEL <= accel <= MAX_ACCEL
+          else:
+            send = accel == 0
+          self.assertEqual(send, self.safety.toyota_tx_hook(self._accel_msg(accel)))
+    self.safety.set_long_controls_allowed(True)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   def test_torque_absolute_limits(self):
     for controls_allowed in [True, False]:
@@ -244,11 +356,19 @@ class TestToyotaSafety(unittest.TestCase):
     self.assertEqual(51, self.safety.get_toyota_torque_meas_max())
 
     self.safety.toyota_rx_hook(self._torque_meas_msg(0))
+<<<<<<< HEAD
     self.assertEqual(-1, self.safety.get_toyota_torque_meas_max())
     self.assertEqual(-51, self.safety.get_toyota_torque_meas_min())
 
     self.safety.toyota_rx_hook(self._torque_meas_msg(0))
     self.assertEqual(-1, self.safety.get_toyota_torque_meas_max())
+=======
+    self.assertEqual(1, self.safety.get_toyota_torque_meas_max())
+    self.assertEqual(-51, self.safety.get_toyota_torque_meas_min())
+
+    self.safety.toyota_rx_hook(self._torque_meas_msg(0))
+    self.assertEqual(1, self.safety.get_toyota_torque_meas_max())
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.assertEqual(-1, self.safety.get_toyota_torque_meas_min())
 
   def test_ipas_override(self):
@@ -416,12 +536,22 @@ class TestToyotaSafety(unittest.TestCase):
     # reset no angle control at the end of the test
     self.safety.reset_angle_control()
 
+<<<<<<< HEAD
   def test_gas_safety_check(self):
     self.safety.set_controls_allowed(0)
     self.assertTrue(self.safety.honda_tx_hook(self._gas_msg(0x0000)))
     self.assertFalse(self.safety.honda_tx_hook(self._gas_msg(0x1000)))
     self.safety.set_controls_allowed(1)
     self.assertTrue(self.safety.honda_tx_hook(self._gas_msg(0x1000)))
+=======
+  def test_gas_interceptor_safety_check(self):
+
+    self.safety.set_controls_allowed(0)
+    self.assertTrue(self.safety.toyota_tx_hook(self._send_interceptor_msg(0, 0x200)))
+    self.assertFalse(self.safety.toyota_tx_hook(self._send_interceptor_msg(0x1000, 0x200)))
+    self.safety.set_controls_allowed(1)
+    self.assertTrue(self.safety.toyota_tx_hook(self._send_interceptor_msg(0x1000, 0x200)))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 if __name__ == "__main__":

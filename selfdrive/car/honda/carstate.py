@@ -3,6 +3,7 @@ from common.kalman.simple_kalman import KF1D
 from selfdrive.can.parser import CANParser, CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.honda.values import CAR, DBC, STEER_THRESHOLD, SPEED_FACTOR, HONDA_BOSCH
+<<<<<<< HEAD
 import selfdrive.kegman_conf as kegman
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
@@ -10,6 +11,8 @@ from selfdrive.car.modules.UIEV_module import UIEvents
 #import os
 #import subprocess
 #import sys
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def parse_gear_shifter(gear, vals):
 
@@ -53,7 +56,10 @@ def get_can_signals(CP):
       ("BRAKE_SWITCH", "POWERTRAIN_DATA", 0),
       ("CRUISE_BUTTONS", "SCM_BUTTONS", 0),
       ("ESP_DISABLED", "VSA_STATUS", 1),
+<<<<<<< HEAD
       ("HUD_LEAD", "ACC_HUD", 0),
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       ("USER_BRAKE", "VSA_STATUS", 0),
       ("BRAKE_HOLD_ACTIVE", "VSA_STATUS", 0),
       ("STEER_STATUS", "STEER_STATUS", 5),
@@ -115,6 +121,7 @@ def get_can_signals(CP):
       checks += [("CRUISE_PARAMS", 10)]
     else:
       checks += [("CRUISE_PARAMS", 50)]
+<<<<<<< HEAD
       
   if CP.carFingerprint in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH):
     signals += [("DRIVERS_DOOR_OPEN", "SCM_FEEDBACK", 1),
@@ -123,6 +130,11 @@ def get_can_signals(CP):
   elif CP.carFingerprint in (CAR.CIVIC_BOSCH, CAR.CRV_HYBRID):
     signals += [("DRIVERS_DOOR_OPEN", "SCM_FEEDBACK", 1)]
     checks += [("RADAR_HUD", 50)]
+=======
+
+  if CP.carFingerprint in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_BOSCH, CAR.CRV_HYBRID):
+    signals += [("DRIVERS_DOOR_OPEN", "SCM_FEEDBACK", 1)]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   elif CP.carFingerprint == CAR.ODYSSEY_CHN:
     signals += [("DRIVERS_DOOR_OPEN", "SCM_BUTTONS", 1)]
   else:
@@ -136,6 +148,10 @@ def get_can_signals(CP):
   if CP.carFingerprint == CAR.CIVIC:
     signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
                 ("MAIN_ON", "SCM_FEEDBACK", 0),
+<<<<<<< HEAD
+=======
+                ("IMPERIAL_UNIT", "HUD_SETTING", 0),
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
                 ("EPB_STATE", "EPB_STATUS", 0)]
   elif CP.carFingerprint == CAR.ACURA_ILX:
     signals += [("CAR_GAS", "GAS_PEDAL_2", 0),
@@ -164,7 +180,12 @@ def get_can_signals(CP):
 
 def get_can_parser(CP):
   signals, checks = get_can_signals(CP)
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, timeout=100)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def get_cam_can_parser(CP):
   signals = []
@@ -176,6 +197,7 @@ def get_cam_can_parser(CP):
 
   cam_bus = 1 if CP.carFingerprint in HONDA_BOSCH else 2
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, cam_bus)
 
 class CarState(object):
@@ -238,6 +260,12 @@ class CarState(object):
     
     self.read_distance_lines_prev = 3
     
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, cam_bus, timeout=100)
+
+class CarState(object):
+  def __init__(self, CP):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.CP = CP
     self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
     self.shifter_values = self.can_define.dv["GEARBOX"]["GEAR_SHIFTER"]
@@ -245,8 +273,11 @@ class CarState(object):
     self.user_gas, self.user_gas_pressed = 0., 0
     self.brake_switch_prev = 0
     self.brake_switch_ts = 0
+<<<<<<< HEAD
     self.lead_distance = 255
     self.hud_lead = 0
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.cruise_buttons = 0
     self.cruise_setting = 0
@@ -257,6 +288,7 @@ class CarState(object):
     self.right_blinker_on = 0
 
     self.stopped = 0
+<<<<<<< HEAD
     
     #BB UIEvents
     self.UE = UIEvents(self)
@@ -270,6 +302,9 @@ class CarState(object):
     #BB custom message counter
     self.custom_alert_counter = -1 #set to 100 for 1 second display; carcontroller will take down to zero
     
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # vEgo kalman filter
     dt = 0.01
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
@@ -279,6 +314,7 @@ class CarState(object):
                          C=[1.0, 0.0],
                          K=[[0.12287673], [0.29666309]])
     self.v_ego = 0.0
+<<<<<<< HEAD
     #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
@@ -332,6 +368,8 @@ class CarState(object):
           kegman.save({'lastALCAMode': int(self.alcaMode)})  # write last distance bar setting to file
           self.cstm_btns.btns[id].btn_label2 = self.alcaLabels[self.alcaMode]
           self.cstm_btns.hasChanges = True
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   def update(self, cp, cp_cam):
 
@@ -345,20 +383,29 @@ class CarState(object):
 
     # update prevs, update must run once per loop
     self.prev_cruise_buttons = self.cruise_buttons
+<<<<<<< HEAD
     self.prev_blinker_on = self.blinker_on
     self.prev_lead_distance = self.lead_distance
+=======
+    self.prev_cruise_setting = self.cruise_setting
+    self.prev_blinker_on = self.blinker_on
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.prev_left_blinker_on = self.left_blinker_on
     self.prev_right_blinker_on = self.right_blinker_on
 
     # ******************* parse out can *******************
 
+<<<<<<< HEAD
 
     if self.CP.carFingerprint in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH): # TODO: find wheels moving bit in dbc
       self.standstill = cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] < 0.1
       self.door_all_closed = not cp.vl["SCM_FEEDBACK"]['DRIVERS_DOOR_OPEN']
       self.lead_distance = cp.vl["RADAR_HUD"]['LEAD_DISTANCE']
     elif self.CP.carFingerprint in (CAR.CIVIC_BOSCH, CAR.CRV_HYBRID):
+=======
+    if self.CP.carFingerprint in (CAR.ACCORD, CAR.ACCORD_15, CAR.ACCORDH, CAR.CIVIC_BOSCH, CAR.CRV_HYBRID): # TODO: find wheels moving bit in dbc
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       self.standstill = cp.vl["ENGINE_DATA"]['XMISSION_SPEED'] < 0.1
       self.door_all_closed = not cp.vl["SCM_FEEDBACK"]['DRIVERS_DOOR_OPEN']
     elif self.CP.carFingerprint == CAR.ODYSSEY_CHN:
@@ -412,7 +459,11 @@ class CarState(object):
     self.angle_steers = cp.vl["STEERING_SENSORS"]['STEER_ANGLE']
     self.angle_steers_rate = cp.vl["STEERING_SENSORS"]['STEER_ANGLE_RATE']
 
+<<<<<<< HEAD
     
+=======
+    self.cruise_setting = cp.vl["SCM_BUTTONS"]['CRUISE_SETTING']
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.cruise_buttons = cp.vl["SCM_BUTTONS"]['CRUISE_BUTTONS']
 
     self.blinker_on = cp.vl["SCM_FEEDBACK"]['LEFT_BLINKER'] or cp.vl["SCM_FEEDBACK"]['RIGHT_BLINKER']
@@ -471,6 +522,7 @@ class CarState(object):
                          cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH'] != self.brake_switch_ts)
       self.brake_switch_prev = self.brake_switch
       self.brake_switch_ts = cp.ts["POWERTRAIN_DATA"]['BRAKE_SWITCH']
+<<<<<<< HEAD
     
     self.v_cruise_pcm = int(min(self.v_cruise_pcm, interp(self.angle_steers, self.Angle, self.Angle_Speed)))
     self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
@@ -513,10 +565,23 @@ class CarState(object):
       
     # Gets rid of Pedal Grinding noise when brake is pressed at slow speeds for some models
     # TODO: this should be ok for all cars. Verify it.
+=======
+
+    self.user_brake = cp.vl["VSA_STATUS"]['USER_BRAKE']
+    self.pcm_acc_status = cp.vl["POWERTRAIN_DATA"]['ACC_STATUS']
+
+    # Gets rid of Pedal Grinding noise when brake is pressed at slow speeds for some models
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if self.CP.carFingerprint in (CAR.PILOT, CAR.PILOT_2019, CAR.RIDGELINE):
       if self.user_brake > 0.05:
         self.brake_pressed = 1
 
+<<<<<<< HEAD
+=======
+    # TODO: discover the CAN msg that has the imperial unit bit for all other cars
+    self.is_metric = not cp.vl["HUD_SETTING"]['IMPERIAL_UNIT'] if self.CP.carFingerprint in (CAR.CIVIC) else False
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 # carstate standalone tester
 if __name__ == '__main__':
   import zmq

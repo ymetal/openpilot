@@ -2,10 +2,13 @@ from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD
 from selfdrive.can.parser import CANParser
 from selfdrive.config import Conversions as CV
 from common.kalman.simple_kalman import KF1D
+<<<<<<< HEAD
 import numpy as np
 #from common.numpy_fast import interp
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 def get_can_parser(CP):
@@ -97,7 +100,12 @@ def get_can_parser(CP):
     ("SAS11", 100)
   ]
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, timeout=100)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def get_camera_parser(CP):
 
@@ -122,11 +130,17 @@ def get_camera_parser(CP):
 
   checks = []
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2, timeout=100)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 class CarState(object):
   def __init__(self, CP):
 
+<<<<<<< HEAD
     self.Angle = [0, 5, 10, 15,20,25,30,35,60,100,180,270,500]
     self.Angle_Speed = [255,160,100,80,70,60,55,50,40,33,27,17,12]
     #labels for ALCA modes
@@ -189,6 +203,13 @@ class CarState(object):
 
 
     
+=======
+    self.CP = CP
+
+    # initialize can parser
+    self.car_fingerprint = CP.carFingerprint
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # vEgo kalman filter
     dt = 0.01
     # Q = np.matrix([[10.0, 0.0], [0.0, 100.0]])
@@ -203,6 +224,7 @@ class CarState(object):
     self.right_blinker_on = 0
     self.right_blinker_flash = 0
 
+<<<<<<< HEAD
  #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
@@ -230,6 +252,8 @@ class CarState(object):
         self.cstm_btns.btns[id].btn_status = btn_status
 
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def update(self, cp, cp_cam):
     # copy can_valid
     self.can_valid = cp.can_valid
@@ -286,10 +310,16 @@ class CarState(object):
     self.steer_torque_driver = cp.vl["MDPS11"]['CR_Mdps_DrvTq']
     self.steer_torque_motor = cp.vl["MDPS12"]['CR_Mdps_OutTq']
     self.stopped = cp.vl["SCC11"]['SCCInfoDisplay'] == 4.
+<<<<<<< HEAD
     self.blind_spot_on = bool(0)
     self.read_distance_lines = 2
     self.user_brake = 0
     self.acc_slow_on = False
+=======
+
+    self.user_brake = 0
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.brake_pressed = cp.vl["TCS13"]['DriverBraking']
     self.brake_lights = bool(self.brake_pressed)
     if (cp.vl["TCS13"]["DriverOverride"] == 0 and cp.vl["TCS13"]['ACC_REQ'] == 1):

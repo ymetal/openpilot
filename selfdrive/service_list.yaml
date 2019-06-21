@@ -14,7 +14,11 @@ gpsNMEA: [8004, true]
 thermal: [8005, true]
 # List(CanData), list of can messages
 can: [8006, true]
+<<<<<<< HEAD
 live100: [8007, true]
+=======
+controlsState: [8007, true]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # random events we want to log
 
@@ -22,7 +26,11 @@ live100: [8007, true]
 model: [8009, true]
 features: [8010, true]
 health: [8011, true]
+<<<<<<< HEAD
 live20: [8012, true]
+=======
+radarState: [8012, true]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #liveUI: [8014, true]
 encodeIdx: [8015, true]
 liveTracks: [8016, true]
@@ -72,6 +80,7 @@ orbFeaturesSummary: [8062, true]
 driverMonitoring: [8063, true]
 liveParameters: [8064, true]
 liveMapData: [8065, true]
+<<<<<<< HEAD
 liveTrafficData: [8079, false]
 latControl: [8078, false]
 cameraOdometry: [8066, true]
@@ -79,11 +88,17 @@ pathPlan: [8067, true]
 kalmanOdometry: [8068, true]
 phantomData: [8069, false]
 managerData: [8070, false]
+=======
+cameraOdometry: [8066, true]
+pathPlan: [8067, true]
+kalmanOdometry: [8068, true]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 testModel: [8040, false]
 testLiveLocation: [8045, false]
 testJoystick: [8056, false]
 
+<<<<<<< HEAD
 #ui Events
 uiButtonInfo: [8201, false]
 uiCustomAlert: [8202, false]
@@ -93,6 +108,8 @@ uiPlaySound: [8205, false]
 uiUpdate: [8206, false]
 
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 # 8080 is reserved for slave testing daemon
 # 8762 is reserved for logserver
 
@@ -110,23 +127,40 @@ uiUpdate: [8206, false]
 #   publishes:  sensorEvents, gpsNMEA
 
 # visiond -- talks to the cameras, runs the model, saves the videos
+<<<<<<< HEAD
 #   subscribes: liveCalibration, sensorEvents, live100
+=======
+#   subscribes: liveCalibration, sensorEvents, controlsState
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #   publishes:  frame, encodeIdx, model, liveCalibration
 
 # **** stateful data transformers ****
 
 # plannerd -- decides where to drive the car
+<<<<<<< HEAD
 #   subscribes: carState, model, live20
+=======
+#   subscribes: carState, model, radarState
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #   publishes:  plan
 
 # controlsd -- actually drives the car
 #   subscribes: can, thermal, plan
+<<<<<<< HEAD
 #   publishes:  carState, carControl, sendcan, live100
 
 # radard -- processes the radar data
 #   blocks:     CarParams
 #   subscribes: can, live100, model
 #   publishes:  live20, liveTracks
+=======
+#   publishes:  carState, carControl, sendcan, controlsState
+
+# radard -- processes the radar and vision data
+#   blocks:     CarParams
+#   subscribes: can, controlsState, model
+#   publishes:  radarState, liveTracks
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # **** LOGGING SERVICE ****
 
@@ -136,7 +170,11 @@ uiUpdate: [8206, false]
 # **** NON VITAL SERVICES ****
 
 # ui
+<<<<<<< HEAD
 #   subscribes: live100, live20, liveCalibration, model, (raw frames)
+=======
+#   subscribes: controlsState, radarState, liveCalibration, model, (raw frames)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # uploader
 #   communicates through file system with loggerd

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import zmq
 from math import sin,cos,radians
 import selfdrive.messaging as messaging
@@ -40,6 +41,13 @@ def gps_distance(gpsLat, gpsLon, gpsAlt, gpsAcc):
   #else:
     #print "Altitude inacurate"
   return dist, includeradius, approachradius, speedlimit
+=======
+import numpy as np
+from common.kalman.simple_kalman import KF1D
+from selfdrive.can.parser import CANParser, CANDefine
+from selfdrive.config import Conversions as CV
+from selfdrive.car.toyota.values import CAR, DBC, STEER_THRESHOLD
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def parse_gear_shifter(gear, vals):
 
@@ -56,10 +64,14 @@ def get_can_parser(CP):
   signals = [
     # sig_name, sig_address, default
     ("GEAR", "GEAR_PACKET", 0),
+<<<<<<< HEAD
     ("SPORT_ON", "GEAR_PACKET", 0),
     ("ECON_ON", "GEAR_PACKET", 0),
     ("BRAKE_PRESSED", "BRAKE_MODULE", 0),
     ("BRAKE_PRESSURE", "BRAKE_MODULE", 0),
+=======
+    ("BRAKE_PRESSED", "BRAKE_MODULE", 0),
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ("GAS_PEDAL", "GAS_PEDAL", 0),
     ("WHEEL_SPEED_FL", "WHEEL_SPEEDS", 0),
     ("WHEEL_SPEED_FR", "WHEEL_SPEEDS", 0),
@@ -76,6 +88,13 @@ def get_can_parser(CP):
     ("STEER_RATE", "STEER_ANGLE_SENSOR", 0),
     ("GAS_RELEASED", "PCM_CRUISE", 0),
     ("CRUISE_ACTIVE", "PCM_CRUISE", 0),
+<<<<<<< HEAD
+=======
+    ("CRUISE_STATE", "PCM_CRUISE", 0),
+    ("MAIN_ON", "PCM_CRUISE_2", 0),
+    ("SET_SPEED", "PCM_CRUISE_2", 0),
+    ("LOW_SPEED_LOCKOUT", "PCM_CRUISE_2", 0),
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ("STEER_TORQUE_DRIVER", "STEER_TORQUE_SENSOR", 0),
     ("STEER_TORQUE_EPS", "STEER_TORQUE_SENSOR", 0),
     ("TURN_SIGNALS", "STEERING_LEVERS", 3),   # 3 is no blinkers
@@ -83,6 +102,7 @@ def get_can_parser(CP):
     ("IPAS_STATE", "EPS_STATUS", 1),
     ("BRAKE_LIGHTS_ACC", "ESP_CONTROL", 0),
     ("AUTO_HIGH_BEAM", "LIGHT_STALK", 0),
+<<<<<<< HEAD
     ("BLINDSPOT","DEBUG", 0),
     ("BLINDSPOTSIDE","DEBUG",65),
     ("BLINDSPOTD1","DEBUG", 0),
@@ -141,22 +161,44 @@ def get_can_parser(CP):
       ("LOW_SPEED_LOCKOUT", "PCM_CRUISE_2", 0),
     ]
     checks += [("PCM_CRUISE_2", 33)]
+=======
+  ]
+
+  checks = [
+    ("BRAKE_MODULE", 40),
+    ("GAS_PEDAL", 33),
+    ("WHEEL_SPEEDS", 80),
+    ("STEER_ANGLE_SENSOR", 80),
+    ("PCM_CRUISE", 33),
+    ("PCM_CRUISE_2", 33),
+    ("STEER_TORQUE_SENSOR", 50),
+    ("EPS_STATUS", 25),
+  ]
+
+  if CP.carFingerprint == CAR.PRIUS:
+    signals += [("STATE", "AUTOPARK_STATUS", 0)]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # add gas interceptor reading if we are using it
   if CP.enableGasInterceptor:
       signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR", 0))
       checks.append(("GAS_SENSOR", 50))
 
+<<<<<<< HEAD
   # add gas interceptor reading if we are using it
   if CP.enableGasInterceptor:
     signals.append(("INTERCEPTOR_GAS", "GAS_SENSOR", 0))
     checks.append(("GAS_SENSOR", 50))
     
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, timeout=100)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 def get_cam_can_parser(CP):
 
+<<<<<<< HEAD
   signals = [
     ("TSGN1", "RSA1", 0),
     ("SPDVAL1", "RSA1", 0),
@@ -169,15 +211,23 @@ def get_cam_can_parser(CP):
     ("TSGN4", "RSA2", 0),
     ("SPLSGN4", "RSA2", 0),
   ]
+=======
+  signals = []
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # use steering message to check if panda is connected to frc
   checks = [("STEERING_LKA", 42)]
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2, timeout=100)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class CarState(object):
   def __init__(self, CP):
+<<<<<<< HEAD
     self.brakefactor = float(kegman.conf['brakefactor'])
     self.trfix = False
     self.indi_toggle = False
@@ -278,6 +328,15 @@ class CarState(object):
 
     #BB custom message counter
     self.custom_alert_counter = 100 #set to 100 for 1 second display; carcontroller will take down to zero
+=======
+
+    self.CP = CP
+    self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
+    self.shifter_values = self.can_define.dv["GEAR_PACKET"]['GEAR']
+    self.left_blinker_on = 0
+    self.right_blinker_on = 0
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # initialize can parser
     self.car_fingerprint = CP.carFingerprint
 
@@ -291,6 +350,7 @@ class CarState(object):
                          K=[[0.12287673], [0.29666309]])
     self.v_ego = 0.0
 
+<<<<<<< HEAD
  #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
@@ -360,10 +420,13 @@ class CarState(object):
           self.cstm_btns.btns[id].btn_label2 = self.sloLabels[self.sloMode]
           self.cstm_btns.hasChanges = True
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def update(self, cp, cp_cam):
     # copy can_valid
     self.can_valid = cp.can_valid
     self.cam_can_valid = cp_cam.can_valid
+<<<<<<< HEAD
     msg = None
     #lastspeedlimit = None
     lastlive_MapData = None
@@ -390,6 +453,9 @@ class CarState(object):
       self.prev_distance = self.distance
       self.distance, self.includeradius, self.approachradius, self.speedlimit = gps_distance(gps_pkt.latitude,gps_pkt.longitude,gps_pkt.altitude,gps_pkt.accuracy)
       #self.distance = 6371010*acos(sin(radians(gps_pkt.latitude))*sin(radians(48.12893908))+cos(radians(gps_pkt.latitude))*cos(radians(48.12893908))*cos(radians(gps_pkt.longitude-9.797879048)))
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # update prevs, update must run once per loop
     self.prev_left_blinker_on = self.left_blinker_on
     self.prev_right_blinker_on = self.right_blinker_on
@@ -420,6 +486,7 @@ class CarState(object):
     self.v_ego_raw = v_wheel
     v_ego_x = self.v_ego_kf.update(v_wheel)
     self.v_ego = float(v_ego_x[0])
+<<<<<<< HEAD
     if self.lastlat_Control and self.v_ego > 11:
       angle_later = self.lastlat_Control.anglelater
     else:
@@ -475,10 +542,27 @@ class CarState(object):
     else:
       self.steer_error = cp.vl["EPS_STATUS"]['LKA_STATE'] not in [1, 3, 5, 9, 17, 25]
     self.steer_unavailable = cp.vl["EPS_STATUS"]['LKA_STATE'] in [3, 17]  # don't disengage, just warning
+=======
+    self.a_ego = float(v_ego_x[1])
+    self.standstill = not v_wheel > 0.001
+
+    self.angle_steers = cp.vl["STEER_ANGLE_SENSOR"]['STEER_ANGLE'] + cp.vl["STEER_ANGLE_SENSOR"]['STEER_FRACTION']
+    self.angle_steers_rate = cp.vl["STEER_ANGLE_SENSOR"]['STEER_RATE']
+    can_gear = int(cp.vl["GEAR_PACKET"]['GEAR'])
+    self.gear_shifter = parse_gear_shifter(can_gear, self.shifter_values)
+    self.main_on = cp.vl["PCM_CRUISE_2"]['MAIN_ON']
+    self.left_blinker_on = cp.vl["STEERING_LEVERS"]['TURN_SIGNALS'] == 1
+    self.right_blinker_on = cp.vl["STEERING_LEVERS"]['TURN_SIGNALS'] == 2
+
+    # 2 is standby, 10 is active. TODO: check that everything else is really a faulty state
+    self.steer_state = cp.vl["EPS_STATUS"]['LKA_STATE']
+    self.steer_error = cp.vl["EPS_STATUS"]['LKA_STATE'] not in [1, 5]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.ipas_active = cp.vl['EPS_STATUS']['IPAS_STATE'] == 3
     self.brake_error = 0
     self.steer_torque_driver = cp.vl["STEER_TORQUE_SENSOR"]['STEER_TORQUE_DRIVER']
     self.steer_torque_motor = cp.vl["STEER_TORQUE_SENSOR"]['STEER_TORQUE_EPS']
+<<<<<<< HEAD
     if bool(cp.vl["JOEL_ID"]['LANE_WARNING']) <> self.lane_departure_toggle_on_prev:
       self.lane_departure_toggle_on = bool(cp.vl["JOEL_ID"]['LANE_WARNING'])
       if self.lane_departure_toggle_on:
@@ -618,3 +702,19 @@ class CarState(object):
       else:
         dat.liveTrafficData.speedAdvisoryValid = False
       self.traffic_data_sock.send(dat.to_bytes())
+=======
+    # we could use the override bit from dbc, but it's triggered at too high torque values
+    self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
+
+    self.user_brake = 0
+    self.v_cruise_pcm = cp.vl["PCM_CRUISE_2"]['SET_SPEED']
+    self.pcm_acc_status = cp.vl["PCM_CRUISE"]['CRUISE_STATE']
+    self.pcm_acc_active = bool(cp.vl["PCM_CRUISE"]['CRUISE_ACTIVE'])
+    self.gas_pressed = not cp.vl["PCM_CRUISE"]['GAS_RELEASED']
+    self.low_speed_lockout = cp.vl["PCM_CRUISE_2"]['LOW_SPEED_LOCKOUT'] == 2
+    self.brake_lights = bool(cp.vl["ESP_CONTROL"]['BRAKE_LIGHTS_ACC'] or self.brake_pressed)
+    if self.CP.carFingerprint == CAR.PRIUS:
+      self.generic_toggle = cp.vl["AUTOPARK_STATUS"]['STATE'] != 0
+    else:
+      self.generic_toggle = bool(cp.vl["LIGHT_STALK"]['AUTO_HIGH_BEAM'])
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

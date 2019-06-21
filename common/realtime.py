@@ -2,6 +2,7 @@
 import os
 import time
 import platform
+<<<<<<< HEAD
 import threading
 import subprocess
 import multiprocessing
@@ -54,6 +55,26 @@ def sec_since_boot():
   return clock_gettime(CLOCK_BOOTTIME)
 
 
+=======
+import subprocess
+import multiprocessing
+from cffi import FFI
+
+# Build and load cython module
+import pyximport
+installer = pyximport.install(inplace=True, build_dir='/tmp')
+from common.clock import monotonic_time, sec_since_boot  # pylint: disable=no-name-in-module, import-error
+pyximport.uninstall(*installer)
+assert monotonic_time
+assert sec_since_boot
+
+
+ffi = FFI()
+ffi.cdef("long syscall(long number, ...);")
+libc = ffi.dlopen(None)
+
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 def set_realtime_priority(level):
   if os.getuid() != 0:
     print("not setting priority, not root")
@@ -99,10 +120,17 @@ class Ratekeeper(object):
     lagged = False
     remaining = self._next_frame_time - sec_since_boot()
     self._next_frame_time += self._interval
+<<<<<<< HEAD
     if remaining < -self._print_delay_threshold:
+=======
+    if self._print_delay_threshold is not None and remaining < -self._print_delay_threshold:
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       print("%s lagging by %.2f ms" % (self._process_name, -remaining * 1000))
       lagged = True
     self._frame += 1
     self._remaining = remaining
     return lagged
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

@@ -5,12 +5,18 @@ import fcntl
 import errno
 import signal
 import subprocess
+<<<<<<< HEAD
 import selfdrive.messaging as messaging
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 from common.basedir import BASEDIR
 sys.path.append(os.path.join(BASEDIR, "pyextra"))
 os.environ['BASEDIR'] = BASEDIR
+<<<<<<< HEAD
 manager_sock = None
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def unblock_stdout():
   # get a non-blocking stdout
@@ -95,7 +101,10 @@ managed_processes = {
   "plannerd": "selfdrive.controls.plannerd",
   "radard": "selfdrive.controls.radard",
   "ubloxd": ("selfdrive/locationd", ["./ubloxd"]),
+<<<<<<< HEAD
   "mapd": "selfdrive.mapd.mapd",
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   "loggerd": ("selfdrive/loggerd", ["./loggerd"]),
   "logmessaged": "selfdrive.logmessaged",
   "tombstoned": "selfdrive.tombstoned",
@@ -103,7 +112,11 @@ managed_processes = {
   "proclogd": ("selfdrive/proclogd", ["./proclogd"]),
   "boardd": ("selfdrive/boardd", ["./boardd"]),   # not used directly
   "pandad": "selfdrive.pandad",
+<<<<<<< HEAD
   "ui": ("selfdrive/ui", ["./start.sh"]),
+=======
+  "ui": ("selfdrive/ui", ["./start.py"]),
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   "calibrationd": "selfdrive.locationd.calibrationd",
   "locationd": "selfdrive.locationd.locationd_local",
   "visiond": ("selfdrive/visiond", ["./visiond"]),
@@ -112,6 +125,7 @@ managed_processes = {
   "updated": "selfdrive.updated",
   "athena": "selfdrive.athena.athenad",
 }
+<<<<<<< HEAD
 # define process name with niceness factor
 mean_processes = {
   "controlsd": -15,
@@ -125,6 +139,8 @@ mean_processes = {
   "mapd": -7,
   "sensord": -6,
 }
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 android_packages = ("ai.comma.plus.offroad", "ai.comma.plus.frame")
 
 running = {}
@@ -143,11 +159,17 @@ persistent_processes = [
   'logcatd',
   'tombstoned',
   'uploader',
+<<<<<<< HEAD
   'deleter',
   'ui',
   'gpsd',
   'updated',
   'athena'
+=======
+  'ui',
+  'updated',
+  'athena',
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 ]
 
 car_started_processes = [
@@ -161,7 +183,12 @@ car_started_processes = [
   'visiond',
   'proclogd',
   'ubloxd',
+<<<<<<< HEAD
   'mapd',
+=======
+  'gpsd',
+  'deleter',
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 ]
 
 def register_managed_process(name, desc, car_started=False):
@@ -201,6 +228,7 @@ def nativelauncher(pargs, cwd):
 
   os.execvp(pargs[0], pargs)
 
+<<<<<<< HEAD
 def send_running_processes():
   global manager_sock
   data = messaging.new_message()
@@ -208,6 +236,8 @@ def send_running_processes():
   data.managerData.runningProcesses = running.keys()
   manager_sock.send(data.to_bytes())
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 def start_managed_process(name):
   if name in running or name not in managed_processes:
     return
@@ -222,6 +252,7 @@ def start_managed_process(name):
     running[name] = Process(name=name, target=nativelauncher, args=(pargs, cwd))
   running[name].start()
 
+<<<<<<< HEAD
   if name in mean_processes:
     try:
       subprocess.call(["renice", "-n", str(mean_processes[name]), str(running[name].pid)])
@@ -229,6 +260,8 @@ def start_managed_process(name):
       cloudlog.warning("failed to renice process %s" % name)
 
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 def prepare_managed_process(p):
   proc = managed_processes[p]
   if isinstance(proc, str):
@@ -287,8 +320,11 @@ def cleanup_all_processes(signal, frame):
 
   for name in list(running.keys()):
     kill_managed_process(name)
+<<<<<<< HEAD
 
   send_running_processes()
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   cloudlog.info("everything is dead")
 
 
@@ -340,11 +376,16 @@ def system(cmd):
 
 def manager_thread():
   # now loop
+<<<<<<< HEAD
   global manager_sock
   context = zmq.Context()
   thermal_sock = messaging.sub_sock(context, service_list['thermal'].port)
   gps_sock = messaging.sub_sock(context, service_list['gpsLocation'].port, conflate=True)
   manager_sock = messaging.pub_sock(context, service_list['managerData'].port)
+=======
+  context = zmq.Context()
+  thermal_sock = messaging.sub_sock(context, service_list['thermal'].port)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
@@ -352,6 +393,10 @@ def manager_thread():
   # save boot log
   subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
 
+<<<<<<< HEAD
+=======
+  # start persistent processes
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   for p in persistent_processes:
     start_managed_process(p)
 
@@ -364,6 +409,7 @@ def manager_thread():
 
   params = Params()
   logger_dead = False
+<<<<<<< HEAD
   while 1:
     # get health of board, log this in "thermal"
     msg = messaging.recv_sock(thermal_sock, wait=True)
@@ -373,13 +419,24 @@ def manager_thread():
         logger_dead = True
       else:
         logger_dead = False
+=======
+
+  while 1:
+    # get health of board, log this in "thermal"
+    msg = messaging.recv_sock(thermal_sock, wait=True)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # uploader is gated based on the phone temperature
     if msg.thermal.thermalStatus >= ThermalStatus.yellow:
       kill_managed_process("uploader")
     else:
       start_managed_process("uploader")
 
+<<<<<<< HEAD
     if msg.thermal.freeSpace < 0.18:
+=======
+    if msg.thermal.freeSpace < 0.05:
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       logger_dead = True
 
     if msg.thermal.started:
@@ -394,10 +451,16 @@ def manager_thread():
         kill_managed_process(p)
 
     # check the status of all processes, did any of them die?
+<<<<<<< HEAD
     for p in running:
       cloudlog.debug("   running %s %s" % (p, running[p]))
 
     send_running_processes()
+=======
+    running_list = ["   running %s %s" % (p, running[p]) for p in running]
+    cloudlog.debug('\n'.join(running_list))
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # is this still needed?
     if params.get("DoUninstall") == "1":
       break

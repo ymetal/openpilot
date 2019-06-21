@@ -1,4 +1,5 @@
 from cereal import car
+<<<<<<< HEAD
 #from common.numpy_fast import interp
 from selfdrive.boardd.boardd import can_list_to_can_capnp
 from selfdrive.car import apply_toyota_steer_torque_limits
@@ -8,6 +9,12 @@ from selfdrive.car.chrysler.chryslercan import create_lkas_hud, create_lkas_comm
 
 from selfdrive.car.modules.ALCA_module import ALCAController
 
+=======
+from selfdrive.car import apply_toyota_steer_torque_limits
+from selfdrive.car.chrysler.chryslercan import create_lkas_hud, create_lkas_command, \
+                                               create_wheel_buttons, \
+                                               create_chimes
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 from selfdrive.car.chrysler.values import ECU, CAR
 from selfdrive.can.packer import CANPacker
 
@@ -34,9 +41,12 @@ class CarController(object):
     self.alert_active = False
     self.send_chime = False
     self.gone_fast_yet = False
+<<<<<<< HEAD
     
     self.ALCA = ALCAController(self,True,False)  # Enabled  True and SteerByAngle only False
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.fake_ecus = set()
     if enable_camera:
@@ -45,6 +55,7 @@ class CarController(object):
     self.packer = CANPacker(dbc_name)
 
 
+<<<<<<< HEAD
   def update(self, sendcan, enabled, CS, frame, actuators,
              pcm_cancel_cmd, hud_alert, audible_alert):
     #update custom UI buttons and alerts
@@ -74,6 +85,17 @@ class CarController(object):
     # *** compute control surfaces ***
     # steer torque
     apply_steer = alca_steer * SteerLimitParams.STEER_MAX
+=======
+  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, hud_alert, audible_alert):
+    # this seems needed to avoid steering faults and to force the sync with the EPS counter
+    frame = CS.lkas_counter
+    if self.prev_frame == frame:
+      return []
+
+    # *** compute control surfaces ***
+    # steer torque
+    apply_steer = actuators.steer * SteerLimitParams.STEER_MAX
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     apply_steer = apply_toyota_steer_torque_limits(apply_steer, self.apply_steer_last,
                                                    CS.steer_torque_motor, SteerLimitParams)
 
@@ -87,12 +109,18 @@ class CarController(object):
 
     if not lkas_active:
       apply_steer = 0
+<<<<<<< HEAD
       
     if not CS.lane_departure_toggle_on:
         apply_steer = 0
     self.apply_steer_last = apply_steer
     
         
+=======
+
+    self.apply_steer_last = apply_steer
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if audible_alert in LOUD_ALERTS:
       self.send_chime = True
 
@@ -113,11 +141,14 @@ class CarController(object):
 
     # LKAS_HEARTBIT is forwarded by Panda so no need to send it here.
     # frame is 100Hz (0.01s period)
+<<<<<<< HEAD
 
     if (self.ccframe % 10 == 0):  # 0.1s period
       new_msg = create_lkas_heartbit(self.packer, CS.lkas_status_ok)
       can_sends.append(new_msg)
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if (self.ccframe % 25 == 0):  # 0.25s period
       if (CS.lkas_car_model != -1):
         new_msg = create_lkas_hud(
@@ -131,4 +162,9 @@ class CarController(object):
 
     self.ccframe += 1
     self.prev_frame = frame
+<<<<<<< HEAD
     sendcan.send(can_list_to_can_capnp(can_sends, msgtype='sendcan'))
+=======
+
+    return can_sends
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

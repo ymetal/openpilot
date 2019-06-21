@@ -7,14 +7,21 @@ from selfdrive.version import training_version
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
+<<<<<<< HEAD
 from selfdrive.loggerd.config import ROOT
+=======
+from selfdrive.loggerd.config import get_available_percent
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 from common.params import Params
 from common.realtime import sec_since_boot
 from common.numpy_fast import clip
 from common.filter_simple import FirstOrderFilter
+<<<<<<< HEAD
 import selfdrive.kegman_conf as kegman
 import subprocess
 import signal
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 ThermalStatus = log.ThermalData.ThermalStatus
 CURRENT_TAU = 15.   # 15s time constant
@@ -108,12 +115,17 @@ def handle_fan(max_cpu_temp, bat_temp, fan_speed):
   return fan_speed
 
 
+<<<<<<< HEAD
 def check_car_battery_voltage(should_start, health, charging_disabled, msg):
+=======
+def check_car_battery_voltage(should_start, health, charging_disabled):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # charging disallowed if:
   #   - there are health packets from panda, and;
   #   - 12V battery voltage is too low, and;
   #   - onroad isn't started
+<<<<<<< HEAD
   print health
 
   if charging_disabled and (health is None or health.health.voltage > (int(kegman.conf['carVoltageMinEonShutdown'])+400)) and msg.thermal.batteryPercent < int(kegman.conf['battChargeMin']):
@@ -158,13 +170,27 @@ class LocationStarter(object):
     else:
       cloudlog.event("location_start", location=location.to_dict() if location else None)
       return location.speed*3.6 > 10
+=======
+  if charging_disabled and (health is None or health.health.voltage > 11800):
+    charging_disabled = False
+    os.system('echo "1" > /sys/class/power_supply/battery/charging_enabled')
+  elif not charging_disabled and health is not None and health.health.voltage < 11500 and not should_start:
+    charging_disabled = True
+    os.system('echo "0" > /sys/class/power_supply/battery/charging_enabled')
+
+  return charging_disabled
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 def thermald_thread():
   setup_eon_fan()
 
   # prevent LEECO from undervoltage
+<<<<<<< HEAD
   BATT_PERC_OFF = int(kegman.conf['battPercOff'])
+=======
+  BATT_PERC_OFF = 10 if LEON else 3
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # now loop
   context = zmq.Context()
@@ -177,12 +203,21 @@ def thermald_thread():
   off_ts = None
   started_ts = None
   ignition_seen = False
+<<<<<<< HEAD
   #started_seen = False
   passive_starter = LocationStarter()
   thermal_status = ThermalStatus.green
   health_sock.RCVTIMEO = 1500
   current_filter = FirstOrderFilter(0., CURRENT_TAU, 1.)
   services_killed = False
+=======
+  started_seen = False
+  thermal_status = ThermalStatus.green
+  health_sock.RCVTIMEO = 1500
+  current_filter = FirstOrderFilter(0., CURRENT_TAU, 1.)
+  health_prev = None
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   # Make sure charging is enabled
   charging_disabled = False
   os.system('echo "1" > /sys/class/power_supply/battery/charging_enabled')
@@ -195,6 +230,7 @@ def thermald_thread():
     location = location.gpsLocation if location else None
     msg = read_thermal()
 
+<<<<<<< HEAD
     # loggerd is gated based on free space
     try:
       statvfs = os.statvfs(ROOT)
@@ -202,6 +238,15 @@ def thermald_thread():
       os.mkdir(ROOT)
       statvfs = os.statvfs(ROOT)
     avail = (statvfs.f_bavail * 1.0)/statvfs.f_blocks
+=======
+    # clear car params when panda gets disconnected
+    if health is None and health_prev is not None:
+      params.panda_disconnect()
+    health_prev = health
+
+    # loggerd is gated based on free space
+    avail = get_available_percent() / 100.0
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # thermal message now also includes free space
     msg.thermal.freeSpace = avail
@@ -265,6 +310,7 @@ def thermald_thread():
     # have we seen a panda?
     passive = (params.get("Passive") == "1")
 
+<<<<<<< HEAD
     # start on gps movement if we haven't seen ignition and are in passive mode
     should_start = should_start or (not (ignition_seen and health) # seen ignition and panda is connected
                                     and passive
@@ -276,6 +322,11 @@ def thermald_thread():
     # require usb power in passive mode
     should_start = should_start and (not passive or msg.thermal.usbOnline)
 
+=======
+    # with 2% left, we killall, otherwise the phone will take a long time to boot
+    should_start = should_start and msg.thermal.freeSpace > 0.02
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # confirm we have completed training and aren't uninstalling
     should_start = should_start and accepted_terms and (passive or completed_training) and (not do_uninstall)
 
@@ -288,9 +339,14 @@ def thermald_thread():
     if should_start:
       off_ts = None
       if started_ts is None:
+<<<<<<< HEAD
         params.car_start()
         started_ts = sec_since_boot()
         #started_seen = True
+=======
+        started_ts = sec_since_boot()
+        started_seen = True
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         os.system('echo performance > /sys/class/devfreq/soc:qcom,cpubw/governor')
     else:
       started_ts = None
@@ -300,6 +356,7 @@ def thermald_thread():
 
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
+<<<<<<< HEAD
       if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryCurrent > 0 and \
          sec_since_boot() > 180:
          #started_seen and (sec_since_boot() - off_ts) > 60:
@@ -330,6 +387,16 @@ def thermald_thread():
     
     msg.thermal.chargingDisabled = charging_disabled
     msg.thermal.chargingError = current_filter.x > 0.   # if current is positive, then battery is being discharged
+=======
+      if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
+         started_seen and (sec_since_boot() - off_ts) > 60:
+        os.system('LD_LIBRARY_PATH="" svc power shutdown')
+
+    #charging_disabled = check_car_battery_voltage(should_start, health, charging_disabled)
+
+    msg.thermal.chargingDisabled = charging_disabled
+    msg.thermal.chargingError = current_filter.x > 0. and msg.thermal.batteryPercent < 90  # if current is positive, then battery is being discharged
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     msg.thermal.started = started_ts is not None
     msg.thermal.startedTs = int(1e9*(started_ts or 0))
 
@@ -353,4 +420,7 @@ def main(gctx=None):
 
 if __name__ == "__main__":
   main()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

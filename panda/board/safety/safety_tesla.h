@@ -219,20 +219,26 @@ static int tesla_tx_hook(CAN_FIFOMailBox_TypeDef *to_send)
   return true;
 }
 
+<<<<<<< HEAD
 static int tesla_tx_lin_hook(int lin_num, uint8_t *data, int len)
 {
   // LIN is not used on the Tesla
   return false;
 }
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 static void tesla_init(int16_t param)
 {
   controls_allowed = 0;
   tesla_ignition_started = 0;
   gmlan_switch_init(1); //init the gmlan switch with 1s timeout enabled
+<<<<<<< HEAD
   #ifdef PANDA
     lline_relay_release();
   #endif
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 static int tesla_ign_hook()
@@ -281,6 +287,7 @@ static int tesla_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd)
 }
 
 const safety_hooks tesla_hooks = {
+<<<<<<< HEAD
     .init = tesla_init,
     .rx = tesla_rx_hook,
     .tx = tesla_tx_hook,
@@ -288,4 +295,12 @@ const safety_hooks tesla_hooks = {
     .ignition = tesla_ign_hook,
     .fwd = tesla_fwd_hook,
     .relay = nooutput_relay_hook,
+=======
+  .init = tesla_init,
+  .rx = tesla_rx_hook,
+  .tx = tesla_tx_hook,
+  .tx_lin = nooutput_tx_lin_hook,
+  .ignition = tesla_ign_hook,
+  .fwd = tesla_fwd_hook,
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 };

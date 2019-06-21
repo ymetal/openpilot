@@ -23,12 +23,15 @@ Programming
 make
 ```
 
+<<<<<<< HEAD
 **NEO**
 
 ```
 make -f Makefile.legacy
 ```
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 Troubleshooting
 ----
 

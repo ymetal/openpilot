@@ -32,11 +32,19 @@ MAX_SR_TH = 1.9
 
 LEARNING_RATE = 3
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 class Localizer(object):
   def __init__(self, disabled_logs=None, dog=None):
     self.kf = LocLocalKalman()
     self.reset_kalman()
 
+<<<<<<< HEAD
+=======
+    self.sensor_data_t = 0.0
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.max_age = .2  # seconds
     self.calibration_valid = False
 
@@ -73,10 +81,17 @@ class Localizer(object):
     self.update_kalman(current_time, ObservationKind.CAMERA_ODO_TRANSLATION, np.concatenate([log.cameraOdometry.trans,
                                                                                              log.cameraOdometry.transStd]))
 
+<<<<<<< HEAD
   def handle_live100(self, log, current_time):
     self.speed_counter += 1
     if self.speed_counter % 5 == 0:
       self.update_kalman(current_time, ObservationKind.ODOMETRIC_SPEED, np.array([log.live100.vEgo]))
+=======
+  def handle_controls_state(self, log, current_time):
+    self.speed_counter += 1
+    if self.speed_counter % 5 == 0:
+      self.update_kalman(current_time, ObservationKind.ODOMETRIC_SPEED, np.array([log.controlsState.vEgo]))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   def handle_sensors(self, log, current_time):
     for sensor_reading in log.sensorEvents:
@@ -92,9 +107,16 @@ class Localizer(object):
     if typ in self.disabled_logs:
       return
     if typ == "sensorEvents":
+<<<<<<< HEAD
       self.handle_sensors(log, current_time)
     elif typ == "live100":
       self.handle_live100(log, current_time)
+=======
+      self.sensor_data_t = current_time
+      self.handle_sensors(log, current_time)
+    elif typ == "controlsState":
+      self.handle_controls_state(log, current_time)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     elif typ == "cameraOdometry":
       self.handle_cam_odo(log, current_time)
 
@@ -173,7 +195,11 @@ def locationd_thread(gctx, addr, disabled_logs):
   ctx = zmq.Context()
   poller = zmq.Poller()
 
+<<<<<<< HEAD
   live100_socket = messaging.sub_sock(ctx, service_list['live100'].port, poller, addr=addr, conflate=True)
+=======
+  controls_state_socket = messaging.sub_sock(ctx, service_list['controlsState'].port, poller, addr=addr, conflate=True)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   sensor_events_socket = messaging.sub_sock(ctx, service_list['sensorEvents'].port, poller, addr=addr, conflate=True)
   camera_odometry_socket = messaging.sub_sock(ctx, service_list['cameraOdometry'].port, poller, addr=addr, conflate=True)
 
@@ -191,17 +217,29 @@ def locationd_thread(gctx, addr, disabled_logs):
   # Check if car model matches
   if params is not None:
     params = json.loads(params)
+<<<<<<< HEAD
     if params.get('carFingerprint', None) != CP.carFingerprint:
+=======
+    if (params.get('carFingerprint', None) != CP.carFingerprint) or (params.get('carVin', CP.carVin) != CP.carVin):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       cloudlog.info("Parameter learner found parameters for wrong car.")
       params = None
 
   if params is None:
     params = {
       'carFingerprint': CP.carFingerprint,
+<<<<<<< HEAD
+=======
+      'carVin': CP.carVin,
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       'angleOffsetAverage': 0.0,
       'stiffnessFactor': 1.0,
       'steerRatio': VM.sR,
     }
+<<<<<<< HEAD
+=======
+    params_reader.put("LiveParameters", json.dumps(params))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     cloudlog.info("Parameter learner resetting to default values")
 
   cloudlog.info("Parameter starting with: %s" % str(params))
@@ -213,29 +251,53 @@ def locationd_thread(gctx, addr, disabled_logs):
                           steer_ratio=params['steerRatio'],
                           learning_rate=LEARNING_RATE)
 
+<<<<<<< HEAD
   i = 0
+=======
+  i = 1
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   while True:
     for socket, event in poller.poll(timeout=1000):
       log = messaging.recv_one(socket)
       localizer.handle_log(log)
 
+<<<<<<< HEAD
       if socket is live100_socket:
+=======
+      if socket is controls_state_socket:
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         if not localizer.kf.t:
           continue
 
         if i % LEARNING_RATE == 0:
+<<<<<<< HEAD
           # live100 is not updating the Kalman Filter, so update KF manually
+=======
+          # controlsState is not updating the Kalman Filter, so update KF manually
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
           localizer.kf.predict(1e-9 * log.logMonoTime)
 
           predicted_state = localizer.kf.x
           yaw_rate = -float(predicted_state[5])
 
+<<<<<<< HEAD
           steering_angle = math.radians(log.live100.angleSteers)
           params_valid = learner.update(yaw_rate, log.live100.vEgo, steering_angle)
+=======
+          steering_angle = math.radians(log.controlsState.angleSteers)
+          params_valid = learner.update(yaw_rate, log.controlsState.vEgo, steering_angle)
+
+          log_t = 1e-9 * log.logMonoTime
+          sensor_data_age = log_t - localizer.sensor_data_t
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
           params = messaging.new_message()
           params.init('liveParameters')
           params.liveParameters.valid = bool(params_valid)
+<<<<<<< HEAD
+=======
+          params.liveParameters.sensorValid = bool(sensor_data_age < 5.0)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
           params.liveParameters.angleOffset = float(math.degrees(learner.ao))
           params.liveParameters.angleOffsetAverage = float(math.degrees(learner.slow_ao))
           params.liveParameters.stiffnessFactor = float(learner.x)
@@ -245,8 +307,14 @@ def locationd_thread(gctx, addr, disabled_logs):
         if i % 6000 == 0:   # once a minute
           params = learner.get_values()
           params['carFingerprint'] = CP.carFingerprint
+<<<<<<< HEAD
           params_reader.put("LiveParameters", json.dumps(params))
           params_reader.put("ControlsParams", json.dumps({'angle_model_bias': log.live100.angleModelBias}))
+=======
+          params['carVin'] = CP.carVin
+          params_reader.put("LiveParameters", json.dumps(params))
+          params_reader.put("ControlsParams", json.dumps({'angle_model_bias': log.controlsState.angleModelBias}))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
         i += 1
       elif socket is camera_odometry_socket:
@@ -264,7 +332,11 @@ def main(gctx=None, addr="127.0.0.1"):
   disabled_logs = os.getenv("DISABLED_LOGS", "").split(",")
 
   # No speed for now
+<<<<<<< HEAD
   disabled_logs.append('live100')
+=======
+  disabled_logs.append('controlsState')
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   if IN_CAR:
     addr = "192.168.5.11"
 

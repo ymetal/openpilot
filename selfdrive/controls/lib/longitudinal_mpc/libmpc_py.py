@@ -38,10 +38,16 @@ def _get_libmpc(mpc_id):
     } log_t;
 
     void init(double ttcCost, double distanceCost, double accelerationCost, double jerkCost);
+<<<<<<< HEAD
     void change_tr(double ttcCost, double distanceCost, double accelerationCost, double jerkCost);
     void init_with_simulation(double v_ego, double x_l, double v_l, double a_l, double l);
     int run_mpc(state_t * x0, log_t * solution,
                 double l, double a_l_0, double TR);
+=======
+    void init_with_simulation(double v_ego, double x_l, double v_l, double a_l, double l);
+    int run_mpc(state_t * x0, log_t * solution,
+                double l, double a_l_0);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     """)
 
     return (ffi, ffi.dlopen(libmpc_fn))

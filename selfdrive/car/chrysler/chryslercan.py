@@ -6,6 +6,10 @@ AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 
 def calc_checksum(data):
   """This function does not want the checksum byte in the input data.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   jeep chrysler canbus checksum from http://illmatics.com/Remote%20Car%20Hacking.pdf
   """
   end_index = len(data)
@@ -43,12 +47,15 @@ def calc_checksum(data):
 def make_can_msg(addr, dat):
   return [addr, 0, dat, 0]
 
+<<<<<<< HEAD
 def create_lkas_heartbit(packer, lkas_status_ok): # is this needed?
   # LKAS_HEARTBIT 0x2d9 (729) Lane-keeping heartbeat.
   values = {
     "LKAS_STATUS_OK": lkas_status_ok
   }
   return packer.make_can_msg("LKAS_HEARTBIT", 0, values)
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def create_lkas_hud(packer, gear, lkas_active, hud_alert, hud_count, lkas_car_model):
   # LKAS_HUD 0x2a6 (678) Controls what lane-keeping icon is displayed.

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+// this is last place with ifdef PANDA
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #ifdef STM32F4
   #include "stm32f4xx_hal_gpio_ex.h"
 #else
@@ -61,6 +66,7 @@ void detect() {
 
 // ********************* bringup *********************
 
+<<<<<<< HEAD
 void clock_init() {
   // enable external oscillator
   RCC->CR |= RCC_CR_HSEON;
@@ -98,6 +104,8 @@ void clock_init() {
   // *** running on PLL ***
 }
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 void periph_init() {
   // enable GPIOB, UART2, CAN, USB clock
   RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
@@ -117,6 +125,7 @@ void periph_init() {
     RCC->APB1ENR |= RCC_APB1ENR_CAN3EN;
   #endif
   RCC->APB1ENR |= RCC_APB1ENR_DACEN;
+<<<<<<< HEAD
   RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
   RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
   RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
@@ -129,6 +138,18 @@ void periph_init() {
   RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 
   // needed?
+=======
+  RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;  // main counter
+  RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;  // slow loop and pedal
+  RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;  // gmlan_alt
+  //RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
+  //RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+  RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+  RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
+  //RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+  RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+  RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 }
 
@@ -197,7 +218,11 @@ void set_can_mode(int can, int use_gmlan) {
       set_gpio_alternate(GPIOB, 12, GPIO_AF9_CAN2);
       set_gpio_alternate(GPIOB, 13, GPIO_AF9_CAN2);
 #ifdef CAN3
+<<<<<<< HEAD
     } else if (revision == PANDA_REV_C && can == 2) {
+=======
+    } else if (can == 2) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       // A8,A15: disable normal mode
       set_gpio_mode(GPIOA, 8, MODE_INPUT);
       set_gpio_mode(GPIOA, 15, MODE_INPUT);
@@ -218,11 +243,17 @@ void set_can_mode(int can, int use_gmlan) {
       set_gpio_alternate(GPIOB, 6, GPIO_AF9_CAN2);
 #ifdef CAN3
     } else if (can == 2) {
+<<<<<<< HEAD
       if(revision == PANDA_REV_C){
         // B3,B4: disable gmlan mode
         set_gpio_mode(GPIOB, 3, MODE_INPUT);
         set_gpio_mode(GPIOB, 4, MODE_INPUT);
       }
+=======
+      // B3,B4: disable gmlan mode
+      set_gpio_mode(GPIOB, 3, MODE_INPUT);
+      set_gpio_mode(GPIOB, 4, MODE_INPUT);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       // A8,A15: normal mode
       set_gpio_alternate(GPIOA, 8, GPIO_AF11_CAN3);
       set_gpio_alternate(GPIOA, 15, GPIO_AF11_CAN3);
@@ -377,11 +408,15 @@ void gpio_init() {
 
   #ifdef PANDA
     // K-line enable moved from B4->B7 to make room for GMLAN on CAN3
+<<<<<<< HEAD
     if (revision == PANDA_REV_C) {
       set_gpio_output(GPIOB, 7, 1); // REV C
     } else {
       set_gpio_output(GPIOB, 4, 1); // REV AB
     }
+=======
+    set_gpio_output(GPIOB, 7, 1); // REV C
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     // C12,D2: K-Line setup on UART 5
     set_gpio_alternate(GPIOC, 12, GPIO_AF8_UART5);
@@ -392,16 +427,24 @@ void gpio_init() {
     set_gpio_output(GPIOA, 14, 1);
 
     // C10,C11: L-Line setup on USART 3
+<<<<<<< HEAD
     // LLine now used for relay output
     set_gpio_output(GPIOC, 10, 1);
     //set_gpio_alternate(GPIOC, 10, GPIO_AF7_USART3);
+=======
+    set_gpio_alternate(GPIOC, 10, GPIO_AF7_USART3);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     set_gpio_alternate(GPIOC, 11, GPIO_AF7_USART3);
     set_gpio_pullup(GPIOC, 11, PULL_UP);
   #endif
 
+<<<<<<< HEAD
   if (revision == PANDA_REV_C) {
     set_usb_power_mode(USB_POWER_CLIENT);
   }
+=======
+  set_usb_power_mode(USB_POWER_CLIENT);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 // ********************* early bringup *********************

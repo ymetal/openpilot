@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#!/usr/bin/env python
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 import psutil
 import time
 import os

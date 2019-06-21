@@ -5,8 +5,13 @@ from common.realtime import sec_since_boot
 import copy
 
 
+<<<<<<< HEAD
 AlertSize = log.Live100Data.AlertSize
 AlertStatus = log.Live100Data.AlertStatus
+=======
+AlertSize = log.ControlsState.AlertSize
+AlertStatus = log.ControlsState.AlertStatus
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class AlertManager(object):

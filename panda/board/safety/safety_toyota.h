@@ -1,14 +1,23 @@
+<<<<<<< HEAD
 int toyota_giraffe_switch_1 = 0;          // is giraffe switch 1 high?
 int toyota_camera_forwarded = 0;          // should we forward the camera bus?
 
 // global torque limit
 const int TOYOTA_MAX_TORQUE = 1800;       // max torque cmd allowed ever
+=======
+// global torque limit
+const int TOYOTA_MAX_TORQUE = 1500;       // max torque cmd allowed ever
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 // rate based torque limit + stay within actually applied
 // packet is sent at 100hz, so this limit is 1000/sec
 const int TOYOTA_MAX_RATE_UP = 10;        // ramp up slow
 const int TOYOTA_MAX_RATE_DOWN = 25;      // ramp down fast
+<<<<<<< HEAD
 const int TOYOTA_MAX_TORQUE_ERROR = 375;  // max torque cmd in excess of torque motor
+=======
+const int TOYOTA_MAX_TORQUE_ERROR = 350;  // max torque cmd in excess of torque motor
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 // real time torque limit to prevent controls spamming
 // the real time limit is 1500/sec
@@ -16,6 +25,7 @@ const int TOYOTA_MAX_RT_DELTA = 375;      // max delta torque allowed for real t
 const int TOYOTA_RT_INTERVAL = 250000;    // 250ms between real time checks
 
 // longitudinal limits
+<<<<<<< HEAD
 const int TOYOTA_MAX_ACCEL = 3500;        // 3.5 m/s2
 const int TOYOTA_MIN_ACCEL = -4000;       // 4.0 m/s2
 
@@ -24,21 +34,41 @@ int toyota_actuation_limits = 1;          // by default steer limits are imposed
 int toyota_dbc_eps_torque_factor = 100;   // conversion factor for STEER_TORQUE_EPS in %: see dbc file
 
 // state of torque limits
+=======
+const int TOYOTA_MAX_ACCEL = 1500;        // 1.5 m/s2
+const int TOYOTA_MIN_ACCEL = -3000;       // 3.0 m/s2
+
+const int TOYOTA_GAS_INTERCEPTOR_THRESHOLD = 475;  // ratio between offset and gain from dbc file
+
+// global actuation limit states
+int toyota_dbc_eps_torque_factor = 100;   // conversion factor for STEER_TORQUE_EPS in %: see dbc file
+
+// states
+int toyota_giraffe_switch_1 = 0;          // is giraffe switch 1 high?
+int toyota_camera_forwarded = 0;          // should we forward the camera bus?
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 int toyota_desired_torque_last = 0;       // last desired steer torque
 int toyota_rt_torque_last = 0;            // last desired torque for real time check
 uint32_t toyota_ts_last = 0;
 int toyota_cruise_engaged_last = 0;       // cruise state
+<<<<<<< HEAD
 int ego_speed_toyota = 0;                        // speed
+=======
+int toyota_gas_prev = 0;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 struct sample_t toyota_torque_meas;       // last 3 motor torques produced by the eps
 
 
 static void toyota_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
+<<<<<<< HEAD
   // sample speed
   if ((to_push->RIR>>21) == 0xb4) {
     // Middle bytes needed
     ego_speed_toyota = (to_push->RDHR >>  8) & 0xFFFF; //Speed is 100x
   }// Special thanks to Willem Melching for the code
   
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // get eps motor torque (0.66 factor in dbc)
   if ((to_push->RIR>>21) == 0x260) {
     int torque_meas_new = (((to_push->RDHR) & 0xFF00) | ((to_push->RDHR >> 16) & 0xFF));
@@ -47,25 +77,65 @@ static void toyota_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     // scale by dbc_factor
     torque_meas_new = (torque_meas_new * toyota_dbc_eps_torque_factor) / 100;
 
+<<<<<<< HEAD
     // increase torque_meas by 1 to be conservative on rounding
     torque_meas_new += (torque_meas_new > 0 ? 1 : -1);
 
     // update array of sample
     update_sample(&toyota_torque_meas, torque_meas_new);
+=======
+    // update array of sample
+    update_sample(&toyota_torque_meas, torque_meas_new);
+
+    // increase torque_meas by 1 to be conservative on rounding
+    toyota_torque_meas.min--;
+    toyota_torque_meas.max++;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 
   // enter controls on rising edge of ACC, exit controls on ACC off
   if ((to_push->RIR>>21) == 0x1D2) {
     // 5th bit is CRUISE_ACTIVE
     int cruise_engaged = to_push->RDLR & 0x20;
+<<<<<<< HEAD
     if (cruise_engaged && !toyota_cruise_engaged_last) {
       controls_allowed = 1;
     } else if (!cruise_engaged) {
       controls_allowed = 0;
+=======
+    if (!cruise_engaged) {
+      controls_allowed = 0;
+    } else if (cruise_engaged && !toyota_cruise_engaged_last) {
+      controls_allowed = 1;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     }
     toyota_cruise_engaged_last = cruise_engaged;
   }
 
+<<<<<<< HEAD
+=======
+  // exit controls on rising edge of gas press if interceptor (0x201)
+  if ((to_push->RIR>>21) == 0x201) {
+    gas_interceptor_detected = 1;
+    int gas_interceptor = ((to_push->RDLR & 0xFF) << 8) | ((to_push->RDLR & 0xFF00) >> 8);
+    if ((gas_interceptor > TOYOTA_GAS_INTERCEPTOR_THRESHOLD) &&
+        (gas_interceptor_prev <= TOYOTA_GAS_INTERCEPTOR_THRESHOLD) &&
+        long_controls_allowed) {
+      controls_allowed = 0;
+    }
+    gas_interceptor_prev = gas_interceptor;
+  }
+
+  // exit controls on rising edge of gas press
+  if ((to_push->RIR>>21) == 0x2C1) {
+    int gas = (to_push->RDHR >> 16) & 0xFF;
+    if ((gas > 0) && (toyota_gas_prev == 0) && !gas_interceptor_detected && long_controls_allowed) {
+      controls_allowed = 0;
+    }
+    toyota_gas_prev = gas;
+  }
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   int bus = (to_push->RDTR >> 4) & 0xF;
   // msgs are only on bus 2 if panda is connected to frc
   if (bus == 2) {
@@ -88,7 +158,11 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
     // GAS PEDAL: safety check
     if ((to_send->RIR>>21) == 0x200) {
+<<<<<<< HEAD
       if (controls_allowed && toyota_actuation_limits) {
+=======
+      if (controls_allowed && long_controls_allowed) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         // all messages are fine here
       } else {
         if ((to_send->RDLR & 0xFFFF0000) != to_send->RDLR) return 0;
@@ -99,10 +173,17 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
     if ((to_send->RIR>>21) == 0x343) {
       int desired_accel = ((to_send->RDLR & 0xFF) << 8) | ((to_send->RDLR >> 8) & 0xFF);
       desired_accel = to_signed(desired_accel, 16);
+<<<<<<< HEAD
       if (controls_allowed && toyota_actuation_limits) {
         int violation = max_limit_check(desired_accel, TOYOTA_MAX_ACCEL, TOYOTA_MIN_ACCEL);
         if (violation) return 0;
       } else if (!controls_allowed && (desired_accel != 0)) {
+=======
+      if (controls_allowed && long_controls_allowed) {
+        int violation = max_limit_check(desired_accel, TOYOTA_MAX_ACCEL, TOYOTA_MIN_ACCEL);
+        if (violation) return 0;
+      } else if (desired_accel != 0) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         return 0;
       }
     }
@@ -115,6 +196,7 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
       uint32_t ts = TIM2->CNT;
 
+<<<<<<< HEAD
       // only check if controls are allowed and actuation_limits are imposed
       if (toyota_actuation_limits) {
 
@@ -136,6 +218,17 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
           &toyota_torque_meas, TOYOTA_MAX_RATE_UP, TOYOTA_MAX_RATE_DOWN, TOYOTA_MAX_TORQUE_ERROR);
 
 
+=======
+      if (controls_allowed) {
+
+        // *** global torque limit check ***
+        violation |= max_limit_check(desired_torque, TOYOTA_MAX_TORQUE, -TOYOTA_MAX_TORQUE);
+
+        // *** torque rate limit check ***
+        violation |= dist_to_meas_check(desired_torque, toyota_desired_torque_last,
+          &toyota_torque_meas, TOYOTA_MAX_RATE_UP, TOYOTA_MAX_RATE_DOWN, TOYOTA_MAX_TORQUE_ERROR);
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         // used next time
         toyota_desired_torque_last = desired_torque;
 
@@ -151,12 +244,21 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
       }
 
       // no torque if controls is not allowed
+<<<<<<< HEAD
       //if (!controls_allowed && (desired_torque != 0)) {
       //  violation = 1;
       //}
 
       // reset to 0 if either controls is not allowed or there's a violation
       if (violation) {
+=======
+      if (!controls_allowed && (desired_torque != 0)) {
+        violation = 1;
+      }
+
+      // reset to 0 if either controls is not allowed or there's a violation
+      if (violation || !controls_allowed) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         toyota_desired_torque_last = 0;
         toyota_rt_torque_last = 0;
         toyota_ts_last = ts;
@@ -174,6 +276,7 @@ static int toyota_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
 
 static void toyota_init(int16_t param) {
   controls_allowed = 0;
+<<<<<<< HEAD
   toyota_actuation_limits = 1;
   toyota_giraffe_switch_1 = 0;
   toyota_camera_forwarded = 0;
@@ -181,10 +284,16 @@ static void toyota_init(int16_t param) {
   #ifdef PANDA
     lline_relay_release();
   #endif
+=======
+  toyota_giraffe_switch_1 = 0;
+  toyota_camera_forwarded = 0;
+  toyota_dbc_eps_torque_factor = param;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 static int toyota_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
 
+<<<<<<< HEAD
   // forward cam to radar and viceversa if car, except lkas cmd and hud
   // don't forward when switch 1 is high
   if ((bus_num == 0 || bus_num == 2) && toyota_camera_forwarded && !toyota_giraffe_switch_1) {
@@ -193,6 +302,22 @@ static int toyota_fwd_hook(int bus_num, CAN_FIFOMailBox_TypeDef *to_fwd) {
     // in TSSP 2.0 the camera does ACC as well, so filter 0x343
     bool is_acc_msg = (addr == 0x343 && bus_num  == 2);
     return (is_lkas_msg || is_acc_msg)? -1 : (uint8_t)(~bus_num & 0x2);
+=======
+  if (toyota_camera_forwarded && !toyota_giraffe_switch_1) {
+    int addr = to_fwd->RIR>>21;
+    if (bus_num == 0) {
+      return 2;
+    } else if (bus_num == 2) {
+      // block stock lkas messages and stock acc messages (if OP is doing ACC)
+      int is_lkas_msg = (addr == 0x2E4 || addr == 0x412);
+      // in TSSP 2.0 the camera does ACC as well, so filter 0x343
+      int is_acc_msg = (addr == 0x343);
+      if (is_lkas_msg || (is_acc_msg && long_controls_allowed)) {
+        return -1;
+      }
+      return 0;
+    }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
   return -1;
 }
@@ -204,6 +329,7 @@ const safety_hooks toyota_hooks = {
   .tx_lin = nooutput_tx_lin_hook,
   .ignition = default_ign_hook,
   .fwd = toyota_fwd_hook,
+<<<<<<< HEAD
   .relay = nooutput_relay_hook,
 };
 
@@ -226,4 +352,6 @@ const safety_hooks toyota_nolimits_hooks = {
   .ignition = default_ign_hook,
   .fwd = toyota_fwd_hook,
   .relay = nooutput_relay_hook,
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 };

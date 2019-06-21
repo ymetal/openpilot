@@ -23,6 +23,7 @@ static int find_dev() {
 
     int fd = openat(dirfd(dir), de->d_name, O_RDONLY);
     assert(fd >= 0);
+<<<<<<< HEAD
     
     FILE *fp;
     FILE *fp2;
@@ -73,6 +74,20 @@ static int find_dev() {
     }
 
     
+=======
+
+    unsigned char ev_bits[KEY_MAX / 8 + 1];
+    err = ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(ev_bits)), ev_bits);
+    assert(err >= 0);
+
+    const int x_key = ABS_MT_POSITION_X / 8;
+    const int y_key = ABS_MT_POSITION_Y / 8;
+    if ((ev_bits[x_key] & (ABS_MT_POSITION_X - x_key)) &&
+        (ev_bits[y_key] & (ABS_MT_POSITION_Y - y_key))) {
+      ret = fd;
+      break;
+    }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     close(fd);
   }
   closedir(dir);
@@ -106,6 +121,7 @@ int touch_poll(TouchState *s, int* out_x, int* out_y, int timeout) {
     if (err < sizeof(event)) {
       return -1;
     }
+<<<<<<< HEAD
     FILE *fp;
     FILE *fp2;
     char str[1000];
@@ -160,6 +176,21 @@ int touch_poll(TouchState *s, int* out_x, int* out_y, int timeout) {
       }
     }
     
+=======
+
+    switch (event.type) { 
+    case EV_ABS:
+      if (event.code == ABS_MT_POSITION_X) {
+        s->last_x = event.value;
+      } else if (event.code == ABS_MT_POSITION_Y) {
+        s->last_y = event.value;
+      }
+      up = true;
+      break;
+    default:
+      break;
+    }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
   if (up) {
     // adjust for flippening

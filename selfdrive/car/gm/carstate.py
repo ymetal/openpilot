@@ -1,17 +1,26 @@
+<<<<<<< HEAD
 #import os
 #import subprocess
 #import sys
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 import numpy as np
 from cereal import car
 from common.kalman.simple_kalman import KF1D
 from selfdrive.config import Conversions as CV
 from selfdrive.can.parser import CANParser
+<<<<<<< HEAD
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
 from selfdrive.car.gm.values import DBC, CAR, parse_gear_shifter, \
                                     CruiseButtons, is_eps_status_ok, \
                                     STEER_THRESHOLD, SUPERCRUISE_CARS
 import selfdrive.kegman_conf as kegman
+=======
+from selfdrive.car.gm.values import DBC, CAR, parse_gear_shifter, \
+                                    CruiseButtons, is_eps_status_ok, \
+                                    STEER_THRESHOLD, SUPERCRUISE_CARS
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def get_powertrain_can_parser(CP, canbus):
   # this function generates lists for signal, messages and initial values
@@ -27,7 +36,10 @@ def get_powertrain_can_parser(CP, canbus):
     ("TurnSignals", "BCMTurnSignals", 0),
     ("AcceleratorPedal", "AcceleratorPedal", 0),
     ("ACCButtons", "ASCMSteeringButton", CruiseButtons.UNPRESS),
+<<<<<<< HEAD
     ("LKAButton", "ASCMSteeringButton", 0),
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ("SteeringWheelAngle", "PSCMSteeringAngle", 0),
     ("FLWheelSpd", "EBCMWheelSpdFront", 0),
     ("FRWheelSpd", "EBCMWheelSpdFront", 0),
@@ -36,7 +48,10 @@ def get_powertrain_can_parser(CP, canbus):
     ("PRNDL", "ECMPRDNL", 0),
     ("LKADriverAppldTrq", "PSCMStatus", 0),
     ("LKATorqueDeliveredStatus", "PSCMStatus", 0),
+<<<<<<< HEAD
     ("DistanceButton", "ASCMSteeringButton", 0),
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   ]
 
   if CP.carFingerprint == CAR.VOLT:
@@ -55,6 +70,7 @@ def get_powertrain_can_parser(CP, canbus):
       ("CruiseState", "AcceleratorPedal2", 0),
     ]
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, [], canbus.powertrain)
 
 def get_chassis_can_parser(CP, canbus):
@@ -65,11 +81,16 @@ def get_chassis_can_parser(CP, canbus):
   ]
 
   return CANParser(DBC[CP.carFingerprint]['chassis'], signals, [], canbus.chassis)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, [], canbus.powertrain, timeout=100)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 class CarState(object):
   def __init__(self, CP, canbus):
     self.CP = CP
     # initialize can parser
+<<<<<<< HEAD
     self.gasMode = int(kegman.conf['lastGasMode'])
     self.gasLabels = ["dynamic","sport","eco"]
     self.alcaLabels = ["MadMax","Normal","Wifey","off"]
@@ -79,10 +100,16 @@ class CarState(object):
     self.cruise_buttons = CruiseButtons.UNPRESS
     self.prev_distance_button = 0
     self.distance_button = 0
+=======
+
+    self.car_fingerprint = CP.carFingerprint
+    self.cruise_buttons = CruiseButtons.UNPRESS
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.left_blinker_on = False
     self.prev_left_blinker_on = False
     self.right_blinker_on = False
     self.prev_right_blinker_on = False
+<<<<<<< HEAD
     self.follow_level = int(kegman.conf['lastTrMode'])
     self.prev_lka_button = 0
     self.lka_button = 0
@@ -140,6 +167,9 @@ class CarState(object):
     #BB custom message counter
     self.custom_alert_counter = -1 #set to 100 for 1 second display; carcontroller will take down to zero
     
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # vEgo kalman filter
     dt = 0.01
     self.v_ego_kf = KF1D(x0=[[0.], [0.]],
@@ -147,6 +177,7 @@ class CarState(object):
                          C=[1., 0.],
                          K=[[0.12287673], [0.29666309]])
     self.v_ego = 0.
+<<<<<<< HEAD
     #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
@@ -191,12 +222,20 @@ class CarState(object):
           self.cstm_btns.hasChanges = True
 
   def update(self, pt_cp, ch_cp):
+=======
+
+  def update(self, pt_cp):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.can_valid = pt_cp.can_valid
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = pt_cp.vl["ASCMSteeringButton"]['ACCButtons']
+<<<<<<< HEAD
     self.prev_distance_button = self.distance_button
     self.distance_button = pt_cp.vl["ASCMSteeringButton"]["DistanceButton"]
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.v_wheel_fl = pt_cp.vl["EBCMWheelSpdFront"]['FLWheelSpd'] * CV.KPH_TO_MS
     self.v_wheel_fr = pt_cp.vl["EBCMWheelSpdFront"]['FRWheelSpd'] * CV.KPH_TO_MS
     self.v_wheel_rl = pt_cp.vl["EBCMWheelSpdRear"]['RLWheelSpd'] * CV.KPH_TO_MS
@@ -211,9 +250,12 @@ class CarState(object):
     self.v_ego = float(v_ego_x[0])
     self.a_ego = float(v_ego_x[1])
 
+<<<<<<< HEAD
     self.prev_lka_button = self.lka_button
     self.lka_button = pt_cp.vl["ASCMSteeringButton"]['LKAButton']
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.standstill = self.v_ego_raw < 0.01
 
     self.angle_steers = pt_cp.vl["PSCMSteeringAngle"]['SteeringWheelAngle']
@@ -248,6 +290,7 @@ class CarState(object):
     self.prev_right_blinker_on = self.right_blinker_on
     self.left_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 1
     self.right_blinker_on = pt_cp.vl["BCMTurnSignals"]['TurnSignals'] == 2
+<<<<<<< HEAD
     
     if self.cstm_btns.get_button_status("lka") == 0:
       self.lane_departure_toggle_on = False
@@ -256,6 +299,8 @@ class CarState(object):
         self.lane_departure_toggle_on = False
       else:
         self.lane_departure_toggle_on = True
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     if self.car_fingerprint in SUPERCRUISE_CARS:
       self.park_brake = False
@@ -284,9 +329,12 @@ class CarState(object):
     self.brake_pressed = self.user_brake > 10 or self.regen_pressed
 
     self.gear_shifter_valid = self.gear_shifter == car.CarState.GearShifter.drive
+<<<<<<< HEAD
     # Update Friction Brakes from Chassis Canbus
     self.frictionBrakesActive = bool(ch_cp.vl["EBCMFrictionBrakeStatus"]["FrictionBrakePressure"] != 0)
     
   def get_follow_level(self):
     return self.follow_level
   
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

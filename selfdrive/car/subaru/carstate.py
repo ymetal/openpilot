@@ -1,11 +1,17 @@
 import copy
 from common.kalman.simple_kalman import KF1D
+<<<<<<< HEAD
 from selfdrive.car.modules.UIBT_module import UIButtons,UIButton
 from selfdrive.car.modules.UIEV_module import UIEvents
 from selfdrive.config import Conversions as CV
 from selfdrive.can.parser import CANParser
 import selfdrive.kegman_conf as kegman
 from selfdrive.car.subaru.values import CAR, DBC, STEER_THRESHOLD
+=======
+from selfdrive.config import Conversions as CV
+from selfdrive.can.parser import CANParser
+from selfdrive.car.subaru.values import DBC, STEER_THRESHOLD
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def get_powertrain_can_parser(CP):
   # this function generates lists for signal, messages and initial values
@@ -13,7 +19,10 @@ def get_powertrain_can_parser(CP):
     # sig_name, sig_address, default
     ("Steer_Torque_Sensor", "Steering_Torque", 0),
     ("Steering_Angle", "Steering_Torque", 0),
+<<<<<<< HEAD
     ("Steer_Torque_Output", "Steering_Torque", 0),
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ("Cruise_On", "CruiseControl", 0),
     ("Cruise_Activated", "CruiseControl", 0),
     ("Brake_Pedal", "Brake_Pedal", 0),
@@ -21,7 +30,10 @@ def get_powertrain_can_parser(CP):
     ("LEFT_BLINKER", "Dashlights", 0),
     ("RIGHT_BLINKER", "Dashlights", 0),
     ("SEATBELT_FL", "Dashlights", 0),
+<<<<<<< HEAD
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ("FL", "Wheel_Speeds", 0),
     ("FR", "Wheel_Speeds", 0),
     ("RL", "Wheel_Speeds", 0),
@@ -36,6 +48,7 @@ def get_powertrain_can_parser(CP):
   checks = [
     # sig_address, frequency
     ("Dashlights", 10),
+<<<<<<< HEAD
     ("Wheel_Speeds", 50),
     ("Steering_Torque", 50),
   ]
@@ -60,12 +73,57 @@ def get_powertrain_can_parser(CP):
 def get_camera_can_parser(CP):
   signals = [
     ("Cruise_Set_Speed", "ES_DashStatus", 0),
+=======
+    ("CruiseControl", 20),
+    ("Wheel_Speeds", 50),
+    ("Steering_Torque", 50),
+    ("BodyInfo", 10),
+  ]
+
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, timeout=100)
+
+
+def get_camera_can_parser(CP):
+  signals = [
+    ("Cruise_Set_Speed", "ES_DashStatus", 0),
+
+    ("Counter", "ES_Distance", 0),
+    ("Signal1", "ES_Distance", 0),
+    ("Signal2", "ES_Distance", 0),
+    ("Main", "ES_Distance", 0),
+    ("Signal3", "ES_Distance", 0),
+
+    ("Checksum", "ES_LKAS_State", 0),
+    ("Counter", "ES_LKAS_State", 0),
+    ("Keep_Hands_On_Wheel", "ES_LKAS_State", 0),
+    ("Empty_Box", "ES_LKAS_State", 0),
+    ("Signal1", "ES_LKAS_State", 0),
+    ("LKAS_ACTIVE", "ES_LKAS_State", 0),
+    ("Signal2", "ES_LKAS_State", 0),
+    ("Backward_Speed_Limit_Menu", "ES_LKAS_State", 0),
+    ("LKAS_ENABLE_3", "ES_LKAS_State", 0),
+    ("Signal3", "ES_LKAS_State", 0),
+    ("LKAS_ENABLE_2", "ES_LKAS_State", 0),
+    ("Signal4", "ES_LKAS_State", 0),
+    ("LKAS_Left_Line_Visible", "ES_LKAS_State", 0),
+    ("Signal6", "ES_LKAS_State", 0),
+    ("LKAS_Right_Line_Visible", "ES_LKAS_State", 0),
+    ("Signal7", "ES_LKAS_State", 0),
+    ("FCW_Cont_Beep", "ES_LKAS_State", 0),
+    ("FCW_Repeated_Beep", "ES_LKAS_State", 0),
+    ("Throttle_Management_Activated", "ES_LKAS_State", 0),
+    ("Traffic_light_Ahead", "ES_LKAS_State", 0),
+    ("Right_Depart", "ES_LKAS_State", 0),
+    ("Signal5", "ES_LKAS_State", 0),
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   ]
 
   checks = [
     ("ES_DashStatus", 10),
   ]
 
+<<<<<<< HEAD
   if CP.carFingerprint not in (CAR.OUTBACK, CAR.LEGACY):
     signals += [
       ("Counter", "ES_Distance", 0),
@@ -161,6 +219,16 @@ class CarState(object):
     #BB custom message counter
     self.custom_alert_counter = -1 #set to 100 for 1 second display; carcontroller will take down to zero
     
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 2, timeout=100)
+
+
+class CarState(object):
+  def __init__(self, CP):
+    # initialize can parser
+    self.CP = CP
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.car_fingerprint = CP.carFingerprint
     self.left_blinker_on = False
     self.prev_left_blinker_on = False
@@ -177,6 +245,7 @@ class CarState(object):
                          C=[1., 0.],
                          K=[[0.12287673], [0.29666309]])
     self.v_ego = 0.
+<<<<<<< HEAD
    #BB init ui buttons
   def init_ui_buttons(self):
     btns = []
@@ -220,6 +289,9 @@ class CarState(object):
           self.cstm_btns.btns[id].btn_label2 = self.alcaLabels[self.alcaMode]
           self.cstm_btns.hasChanges = True
           
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def update(self, cp, cp_cam):
 
     self.can_valid = cp.can_valid
@@ -242,7 +314,11 @@ class CarState(object):
       self.v_cruise_pcm *= CV.MPH_TO_KPH
 
     v_wheel = (self.v_wheel_fl + self.v_wheel_fr + self.v_wheel_rl + self.v_wheel_rr) / 4.
+<<<<<<< HEAD
     # Kalman filter, even though Subaru raw wheel speed is heaviliy filtered by default
+=======
+    # Kalman filter, even though Hyundai raw wheel speed is heaviliy filtered by default
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if abs(v_wheel - self.v_ego) > 2.0:  # Prevent large accelerations when car starts at non zero speed
       self.v_ego_kf.x = [[v_wheel], [0.0]]
 
@@ -259,7 +335,10 @@ class CarState(object):
     self.right_blinker_on = cp.vl["Dashlights"]['RIGHT_BLINKER'] == 1
     self.seatbelt_unlatched = cp.vl["Dashlights"]['SEATBELT_FL'] == 1
     self.steer_torque_driver = cp.vl["Steering_Torque"]['Steer_Torque_Sensor']
+<<<<<<< HEAD
     self.steer_torque_motor = cp.vl["Steering_Torque"]['Steer_Torque_Output']
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.acc_active = cp.vl["CruiseControl"]['Cruise_Activated']
     self.main_on = cp.vl["CruiseControl"]['Cruise_On']
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD[self.car_fingerprint]
@@ -271,6 +350,7 @@ class CarState(object):
 
     self.es_distance_msg = copy.copy(cp_cam.vl["ES_Distance"])
     self.es_lkas_msg = copy.copy(cp_cam.vl["ES_LKAS_State"])
+<<<<<<< HEAD
     
     if self.car_fingerprint not in (CAR.OUTBACK, CAR.LEGACY):
       self.v_cruise_pcm = cp_cam.vl["ES_DashStatus"]["Cruise_Set_Speed"] * CV.MPH_TO_KPH
@@ -287,3 +367,5 @@ class CarState(object):
         self.lane_departure_toggle_on = False
       else:
         self.lane_departure_toggle_on = True
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

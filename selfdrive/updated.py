@@ -2,6 +2,7 @@
 
 # simple service that waits for network access and tries to update every hour
 
+<<<<<<< HEAD
 import zmq
 import selfdrive.messaging as messaging
 from selfdrive.services import service_list
@@ -16,6 +17,14 @@ def main(gctx=None):
   context = zmq.Context()
   manager_sock = messaging.sub_sock(context, service_list['managerData'].port)
   NEED_REBOOT = False
+=======
+import time
+import subprocess
+from selfdrive.swaglog import cloudlog
+
+NICE_LOW_PRIORITY = ["nice", "-n", "19"]
+def main(gctx=None):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   while True:
     # try network
     ping_failed = subprocess.call(["ping", "-W", "4", "-c", "1", "8.8.8.8"])
@@ -34,6 +43,7 @@ def main(gctx=None):
       time.sleep(60)
       continue
     cloudlog.info("git fetch success: %s", r)
+<<<<<<< HEAD
     if kegman.get("autoUpdate", True) and not os.path.isfile("/data/no_ota_updates"):
       try:
         head_commit = subprocess.check_output(["git", "rev-parse", "HEAD"])
@@ -57,6 +67,10 @@ def main(gctx=None):
             os.system('reboot')
 
     time.sleep(30*60)
+=======
+
+    time.sleep(60*60)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 if __name__ == "__main__":
   main()

@@ -1,6 +1,9 @@
 from cereal import car
 from common.numpy_fast import clip, interp
+<<<<<<< HEAD
 from selfdrive.boardd.boardd import can_list_to_can_capnp
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.car import create_gas_command
 from selfdrive.car.toyota.toyotacan import make_can_msg, create_video_target,\
@@ -9,16 +12,24 @@ from selfdrive.car.toyota.toyotacan import make_can_msg, create_video_target,\
                                            create_fcw_command
 from selfdrive.car.toyota.values import ECU, STATIC_MSGS, TSSP2_CAR
 from selfdrive.can.packer import CANPacker
+<<<<<<< HEAD
 from selfdrive.car.modules.ALCA_module import ALCAController
 from selfdrive.phantom import Phantom
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 
 # Accel limits
 ACCEL_HYST_GAP = 0.02  # don't change accel command for small oscilalitons within this value
+<<<<<<< HEAD
 ACCEL_MAX = 3.5  # 3.5 m/s2
 ACCEL_MIN = -4.0 # 4   m/s2
+=======
+ACCEL_MAX = 1.5  # 1.5 m/s2
+ACCEL_MIN = -3.0 # 3   m/s2
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 ACCEL_SCALE = max(ACCEL_MAX, -ACCEL_MIN)
 
 # Steer torque limits
@@ -35,16 +46,20 @@ ANGLE_DELTA_BP = [0., 5., 15.]
 ANGLE_DELTA_V = [5., .8, .15]     # windup limit
 ANGLE_DELTA_VU = [5., 3.5, 0.4]   # unwind limit
 
+<<<<<<< HEAD
 # Blindspot codes
 LEFT_BLINDSPOT = '\x41'
 RIGHT_BLINDSPOT = '\x42'
 BLINDSPOTDEBUG = True
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 TARGET_IDS = [0x340, 0x341, 0x342, 0x343, 0x344, 0x345,
               0x363, 0x364, 0x365, 0x370, 0x371, 0x372,
               0x373, 0x374, 0x375, 0x380, 0x381, 0x382,
               0x383]
 
+<<<<<<< HEAD
 def set_blindspot_debug_mode(lr,enable):
   if enable:
     m = lr + "\x02\x10\x60\x00\x00\x00\x00"
@@ -55,6 +70,8 @@ def set_blindspot_debug_mode(lr,enable):
 def poll_blindspot_status(lr):
   m = lr + "\x02\x21\x69\x00\x00\x00\x00"
   return make_can_msg(1872, m, 0, False)
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 def accel_hysteresis(accel, accel_steady, enabled):
 
@@ -129,6 +146,7 @@ class CarController(object):
     self.last_standstill = False
     self.standstill_req = False
     self.angle_control = False
+<<<<<<< HEAD
     self.blindspot_poll_counter = 0
     self.blindspot_blink_counter_left = 0
     self.blindspot_blink_counter_right = 0
@@ -138,11 +156,18 @@ class CarController(object):
     self.blindspot_debug_enabled_left = False
     self.blindspot_debug_enabled_right = False
     self.phantom = Phantom()
+=======
+
+    self.steer_angle_enabled = False
+    self.ipas_reset_counter = 0
+    self.last_fault_frame = -200
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.fake_ecus = set()
     if enable_camera: self.fake_ecus.add(ECU.CAM)
     if enable_dsu: self.fake_ecus.add(ECU.DSU)
     if enable_apg: self.fake_ecus.add(ECU.APGS)
+<<<<<<< HEAD
     self.ALCA = ALCAController(self,True,False)  # Enabled True and SteerByAngle only False
 
     self.packer = CANPacker(dbc_name)
@@ -157,6 +182,15 @@ class CarController(object):
       CS.cstm_btns.send_button_info()
       CS.UE.uiSetCarEvent(CS.cstm_btns.car_folder,CS.cstm_btns.car_name)
       
+=======
+
+    self.packer = CANPacker(dbc_name)
+
+  def update(self, enabled, CS, frame, actuators,
+             pcm_cancel_cmd, hud_alert, audible_alert, forwarding_camera,
+             left_line, right_line, lead, left_lane_depart, right_lane_depart):
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # *** compute control surfaces ***
 
     # gas and brake
@@ -172,6 +206,7 @@ class CarController(object):
 
     apply_accel, self.accel_steady = accel_hysteresis(apply_accel, self.accel_steady, enabled)
     apply_accel = clip(apply_accel * ACCEL_SCALE, ACCEL_MIN, ACCEL_MAX)
+<<<<<<< HEAD
     # Get the angle from ALCA.
     alca_enabled = False
     alca_steer = 0.
@@ -207,11 +242,26 @@ class CarController(object):
     cutout_time = 100 if self.phantom.data["status"] else 200
 
     if not enabled or (frame - self.last_fault_frame < cutout_time):
+=======
+
+    # steer torque
+    apply_steer = int(round(actuators.steer * SteerLimitParams.STEER_MAX))
+
+    apply_steer = apply_toyota_steer_torque_limits(apply_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
+
+    # only cut torque when steer state is a known fault
+    if CS.steer_state in [9, 25]:
+      self.last_fault_frame = frame
+
+    # Cut steering for 2s after fault
+    if not enabled or (frame - self.last_fault_frame < 200):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       apply_steer = 0
       apply_steer_req = 0
     else:
       apply_steer_req = 1
 
+<<<<<<< HEAD
     apply_steer = apply_toyota_steer_torque_limits(apply_steer, self.last_steer, CS.steer_torque_motor, SteerLimitParams)
     if apply_steer == 0 and self.last_steer == 0:
       apply_steer_req = 0
@@ -230,15 +280,21 @@ class CarController(object):
       #print apply_steer
       apply_steer_req = 1
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.steer_angle_enabled, self.ipas_reset_counter = \
       ipas_state_transition(self.steer_angle_enabled, enabled, CS.ipas_active, self.ipas_reset_counter)
     #print("{0} {1} {2}".format(self.steer_angle_enabled, self.ipas_reset_counter, CS.ipas_active))
 
     # steer angle
     if self.steer_angle_enabled and CS.ipas_active:
+<<<<<<< HEAD
 
       apply_angle = alca_angle
       #apply_angle = actuators.steerAngle
+=======
+      apply_angle = actuators.steerAngle
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       angle_lim = interp(CS.v_ego, ANGLE_MAX_BP, ANGLE_MAX_V)
       apply_angle = clip(apply_angle, -angle_lim, angle_lim)
 
@@ -257,8 +313,13 @@ class CarController(object):
       pcm_cancel_cmd = 1
 
     # on entering standstill, send standstill request
+<<<<<<< HEAD
     #if CS.standstill and not self.last_standstill:
     #  self.standstill_req = True
+=======
+    if CS.standstill and not self.last_standstill:
+      self.standstill_req = True
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if CS.pcm_acc_status != 8:
       # pcm entered standstill or it's disabled
       self.standstill_req = False
@@ -270,6 +331,7 @@ class CarController(object):
 
     can_sends = []
 
+<<<<<<< HEAD
 # Enable blindspot debug mode once
     if BLINDSPOTDEBUG:
       self.blindspot_poll_counter += 1
@@ -307,6 +369,8 @@ class CarController(object):
       if self.blindspot_poll_counter % 20 == 10 and self.blindspot_poll_counter > 1005:  # Poll blindspots at 5 Hz
         can_sends.append(poll_blindspot_status(RIGHT_BLINDSPOT))
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     #*** control msgs ***
     #print("steer {0} {1} {2} {3}".format(apply_steer, min_lim, max_lim, CS.steer_torque_motor)
 
@@ -321,6 +385,7 @@ class CarController(object):
 
     if self.angle_control:
       can_sends.append(create_ipas_steer_command(self.packer, apply_angle, self.steer_angle_enabled,
+<<<<<<< HEAD
                                                    ECU.APGS in self.fake_ecus))
     elif ECU.APGS in self.fake_ecus:
       can_sends.append(create_ipas_steer_command(self.packer, 0, 0, True))
@@ -331,13 +396,25 @@ class CarController(object):
     else:
       distance = 0 
  
+=======
+                                                 ECU.APGS in self.fake_ecus))
+    elif ECU.APGS in self.fake_ecus:
+      can_sends.append(create_ipas_steer_command(self.packer, 0, 0, True))
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # accel cmd comes from DSU, but we can spam can to cancel the system even if we are using lat only control
     if (frame % 3 == 0 and ECU.DSU in self.fake_ecus) or (pcm_cancel_cmd and ECU.CAM in self.fake_ecus):
       lead = lead or CS.v_ego < 12.    # at low speed we always assume the lead is present do ACC can be engaged
       if ECU.DSU in self.fake_ecus:
+<<<<<<< HEAD
         can_sends.append(create_accel_command(self.packer, apply_accel, pcm_cancel_cmd, self.standstill_req, lead, distance))
       else:
         can_sends.append(create_accel_command(self.packer, 0, pcm_cancel_cmd, False, lead, distance))
+=======
+        can_sends.append(create_accel_command(self.packer, apply_accel, pcm_cancel_cmd, self.standstill_req, lead))
+      else:
+        can_sends.append(create_accel_command(self.packer, 0, pcm_cancel_cmd, False, lead))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     if (frame % 2 == 0) and (CS.CP.enableGasInterceptor):
         # send exactly zero if apply_gas is zero. Interceptor will send the max between read value and apply_gas.
@@ -360,6 +437,10 @@ class CarController(object):
       self.alert_active = not self.alert_active
     else:
       send_ui = False
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if (frame % 100 == 0 or send_ui) and ECU.CAM in self.fake_ecus:
       can_sends.append(create_ui_command(self.packer, steer, sound1, sound2, left_line, right_line, left_lane_depart, right_lane_depart))
 
@@ -384,5 +465,9 @@ class CarController(object):
 
         can_sends.append(make_can_msg(addr, vl, bus, False))
 
+<<<<<<< HEAD
 
     sendcan.send(can_list_to_can_capnp(can_sends, msgtype='sendcan'))
+=======
+    return can_sends
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

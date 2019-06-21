@@ -392,9 +392,12 @@ class Panda(object):
     elif bus in [Panda.GMLAN_CAN2, Panda.GMLAN_CAN3]:
       self._handle.controlWrite(Panda.REQUEST_OUT, 0xdb, 1, bus, b'')
 
+<<<<<<< HEAD
   def set_lline_relay(self, enable):
     self._handle.controlWrite(Panda.REQUEST_OUT, 0xf3, int(enable), 0, b'')
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def set_can_loopback(self, enable):
     # set can loopback mode for all buses
     self._handle.controlWrite(Panda.REQUEST_OUT, 0xe5, int(enable), 0, b'')

@@ -190,12 +190,20 @@ class CANParser {
   CANParser(int abus, const std::string& dbc_name,
             const std::vector<MessageParseOptions> &options,
             const std::vector<SignalParseOptions> &sigoptions,
+<<<<<<< HEAD
             bool sendcan, const std::string& tcp_addr)
+=======
+            bool sendcan, const std::string& tcp_addr, int timeout=-1)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     : bus(abus) {
     // connect to can on 8006
     context = zmq_ctx_new();
     subscriber = zmq_socket(context, ZMQ_SUB);
     zmq_setsockopt(subscriber, ZMQ_SUBSCRIBE, "", 0);
+<<<<<<< HEAD
+=======
+    zmq_setsockopt(subscriber, ZMQ_RCVTIMEO, &timeout, sizeof(int));
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     std::string tcp_addr_str;
 
@@ -325,8 +333,14 @@ class CANParser {
     }
   }
 
+<<<<<<< HEAD
   void update(uint64_t sec, bool wait) {
     int err;
+=======
+  int update(uint64_t sec, bool wait) {
+    int err;
+    int result = 0;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     // recv from can
     zmq_msg_t msg;
@@ -338,6 +352,14 @@ class CANParser {
       if (first) {
         err = zmq_msg_recv(&msg, subscriber, 0);
         first = false;
+<<<<<<< HEAD
+=======
+
+        // When we timeout on the first message, return error
+        if (err < 0){
+          result = -1;
+        }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       } else {
         err = zmq_msg_recv(&msg, subscriber, ZMQ_DONTWAIT);
       }
@@ -352,13 +374,21 @@ class CANParser {
       cereal::Event::Reader event = cmsg.getRoot<cereal::Event>();
 
       auto cans = event.getCan();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       UpdateCans(sec, cans);
     }
 
     UpdateValid(sec);
+<<<<<<< HEAD
 
     zmq_msg_close(&msg);
+=======
+    zmq_msg_close(&msg);
+    return result;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 
   std::vector<SignalValue> query(uint64_t sec) {
@@ -401,11 +431,16 @@ extern "C" {
 void* can_init(int bus, const char* dbc_name,
                size_t num_message_options, const MessageParseOptions* message_options,
                size_t num_signal_options, const SignalParseOptions* signal_options,
+<<<<<<< HEAD
                bool sendcan, const char* tcp_addr) {
+=======
+               bool sendcan, const char* tcp_addr, int timeout) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   CANParser* ret = new CANParser(bus, std::string(dbc_name),
                                  (message_options ? std::vector<MessageParseOptions>(message_options, message_options+num_message_options)
                                   : std::vector<MessageParseOptions>{}),
                                  (signal_options ? std::vector<SignalParseOptions>(signal_options, signal_options+num_signal_options)
+<<<<<<< HEAD
                                   : std::vector<SignalParseOptions>{}), sendcan, std::string(tcp_addr));
   return (void*)ret;
 }
@@ -413,6 +448,15 @@ void* can_init(int bus, const char* dbc_name,
 void can_update(void* can, uint64_t sec, bool wait) {
   CANParser* cp = (CANParser*)can;
   cp->update(sec, wait);
+=======
+                                  : std::vector<SignalParseOptions>{}), sendcan, std::string(tcp_addr), timeout);
+  return (void*)ret;
+}
+
+int can_update(void* can, uint64_t sec, bool wait) {
+  CANParser* cp = (CANParser*)can;
+  return cp->update(sec, wait);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 size_t can_query(void* can, uint64_t sec, bool *out_can_valid, size_t out_values_size, SignalValue* out_values) {

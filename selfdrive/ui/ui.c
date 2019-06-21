@@ -19,6 +19,10 @@
 #include "nanovg_gl.h"
 #include "nanovg_gl_utils.h"
 
+<<<<<<< HEAD
+=======
+#include "common/messaging.h"
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #include "common/timing.h"
 #include "common/util.h"
 #include "common/swaglog.h"
@@ -35,10 +39,13 @@
 #include "cereal/gen/c/log.capnp.h"
 #include "slplay.h"
 
+<<<<<<< HEAD
 //BB include BBUIState def
 #include "bbuistate.h"
 //BB end
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #define STATUS_STOPPED 0
 #define STATUS_DISENGAGED 1
 #define STATUS_ENGAGED 2
@@ -52,6 +59,10 @@
 #define ALERTSIZE_FULL 3
 
 #define UI_BUF_COUNT 4
+<<<<<<< HEAD
+=======
+//#define SHOW_SPEEDLIMIT 1
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 //#define DEBUG_TURN
 
 //#define DEBUG_FPS
@@ -62,7 +73,10 @@ const int nav_w = 640;
 const int nav_ww= 760;
 const int sbr_w = 300;
 const int bdr_s = 30;
+<<<<<<< HEAD
 const int bdr_is = 30;
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 const int box_x = sbr_w+bdr_s;
 const int box_y = bdr_s;
 const int box_w = vwp_w-sbr_w-(bdr_s*2);
@@ -72,7 +86,11 @@ const int header_h = 420;
 const int footer_h = 280;
 const int footer_y = vwp_h-bdr_s-footer_h;
 
+<<<<<<< HEAD
 const int UI_FREQ = 60;   // Hz
+=======
+const int UI_FREQ = 30;   // Hz
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 const int MODEL_PATH_MAX_VERTICES_CNT = 98;
 const int MODEL_LANE_PATH_CNT = 3;
@@ -162,6 +180,7 @@ typedef struct UIScene {
   float awareness_status;
 
   uint64_t started_ts;
+<<<<<<< HEAD
   
   //BB CPU TEMP
   uint16_t maxCpuTemp;
@@ -171,6 +190,9 @@ typedef struct UIScene {
   float angleSteersDes;
   //BB END CPU TEMP
   bool brakeLights;
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // Used to show gps planner status
   bool gps_planner_active;
 
@@ -193,9 +215,12 @@ typedef struct {
 
 
 typedef struct UIState {
+<<<<<<< HEAD
   //BB define BBUIState
   BBUIState b;
   //BB end
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   pthread_mutex_t lock;
   pthread_cond_t bg_cond;
 
@@ -214,6 +239,7 @@ typedef struct UIState {
   int img_turn;
   int img_face;
   int img_map;
+<<<<<<< HEAD
   int img_brake;
 
   zsock_t *thermal_sock;
@@ -236,6 +262,20 @@ typedef struct UIState {
   void *map_data_sock_raw;
 
   zsock_t *uilayout_sock;
+=======
+
+  void *ctx;
+
+  void *thermal_sock_raw;
+  void *model_sock_raw;
+  void *controlsstate_sock_raw;
+  void *livecalibration_sock_raw;
+  void *radarstate_sock_raw;
+  void *livempc_sock_raw;
+  void *plus_sock_raw;
+  void *map_data_sock_raw;
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   void *uilayout_sock_raw;
 
   int plus_state;
@@ -280,14 +320,25 @@ typedef struct UIState {
   int volume_timeout;
   int speed_lim_off_timeout;
   int is_metric_timeout;
+<<<<<<< HEAD
+=======
+  int longitudinal_control_timeout;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   int limit_set_speed_timeout;
 
   int status;
   bool is_metric;
+<<<<<<< HEAD
   bool limit_set_speed;
   float speed_lim_off;
   bool is_ego_over_limit;
   bool passive;
+=======
+  bool longitudinal_control;
+  bool limit_set_speed;
+  float speed_lim_off;
+  bool is_ego_over_limit;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   char alert_type[64];
   char alert_sound[64];
   int alert_size;
@@ -300,7 +351,11 @@ typedef struct UIState {
 
   // Hints for re-calculations and redrawing
   bool model_changed;
+<<<<<<< HEAD
   bool livempc_or_live20_changed;
+=======
+  bool livempc_or_radarstate_changed;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   GLuint frame_vao[2], frame_vbo[2], frame_ibo[2];
   mat4 rear_frame_mat, front_frame_mat;
@@ -308,12 +363,17 @@ typedef struct UIState {
   model_path_vertices_data model_path_vertices[MODEL_LANE_PATH_CNT * 2];
 
   track_vertices_data track_vertices[2];
+<<<<<<< HEAD
 
 } UIState;
 
 #include "dashcam.h"
 #include "bbui.h"
 
+=======
+} UIState;
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 static int last_brightness = -1;
 static void set_brightness(UIState *s, int brightness) {
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -334,12 +394,24 @@ static void set_awake(UIState *s, bool awake) {
   if (s->awake != awake) {
     s->awake = awake;
 
+<<<<<<< HEAD
     if (awake) {
       LOG("awake normal");
       framebuffer_set_power(s->fb, HWC_POWER_MODE_NORMAL);
     } else {
       LOG("awake off");
       set_brightness(s, 0);
+=======
+    // TODO: replace command_awake and command_sleep with direct calls to android
+    if (awake) {
+      LOGW("awake normal");
+      system("service call window 18 i32 1");  // enable event processing
+      framebuffer_set_power(s->fb, HWC_POWER_MODE_NORMAL);
+    } else {
+      LOGW("awake off");
+      set_brightness(s, 0);
+      system("service call window 18 i32 0");  // disable event processing
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       framebuffer_set_power(s->fb, HWC_POWER_MODE_OFF);
     }
   }
@@ -359,6 +431,7 @@ static void set_do_exit(int sig) {
   do_exit = 1;
 }
 
+<<<<<<< HEAD
 static void read_speed_lim_off(UIState *s) {
   char *speed_lim_off = NULL;
   read_db_value(NULL, "SpeedLimitOffset", &speed_lim_off, NULL);
@@ -389,6 +462,44 @@ static void read_limit_set_speed(UIState *s) {
   }
   s->limit_set_speed_timeout =  2 * UI_FREQ; // 0.2Hz
 }
+=======
+static void read_param_bool(bool* param, char* param_name) {
+  char *s;
+  const int result = read_db_value(NULL, param_name, &s, NULL);
+  if (result == 0) {
+    *param = s[0] == '1';
+    free(s);
+  }
+}
+
+static void read_param_float(float* param, char* param_name) {
+  char *s;
+  const int result = read_db_value(NULL, param_name, &s, NULL);
+  if (result == 0) {
+    *param = strtod(s, NULL);
+    free(s);
+  }
+}
+
+static void read_param_bool_timeout(bool* param, char* param_name, int* timeout) {
+  if (*timeout > 0){
+    (*timeout)--;
+  } else {
+    read_param_bool(param, param_name);
+    *timeout = 2 * UI_FREQ; // 0.5Hz
+  }
+}
+
+static void read_param_float_timeout(float* param, char* param_name, int* timeout) {
+  if (*timeout > 0){
+    (*timeout)--;
+  } else {
+    read_param_float(param, param_name);
+    *timeout = 2 * UI_FREQ; // 0.5Hz
+  }
+}
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 static const char frame_vertex_shader[] =
   "attribute vec4 aPosition;\n"
   "attribute vec4 aTexCoord;\n"
@@ -492,6 +603,7 @@ static void ui_init(UIState *s) {
   pthread_mutex_init(&s->lock, NULL);
   pthread_cond_init(&s->bg_cond, NULL);
 
+<<<<<<< HEAD
   // init connections
 
   s->thermal_sock = zsock_new_sub(">tcp://127.0.0.1:8005", "");
@@ -529,6 +641,22 @@ static void ui_init(UIState *s) {
   s->map_data_sock = zsock_new_sub(">tcp://127.0.0.1:8065", "");
   assert(s->map_data_sock);
   s->map_data_sock_raw = zsock_resolve(s->map_data_sock);
+=======
+  s->ctx = zmq_ctx_new();
+
+  s->thermal_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8005");
+  s->model_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8009");
+  s->controlsstate_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8007");
+  s->uilayout_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8060");
+  s->livecalibration_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8019");
+  s->radarstate_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8012");
+  s->livempc_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8035");
+  s->plus_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8037");
+
+#ifdef SHOW_SPEEDLIMIT
+  s->map_data_sock_raw = sub_sock(s->ctx, "tcp://127.0.0.1:8065");
+#endif
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   s->ipc_fd = -1;
 
@@ -564,9 +692,12 @@ static void ui_init(UIState *s) {
   assert(s->img_map >= 0);
   s->img_map = nvgCreateImage(s->vg, "../assets/img_map.png", 1);
 
+<<<<<<< HEAD
   assert(s->img_brake >= 0);
   s->img_brake = nvgCreateImage(s->vg, "../assets/img_brake_disc.png", 1);
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // init gl
   s->frame_program = load_program(frame_vertex_shader, frame_fragment_shader);
   assert(s->frame_program);
@@ -590,6 +721,7 @@ static void ui_init(UIState *s) {
 
   assert(glGetError() == GL_NO_ERROR);
 
+<<<<<<< HEAD
   {
     char *value;
     const int result = read_db_value(NULL, "Passive", &value, NULL);
@@ -598,6 +730,8 @@ static void ui_init(UIState *s) {
       free(value);
     }
   }
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   for(int i = 0; i < 2; i++) {
     float x1, x2, y1, y2;
     if (i == 1) {
@@ -639,7 +773,11 @@ static void ui_init(UIState *s) {
   }
 
   s->model_changed = false;
+<<<<<<< HEAD
   s->livempc_or_live20_changed = false;
+=======
+  s->livempc_or_radarstate_changed = false;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   s->front_frame_mat = matmul(device_transform, full_to_wide_frame_transform);
   s->rear_frame_mat = matmul(device_transform, frame_transform);
@@ -697,11 +835,23 @@ static void ui_init_vision(UIState *s, const VisionStreamBufs back_bufs,
     0.0, 0.0, 0.0, 1.0,
   }};
 
+<<<<<<< HEAD
   read_speed_lim_off(s);
   read_is_metric(s);
   read_limit_set_speed(s);
   s->is_metric_timeout = UI_FREQ / 2; // offset so values isn't read together with limit offset
   s->limit_set_speed_timeout = UI_FREQ; // offset so values isn't read together with limit offset
+=======
+  read_param_float(&s->speed_lim_off, "SpeedLimitOffset");
+  read_param_bool(&s->is_metric, "IsMetric");
+  read_param_bool(&s->longitudinal_control, "LongitudinalControl");
+  read_param_bool(&s->limit_set_speed, "LimitSetSpeed");
+
+  // Set offsets so params don't get read at the same time
+  s->longitudinal_control_timeout = UI_FREQ / 3;
+  s->is_metric_timeout = UI_FREQ / 2;
+  s->limit_set_speed_timeout = UI_FREQ;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 static void ui_draw_transformed_box(UIState *s, uint32_t color) {
@@ -790,11 +940,14 @@ static void draw_chevron(UIState *s, float x_in, float y_in, float sz,
   nvgBeginPath(s->vg);
   float g_xo = sz/5;
   float g_yo = sz/10;
+<<<<<<< HEAD
   //BB added for printing the car
   if (s->b.tri_state_switch == 2) {
     nvgRestore(s->vg);
     bb_ui_draw_car(s);
   } else {
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   if (x >= 0 && y >= 0.) {
     nvgMoveTo(s->vg, x+(sz*1.35)+g_xo, y+sz+g_yo);
     nvgLineTo(s->vg, x, y-g_xo);
@@ -816,12 +969,20 @@ static void draw_chevron(UIState *s, float x_in, float y_in, float sz,
   }
   nvgFillColor(s->vg, fillColor);
   nvgFill(s->vg);
+<<<<<<< HEAD
   }
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   nvgRestore(s->vg);
 }
 
 static void ui_draw_lane_line(UIState *s, const model_path_vertices_data *pvd, NVGcolor color) {
   const UIScene *scene = &s->scene;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   nvgSave(s->vg);
   nvgTranslate(s->vg, 240.0f, 0.0); // rgb-box space
   nvgTranslate(s->vg, -1440.0f / 2, -1080.0f / 2); // zoom 2x
@@ -992,6 +1153,7 @@ static void draw_frame(UIState *s) {
     out_mat = &s->rear_frame_mat;
   }
   glActiveTexture(GL_TEXTURE0);
+<<<<<<< HEAD
   //BB added to suppress video printing
   if (s->b.tri_state_switch != 2) {
     if (s->scene.frontview && s->cur_vision_front_idx >= 0) {
@@ -1001,6 +1163,13 @@ static void draw_frame(UIState *s) {
     }
   }
   //BB end  
+=======
+  if (s->scene.frontview && s->cur_vision_front_idx >= 0) {
+    glBindTexture(GL_TEXTURE_2D, s->frame_front_texs[s->cur_vision_front_idx]);
+  } else if (!scene->frontview && s->cur_vision_idx >= 0) {
+    glBindTexture(GL_TEXTURE_2D, s->frame_texs[s->cur_vision_idx]);
+  }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   glUseProgram(s->frame_program);
   glUniform1i(s->frame_texture_loc, 0);
@@ -1051,11 +1220,14 @@ static void update_all_lane_lines_data(UIState *s, const PathData path, model_pa
 }
 
 static void ui_draw_lane(UIState *s, const PathData *path, model_path_vertices_data *pstart, NVGcolor color) {
+<<<<<<< HEAD
   //BB added to make the line blue
   if (s->b.tri_state_switch == 2) {
     color = nvgRGBA(66, 220, 244,250);
   }
   //BB end
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   ui_draw_lane_line(s, pstart, color);
   float var = min(path->std, 0.7);
   color.a /= 4;
@@ -1065,10 +1237,13 @@ static void ui_draw_lane(UIState *s, const PathData *path, model_path_vertices_d
 
 static void ui_draw_vision_lanes(UIState *s) {
   const UIScene *scene = &s->scene;
+<<<<<<< HEAD
   //BB add to draw our lanes
   if (s->b.tri_state_switch == 2) {
     bb_draw_lane_fill(s);
   }
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   model_path_vertices_data *pvd = &s->model_path_vertices[0];
   if(s->model_changed) {
     update_all_lane_lines_data(s, scene->model.left_lane, pvd);
@@ -1087,9 +1262,15 @@ static void ui_draw_vision_lanes(UIState *s) {
       pvd + MODEL_LANE_PATH_CNT,
       nvgRGBAf(1.0, 1.0, 1.0, scene->model.right_lane.prob));
 
+<<<<<<< HEAD
   if(s->livempc_or_live20_changed) {
     update_all_track_data(s);
     s->livempc_or_live20_changed = false;
+=======
+  if(s->livempc_or_radarstate_changed) {
+    update_all_track_data(s);
+    s->livempc_or_radarstate_changed = false;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
   // Draw vision path
   ui_draw_track(s, false, &s->track_vertices[0]);
@@ -1129,6 +1310,13 @@ static void ui_draw_world(UIState *s) {
 }
 
 static void ui_draw_vision_maxspeed(UIState *s) {
+<<<<<<< HEAD
+=======
+  /*if (!s->longitudinal_control){
+    return;
+  }*/
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   const UIScene *scene = &s->scene;
   int ui_viz_rx = scene->ui_viz_rx;
   int ui_viz_rw = scene->ui_viz_rw;
@@ -1150,6 +1338,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   bool is_set_over_limit = is_speedlim_valid && s->scene.engaged &&
                        is_cruise_set && maxspeed_calc > (speedlim_calc + speed_lim_off);
 
+<<<<<<< HEAD
   int viz_maxspeed_w = 180;
   int viz_maxspeed_h = 202;
   int viz_maxspeed_x = (ui_viz_rx + (bdr_s*2));
@@ -1157,6 +1346,20 @@ static void ui_draw_vision_maxspeed(UIState *s) {
   int viz_maxspeed_xo = 0;
   viz_maxspeed_w += viz_maxspeed_xo;
   //viz_maxspeed_x += viz_maxspeed_w - (viz_maxspeed_xo *2);
+=======
+  int viz_maxspeed_w = 184;
+  int viz_maxspeed_h = 202;
+  int viz_maxspeed_x = (ui_viz_rx + (bdr_s*2));
+  int viz_maxspeed_y = (box_y + (bdr_s*1.5));
+  int viz_maxspeed_xo = 180;
+
+#ifdef SHOW_SPEEDLIMIT
+  viz_maxspeed_w += viz_maxspeed_xo;
+  viz_maxspeed_x += viz_maxspeed_w - (viz_maxspeed_xo * 2);
+#else
+  viz_maxspeed_xo = 0;
+#endif
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   // Draw Background
   nvgBeginPath(s->vg);
@@ -1208,9 +1411,12 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     nvgText(s->vg, viz_maxspeed_x+(viz_maxspeed_xo/2)+(viz_maxspeed_w/2), 242, "N/A", NULL);
   }
 
+<<<<<<< HEAD
   //BB START: add new measures panel  const int bb_dml_w = 180;
 	bb_ui_draw_UI(s) ;
   //BB END: add new measures panel
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #ifdef DEBUG_TURN
   if (s->scene.decel_for_turn && s->scene.engaged){
     int v_curvature = s->scene.v_curvature * 2.2369363 + 0.5;
@@ -1354,8 +1560,13 @@ static void ui_draw_vision_event(UIState *s) {
   const int viz_event_h = (header_h - (bdr_s*1.5));
   if (s->scene.decel_for_turn && s->scene.engaged && s->limit_set_speed) {
     // draw winding road sign
+<<<<<<< HEAD
     const int img_turn_size = 160;
     const int img_turn_x = viz_event_x-(img_turn_size/4)+80;
+=======
+    const int img_turn_size = 160*1.5;
+    const int img_turn_x = viz_event_x-(img_turn_size/4);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     const int img_turn_y = viz_event_y+bdr_s-25;
     float img_turn_alpha = 1.0f;
     nvgBeginPath(s->vg);
@@ -1372,7 +1583,10 @@ static void ui_draw_vision_event(UIState *s) {
     const int img_wheel_size = bg_wheel_size*1.5;
     const int img_wheel_x = bg_wheel_x-(img_wheel_size/2);
     const int img_wheel_y = bg_wheel_y-25;
+<<<<<<< HEAD
     const float img_rotation = s->scene.angleSteers/180*3.141592;
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     float img_wheel_alpha = 0.1f;
     bool is_engaged = (s->status == STATUS_ENGAGED);
     bool is_warning = (s->status == STATUS_WARNING);
@@ -1390,6 +1604,7 @@ static void ui_draw_vision_event(UIState *s) {
       nvgFill(s->vg);
       img_wheel_alpha = 1.0f;
     }
+<<<<<<< HEAD
     nvgSave(s->vg);
     nvgTranslate(s->vg,bg_wheel_x,(bg_wheel_y + (bdr_s*1.5)));
     nvgRotate(s->vg,-img_rotation);
@@ -1400,6 +1615,14 @@ static void ui_draw_vision_event(UIState *s) {
     nvgFillPaint(s->vg, imgPaint);
     nvgFill(s->vg);
     nvgRestore(s->vg);
+=======
+    nvgBeginPath(s->vg);
+    NVGpaint imgPaint = nvgImagePattern(s->vg, img_wheel_x, img_wheel_y,
+      img_wheel_size, img_wheel_size, 0, s->img_wheel, img_wheel_alpha);
+    nvgRect(s->vg, img_wheel_x, img_wheel_y, img_wheel_size, img_wheel_size);
+    nvgFillPaint(s->vg, imgPaint);
+    nvgFill(s->vg);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 }
 
@@ -1455,6 +1678,7 @@ static void ui_draw_vision_face(UIState *s) {
   nvgFill(s->vg);
 }
 
+<<<<<<< HEAD
 static void ui_draw_vision_brake(UIState *s) {
   const UIScene *scene = &s->scene;
   const int brake_size = 96;
@@ -1482,6 +1706,8 @@ static void ui_draw_vision_brake(UIState *s) {
   nvgFill(s->vg);
 }
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 static void ui_draw_vision_header(UIState *s) {
   const UIScene *scene = &s->scene;
   int ui_viz_rx = scene->ui_viz_rx;
@@ -1497,7 +1723,14 @@ static void ui_draw_vision_header(UIState *s) {
   nvgFill(s->vg);
 
   ui_draw_vision_maxspeed(s);
+<<<<<<< HEAD
   //ui_draw_vision_speedlimit(s);
+=======
+
+#ifdef SHOW_SPEEDLIMIT
+  ui_draw_vision_speedlimit(s);
+#endif
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   ui_draw_vision_speed(s);
   ui_draw_vision_event(s);
 }
@@ -1511,8 +1744,15 @@ static void ui_draw_vision_footer(UIState *s) {
   nvgRect(s->vg, ui_viz_rx, footer_y, ui_viz_rw, footer_h);
 
   ui_draw_vision_face(s);
+<<<<<<< HEAD
   ui_draw_vision_map(s);
   ui_draw_vision_brake(s);
+=======
+
+#ifdef SHOW_SPEEDLIMIT
+  ui_draw_vision_map(s);
+#endif
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 static void ui_draw_vision_alert(UIState *s, int va_size, int va_color,
@@ -1589,7 +1829,11 @@ static void ui_draw_vision(UIState *s) {
   glDisable(GL_SCISSOR_TEST);
 
   glClear(GL_STENCIL_BUFFER_BIT);
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   nvgBeginFrame(s->vg, s->fb_w, s->fb_h, 1.0f);
   nvgSave(s->vg);
 
@@ -1600,7 +1844,10 @@ static void ui_draw_vision(UIState *s) {
   nvgScale(s->vg, (float)viz_w / s->fb_w, (float)inner_height / s->fb_h);
   if (!scene->frontview && !scene->fullview) {
     ui_draw_world(s);
+<<<<<<< HEAD
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 
   nvgRestore(s->vg);
@@ -1683,16 +1930,22 @@ static ModelData read_model(cereal_ModelData_ptr modelp) {
 }
 
 static void update_status(UIState *s, int status) {
+<<<<<<< HEAD
   //BB Variable for the old status
   int old_status = s->status;
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   if (s->status != status) {
     s->status = status;
     // wake up bg thread to change
     pthread_cond_signal(&s->bg_cond);
+<<<<<<< HEAD
     //BB add sound
     if ((old_status != STATUS_STOPPED) || (s->status != STATUS_DISENGAGED)) {
       bb_ui_play_sound(s,s->status);
     }
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 }
 
@@ -1700,8 +1953,11 @@ static void ui_update(UIState *s) {
   int err;
 
   if (s->vision_connect_firstrun) {
+<<<<<<< HEAD
     
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     // cant run this in connector thread because opengl.
     // do this here for now in lieu of a run_on_main_thread event
 
@@ -1795,7 +2051,10 @@ static void ui_update(UIState *s) {
       close(s->ipc_fd);
       s->ipc_fd = -1;
       s->vision_connected = false;
+<<<<<<< HEAD
       
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       return;
     }
     if (rp.type == VIPC_STREAM_ACQUIRE) {
@@ -1834,13 +2093,24 @@ static void ui_update(UIState *s) {
   }
   // peek and consume all events in the zmq queue, then return.
   while(true) {
+<<<<<<< HEAD
     polls[0].socket = s->live100_sock_raw;
+=======
+    int plus_sock_num = 7;
+    int num_polls = 8;
+
+    polls[0].socket = s->controlsstate_sock_raw;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     polls[0].events = ZMQ_POLLIN;
     polls[1].socket = s->livecalibration_sock_raw;
     polls[1].events = ZMQ_POLLIN;
     polls[2].socket = s->model_sock_raw;
     polls[2].events = ZMQ_POLLIN;
+<<<<<<< HEAD
     polls[3].socket = s->live20_sock_raw;
+=======
+    polls[3].socket = s->radarstate_sock_raw;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     polls[3].events = ZMQ_POLLIN;
     polls[4].socket = s->livempc_sock_raw;
     polls[4].events = ZMQ_POLLIN;
@@ -1848,6 +2118,7 @@ static void ui_update(UIState *s) {
     polls[5].events = ZMQ_POLLIN;
     polls[6].socket = s->uilayout_sock_raw;
     polls[6].events = ZMQ_POLLIN;
+<<<<<<< HEAD
     polls[7].socket = s->map_data_sock_raw;
     polls[7].events = ZMQ_POLLIN;
     polls[8].socket = s->plus_sock_raw; // plus_sock should be last
@@ -1855,6 +2126,18 @@ static void ui_update(UIState *s) {
     int num_polls = 9;
     
     
+=======
+
+#ifdef SHOW_SPEEDLIMIT
+    plus_sock_num++;
+    num_polls++;
+    polls[7].socket = s->map_data_sock_raw;
+    polls[7].events = ZMQ_POLLIN;
+#endif
+
+    polls[plus_sock_num].socket = s->plus_sock_raw; // plus_sock should be last
+    polls[plus_sock_num].events = ZMQ_POLLIN;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     int ret = zmq_poll(polls, num_polls, 0);
     if (ret < 0) {
@@ -1867,12 +2150,20 @@ static void ui_update(UIState *s) {
 
     if (polls[0].revents || polls[1].revents || polls[2].revents ||
         polls[3].revents || polls[4].revents || polls[6].revents ||
+<<<<<<< HEAD
         polls[7].revents || polls[8].revents){
+=======
+        polls[plus_sock_num].revents) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       // awake on any (old) activity
       set_awake(s, true);
     }
 
+<<<<<<< HEAD
     if (polls[8].revents) {
+=======
+    if (polls[plus_sock_num].revents) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       // plus socket
       zmq_msg_t msg;
       err = zmq_msg_init(&msg);
@@ -1913,20 +2204,30 @@ static void ui_update(UIState *s) {
       struct cereal_Event eventd;
       cereal_read_Event(&eventd, eventp);
       double t = millis_since_boot();
+<<<<<<< HEAD
       if (eventd.which == cereal_Event_live100) {
         struct cereal_Live100Data datad;
         cereal_read_Live100Data(&datad, eventd.live100);
         s->scene.brakeLights = datad.brakeLights;
+=======
+      if (eventd.which == cereal_Event_controlsState) {
+        struct cereal_ControlsState datad;
+        cereal_read_ControlsState(&datad, eventd.controlsState);
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         if (datad.vCruise != s->scene.v_cruise) {
           s->scene.v_cruise_update_ts = eventd.logMonoTime;
         }
         s->scene.v_cruise = datad.vCruise;
         s->scene.v_ego = datad.vEgo;
+<<<<<<< HEAD
         //BB get angles
         s->b.angleSteers = datad.angleSteers;
 	s->scene.angleSteers = datad.angleSteers;
         s->b.angleSteersDes = datad.angleSteersDes;
         //BB END
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         s->scene.curvature = datad.curvature;
         s->scene.engaged = datad.enabled;
         s->scene.engageable = datad.engageable;
@@ -1984,6 +2285,7 @@ static void ui_update(UIState *s) {
         s->scene.alert_ts = eventd.logMonoTime;
 
         s->scene.alert_size = datad.alertSize;
+<<<<<<< HEAD
         if (datad.alertSize == cereal_Live100Data_AlertSize_none) {
           s->alert_size = ALERTSIZE_NONE;
         } else if (datad.alertSize == cereal_Live100Data_AlertSize_small) {
@@ -1997,6 +2299,21 @@ static void ui_update(UIState *s) {
         if (datad.alertStatus == cereal_Live100Data_AlertStatus_userPrompt) {
           update_status(s, STATUS_WARNING);
         } else if (datad.alertStatus == cereal_Live100Data_AlertStatus_critical) {
+=======
+        if (datad.alertSize == cereal_ControlsState_AlertSize_none) {
+          s->alert_size = ALERTSIZE_NONE;
+        } else if (datad.alertSize == cereal_ControlsState_AlertSize_small) {
+          s->alert_size = ALERTSIZE_SMALL;
+        } else if (datad.alertSize == cereal_ControlsState_AlertSize_mid) {
+          s->alert_size = ALERTSIZE_MID;
+        } else if (datad.alertSize == cereal_ControlsState_AlertSize_full) {
+          s->alert_size = ALERTSIZE_FULL;
+        }
+
+        if (datad.alertStatus == cereal_ControlsState_AlertStatus_userPrompt) {
+          update_status(s, STATUS_WARNING);
+        } else if (datad.alertStatus == cereal_ControlsState_AlertStatus_critical) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
           update_status(s, STATUS_ALERT);
         } else if (datad.enabled) {
           update_status(s, STATUS_ENGAGED);
@@ -2021,16 +2338,28 @@ static void ui_update(UIState *s) {
             }
           }
         }
+<<<<<<< HEAD
       } else if (eventd.which == cereal_Event_live20) {
         struct cereal_Live20Data datad;
         cereal_read_Live20Data(&datad, eventd.live20);
         struct cereal_Live20Data_LeadData leaddatad;
         cereal_read_Live20Data_LeadData(&leaddatad, datad.leadOne);
+=======
+      } else if (eventd.which == cereal_Event_radarState) {
+        struct cereal_RadarState datad;
+        cereal_read_RadarState(&datad, eventd.radarState);
+        struct cereal_RadarState_LeadData leaddatad;
+        cereal_read_RadarState_LeadData(&leaddatad, datad.leadOne);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         s->scene.lead_status = leaddatad.status;
         s->scene.lead_d_rel = leaddatad.dRel;
         s->scene.lead_y_rel = leaddatad.yRel;
         s->scene.lead_v_rel = leaddatad.vRel;
+<<<<<<< HEAD
         s->livempc_or_live20_changed = true;
+=======
+        s->livempc_or_radarstate_changed = true;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       } else if (eventd.which == cereal_Event_liveCalibration) {
         s->scene.world_objects_visible = true;
         struct cereal_LiveCalibrationData datad;
@@ -2070,7 +2399,11 @@ static void ui_update(UIState *s) {
         for (int i = 0; i < 50; i++){
           s->scene.mpc_y[i] = capn_to_f32(capn_get32(y_list, i));
         }
+<<<<<<< HEAD
         s->livempc_or_live20_changed = true;
+=======
+        s->livempc_or_radarstate_changed = true;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       } else if (eventd.which == cereal_Event_thermal) {
         struct cereal_ThermalData datad;
         cereal_read_ThermalData(&datad, eventd.thermal);
@@ -2083,6 +2416,7 @@ static void ui_update(UIState *s) {
         }
 
         s->scene.started_ts = datad.startedTs;
+<<<<<<< HEAD
 
         //BB CPU TEMP
 		    s->b.maxCpuTemp=datad.cpu0;
@@ -2101,6 +2435,8 @@ static void ui_update(UIState *s) {
         s->b.maxBatTemp=datad.bat;
         s->b.freeSpace=datad.freeSpace;
         //BB END CPU TEMP
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       } else if (eventd.which == cereal_Event_uiLayoutState) {
         struct cereal_UiLayoutState datad;
         cereal_read_UiLayoutState(&datad, eventd.uiLayoutState);
@@ -2124,7 +2460,11 @@ static void ui_update(UIState *s) {
         s->scene.speedlimit = datad.speedLimit;
         s->scene.speedlimit_valid = datad.speedLimitValid;
         s->scene.map_valid = datad.mapValid;
+<<<<<<< HEAD
       } 
+=======
+      }
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       capn_free(&ctx);
       zmq_msg_close(&msg);
     }
@@ -2170,6 +2510,10 @@ static int vision_subscribe(int fd, VisionPacket *rp, int type) {
 
 static void* vision_connect_thread(void *args) {
   int err;
+<<<<<<< HEAD
+=======
+  set_thread_name("vision_connect");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   UIState *s = args;
   while (!do_exit) {
@@ -2207,6 +2551,10 @@ static void* vision_connect_thread(void *args) {
 
 static void* light_sensor_thread(void *args) {
   int err;
+<<<<<<< HEAD
+=======
+  set_thread_name("light_sensor");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   UIState *s = args;
   s->light_sensor = 0.0;
@@ -2223,8 +2571,16 @@ static void* light_sensor_thread(void *args) {
 
   int SENSOR_LIGHT = 7;
 
+<<<<<<< HEAD
   device->activate(device, SENSOR_LIGHT, 0);
   device->activate(device, SENSOR_LIGHT, 1);
+=======
+  err = device->activate(device, SENSOR_LIGHT, 0);
+  if (err != 0) goto fail;
+  err = device->activate(device, SENSOR_LIGHT, 1);
+  if (err != 0) goto fail;
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   device->setDelay(device, SENSOR_LIGHT, ms2ns(100));
 
   while (!do_exit) {
@@ -2241,11 +2597,23 @@ static void* light_sensor_thread(void *args) {
   }
 
   return NULL;
+<<<<<<< HEAD
+=======
+
+fail:
+  LOGE("LIGHT SENSOR IS MISSING");
+  s->light_sensor = 255;
+  return NULL;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 
 static void* bg_thread(void* args) {
   UIState *s = args;
+<<<<<<< HEAD
+=======
+  set_thread_name("bg");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   EGLDisplay bg_display;
   EGLSurface bg_surface;
@@ -2257,6 +2625,7 @@ static void* bg_thread(void* args) {
   int bg_status = -1;
   while(!do_exit) {
     pthread_mutex_lock(&s->lock);
+<<<<<<< HEAD
     //BB Change of background based on our color
     int actual_status = bb_get_status(s);
     if (bg_status == actual_status) {
@@ -2265,6 +2634,13 @@ static void* bg_thread(void* args) {
     }
     bg_status = actual_status;
     //BB End of background color change
+=======
+    if (bg_status == s->status) {
+      // will always be signaled if it changes?
+      pthread_cond_wait(&s->bg_cond, &s->lock);
+    }
+    bg_status = s->status;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     pthread_mutex_unlock(&s->lock);
 
     assert(bg_status < ARRAYSIZE(bg_colors));
@@ -2296,7 +2672,11 @@ int is_leon() {
   return strstr(str, "letv") != NULL;
 }
 
+<<<<<<< HEAD
 int main() {
+=======
+int main(int argc, char* argv[]) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   int err;
   setpriority(PRIO_PROCESS, 0, -14);
 
@@ -2306,8 +2686,11 @@ int main() {
   UIState uistate;
   UIState *s = &uistate;
   ui_init(s);
+<<<<<<< HEAD
   //BB init our UI
   bb_ui_init(s);
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   pthread_t connect_thread_handle;
   err = pthread_create(&connect_thread_handle, NULL,
@@ -2323,7 +2706,11 @@ int main() {
   err = pthread_create(&bg_thread_handle, NULL,
                        bg_thread, s);
   assert(err == 0);
+<<<<<<< HEAD
   s->b.touch_last_width = s->scene.ui_viz_rw;
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   TouchState touch = {0};
   touch_init(&touch);
   s->touch_fd = touch.fd;
@@ -2336,16 +2723,26 @@ int main() {
   }
 
   // light sensor scaling params
+<<<<<<< HEAD
   const int EON = (access("/EON", F_OK) != -1);
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   const int LEON = is_leon();
 
   const float BRIGHTNESS_B = LEON? 10.0 : 5.0;
   const float BRIGHTNESS_M = LEON? 2.6 : 1.3;
+<<<<<<< HEAD
   #define NEO_BRIGHTNESS 100
 
   float smooth_brightness = BRIGHTNESS_B;
 
   set_volume(s, 0);
+=======
+
+  float smooth_brightness = BRIGHTNESS_B;
+
+  set_volume(s, 13);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #ifdef DEBUG_FPS
   vipc_t1 = millis_since_boot();
   double t1 = millis_since_boot();
@@ -2360,6 +2757,7 @@ int main() {
     }
     pthread_mutex_lock(&s->lock);
 
+<<<<<<< HEAD
     if (EON) {
       // light sensor is only exposed on EONs
 
@@ -2376,6 +2774,13 @@ int main() {
     int touch_x = -1, touch_y = -1;
     int dc_touch_x = -1, dc_touch_y = -1;
     s->b.touch_timeout = max(s->b.touch_timeout -1,0);
+=======
+    // light sensor is only exposed on EONs
+    float clipped_brightness = (s->light_sensor*BRIGHTNESS_M) + BRIGHTNESS_B;
+    if (clipped_brightness > 255) clipped_brightness = 255;
+    smooth_brightness = clipped_brightness * 0.01 + smooth_brightness * 0.99;
+    set_brightness(s, (int)smooth_brightness);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     if (!s->vision_connected) {
       // Car is not started, keep in idle state and awake on touch events
@@ -2387,12 +2792,23 @@ int main() {
         LOGW("poll failed (%d)", ret);
       else if (ret > 0) {
         // awake on any touch
+<<<<<<< HEAD
         touched = touch_read(&touch, &touch_x, &touch_y);
       }
     } else {
       // Car started, fetch a new rgb image from ipc and peek for zmq events.
       touched = touch_poll(&touch, &touch_x, &touch_y, s->awake ? 20 : 500);
       //touched = touch_read(&touch, &touch_x, &touch_y);
+=======
+        int touch_x = -1, touch_y = -1;
+        int touched = touch_read(&touch, &touch_x, &touch_y);
+        if (touched == 1) {
+          set_awake(s, true);
+        }
+      }
+    } else {
+      // Car started, fetch a new rgb image from ipc and peek for zmq events.
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       ui_update(s);
       if(!s->vision_connected) {
         // Visiond process is just stopped, force a redraw to make screen blank again.
@@ -2401,6 +2817,7 @@ int main() {
         should_swap = true;
       }
     }
+<<<<<<< HEAD
     if (touched == 1) {
       set_awake(s, true);
       s->b.touch_last = true;
@@ -2425,6 +2842,8 @@ int main() {
     //BB Update our cereal polls
     bb_ui_poll_update(s);
     
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     // manage wakefulness
     if (s->awake_timeout > 0) {
       s->awake_timeout--;
@@ -2433,7 +2852,10 @@ int main() {
     }
     // Don't waste resources on drawing in case screen is off or car is not started.
     if (s->awake && s->vision_connected) {
+<<<<<<< HEAD
       dashcam(s, dc_touch_x, dc_touch_y);
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       ui_draw(s);
       glFinish();
       should_swap = true;
@@ -2456,6 +2878,7 @@ int main() {
       set_volume(s, volume);
     }
 
+<<<<<<< HEAD
     if (s->speed_lim_off_timeout > 0) {
       s->speed_lim_off_timeout--;
     } else {
@@ -2473,6 +2896,12 @@ int main() {
     } else {
       read_limit_set_speed(s);
     }
+=======
+    read_param_bool_timeout(&s->is_metric, "IsMetric", &s->is_metric_timeout);
+    read_param_bool_timeout(&s->longitudinal_control, "LongitudinalControl", &s->longitudinal_control_timeout);
+    read_param_bool_timeout(&s->limit_set_speed, "LimitSetSpeed", &s->limit_set_speed_timeout);
+    read_param_float_timeout(&s->speed_lim_off, "SpeedLimitOffset", &s->limit_set_speed_timeout);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     pthread_mutex_unlock(&s->lock);
 

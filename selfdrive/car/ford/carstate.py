@@ -29,7 +29,11 @@ def get_can_parser(CP):
   checks = [
   ]
 
+<<<<<<< HEAD
   return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0)
+=======
+  return CANParser(DBC[CP.carFingerprint]['pt'], signals, checks, 0, timeout=100)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class CarState(object):

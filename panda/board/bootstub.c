@@ -12,11 +12,22 @@
   #include "stm32f2xx_hal_gpio_ex.h"
 #endif
 
+<<<<<<< HEAD
 #include "libc.h"
 #include "provision.h"
 
 #include "drivers/drivers.h"
 
+=======
+// default since there's no serial
+int puts(const char *a) { return 0; }
+void puth(unsigned int i) {}
+
+#include "libc.h"
+#include "provision.h"
+
+#include "drivers/clock.h"
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #include "drivers/llgpio.h"
 #include "gpio.h"
 
@@ -24,6 +35,7 @@
 #include "drivers/usb.h"
 //#include "drivers/uart.h"
 
+<<<<<<< HEAD
 #ifdef PEDAL
 #define CUSTOM_CAN_INTERRUPTS
 #include "safety.h"
@@ -33,6 +45,8 @@
 int puts(const char *a) { return 0; }
 void puth(unsigned int i) {}
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #include "crypto/rsa.h"
 #include "crypto/sha.h"
 

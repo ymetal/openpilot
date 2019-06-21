@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from common.numpy_fast import interp
 from common.realtime import sec_since_boot
 from selfdrive.config import Conversions as CV
@@ -8,6 +9,18 @@ from selfdrive.car.modules.ALCA_module import ALCAController
 from selfdrive.car.gm.values import DBC, SUPERCRUISE_CARS, AccState
 from selfdrive.can.packer import CANPacker
 
+=======
+from cereal import car
+from common.numpy_fast import interp
+from common.realtime import sec_since_boot
+from selfdrive.config import Conversions as CV
+from selfdrive.car import apply_std_steer_torque_limits
+from selfdrive.car.gm import gmcan
+from selfdrive.car.gm.values import DBC, SUPERCRUISE_CARS
+from selfdrive.can.packer import CANPacker
+
+VisualAlert = car.CarControl.HUDControl.VisualAlert
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 class CarControllerParams():
   def __init__(self, car_fingerprint):
@@ -27,7 +40,11 @@ class CarControllerParams():
     self.STEER_DRIVER_ALLOWANCE = 50   # allowed driver torque before start limiting
     self.STEER_DRIVER_MULTIPLIER = 4   # weight driver torque heavily
     self.STEER_DRIVER_FACTOR = 100     # from dbc
+<<<<<<< HEAD
     self.NEAR_STOP_BRAKE_PHASE = 1.5 # m/s, more aggressive braking near full stop
+=======
+    self.NEAR_STOP_BRAKE_PHASE = 0.5 # m/s, more aggressive braking near full stop
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # Takes case of "Service Adaptive Cruise" and "Service Front Camera"
     # dashboard messages.
@@ -36,11 +53,19 @@ class CarControllerParams():
 
     # pedal lookups, only for Volt
     MAX_GAS = 3072              # Only a safety limit
+<<<<<<< HEAD
     self.ZERO_GAS = 2048
     MAX_BRAKE = 350             # Should be around 3.5m/s^2, including regen
     self.MAX_ACC_REGEN = 1404  # ACC Regen braking is slightly less powerful than max regen paddle
     self.GAS_LOOKUP_BP = [-0.25, 0., 0.5]
     self.GAS_LOOKUP_V = [self.MAX_ACC_REGEN, self.ZERO_GAS, MAX_GAS]
+=======
+    ZERO_GAS = 2048
+    MAX_BRAKE = 350             # Should be around 3.5m/s^2, including regen
+    self.MAX_ACC_REGEN = 1404  # ACC Regen braking is slightly less powerful than max regen paddle
+    self.GAS_LOOKUP_BP = [-0.25, 0., 0.5]
+    self.GAS_LOOKUP_V = [self.MAX_ACC_REGEN, ZERO_GAS, MAX_GAS]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.BRAKE_LOOKUP_BP = [-1., -0.25]
     self.BRAKE_LOOKUP_V = [MAX_BRAKE, 0]
 
@@ -60,19 +85,36 @@ def actuator_hystereses(final_pedal, pedal_steady):
 
   return final_pedal, pedal_steady
 
+<<<<<<< HEAD
 
 class CarController(object):
   def __init__(self, canbus, car_fingerprint, allow_controls):
+=======
+def process_hud_alert(hud_alert):
+  # initialize to no alert
+  steer = 0
+  if hud_alert == VisualAlert.steerRequired:
+    steer = 1
+  return steer
+
+class CarController(object):
+  def __init__(self, canbus, car_fingerprint):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.pedal_steady = 0.
     self.start_time = sec_since_boot()
     self.chime = 0
     self.steer_idx = 0
     self.apply_steer_last = 0
     self.car_fingerprint = car_fingerprint
+<<<<<<< HEAD
     self.allow_controls = allow_controls
     self.lka_icon_status_last = (False, False)
     self.ALCA = ALCAController(self,True,False)  # Enabled  True and SteerByAngle only False
     
+=======
+    self.lka_icon_status_last = (False, False)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # Setup detection helper. Routes commands to
     # an appropriate CAN bus number.
     self.canbus = canbus
@@ -81,6 +123,7 @@ class CarController(object):
     self.packer_pt = CANPacker(DBC[car_fingerprint]['pt'])
     self.packer_ch = CANPacker(DBC[car_fingerprint]['chassis'])
 
+<<<<<<< HEAD
   def update(self, sendcan, enabled, CS, frame, actuators, \
              hud_v_cruise, hud_show_lanes, hud_show_car, chime, chime_cnt):
     """ Controls thread """
@@ -109,25 +152,46 @@ class CarController(object):
       return
 
     P = self.params
+=======
+  def update(self, enabled, CS, frame, actuators, \
+             hud_v_cruise, hud_show_lanes, hud_show_car, chime, chime_cnt, hud_alert):
+
+    P = self.params
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # Send CAN commands.
     can_sends = []
     canbus = self.canbus
 
+<<<<<<< HEAD
+=======
+    alert_out = process_hud_alert(hud_alert)
+    steer = alert_out
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     ### STEER ###
 
     if (frame % P.STEER_STEP) == 0:
       lkas_enabled = enabled and not CS.steer_not_allowed and CS.v_ego > P.MIN_STEER_SPEED
       if lkas_enabled:
+<<<<<<< HEAD
         apply_steer = alca_steer * P.STEER_MAX
+=======
+        apply_steer = actuators.steer * P.STEER_MAX
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         apply_steer = apply_std_steer_torque_limits(apply_steer, self.apply_steer_last, CS.steer_torque_driver, P)
       else:
         apply_steer = 0
 
       self.apply_steer_last = apply_steer
+<<<<<<< HEAD
 
       idx = (frame // P.STEER_STEP) % 4
       if not CS.lane_departure_toggle_on:
         apply_steer = 0
+=======
+      idx = (frame // P.STEER_STEP) % 4
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
       if self.car_fingerprint in SUPERCRUISE_CARS:
         can_sends += gmcan.create_steering_control_ct6(self.packer_pt,
@@ -159,6 +223,7 @@ class CarController(object):
       if (frame % 4) == 0:
         idx = (frame // 4) % 4
 
+<<<<<<< HEAD
         car_stopping = apply_gas < P.ZERO_GAS
         standstill = CS.pcm_acc_status == AccState.STANDSTILL
         at_full_stop = enabled and standstill and car_stopping
@@ -176,6 +241,18 @@ class CarController(object):
       follow_level = CS.get_follow_level()
       if (frame % 4) == 0:
         can_sends.append(gmcan.create_acc_dashboard_command(self.packer_pt, canbus.powertrain, enabled, hud_v_cruise * CV.MS_TO_KPH, hud_show_car, follow_level))
+=======
+        at_full_stop = enabled and CS.standstill
+        near_stop = enabled and (CS.v_ego < P.NEAR_STOP_BRAKE_PHASE)
+        can_sends.append(gmcan.create_friction_brake_command(self.packer_ch, canbus.chassis, apply_brake, idx, near_stop, at_full_stop))
+
+        at_full_stop = enabled and CS.standstill
+        can_sends.append(gmcan.create_gas_regen_command(self.packer_pt, canbus.powertrain, apply_gas, idx, enabled, at_full_stop))
+
+      # Send dashboard UI commands (ACC status), 25hz
+      if (frame % 4) == 0:
+        can_sends.append(gmcan.create_acc_dashboard_command(self.packer_pt, canbus.powertrain, enabled, hud_v_cruise * CV.MS_TO_KPH, hud_show_car))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
       # Radar needs to know current speed and yaw rate (50hz),
       # and that ADAS is alive (10hz)
@@ -205,7 +282,11 @@ class CarController(object):
       lka_icon_status = (lka_active, lka_critical)
       if frame % P.CAMERA_KEEPALIVE_STEP == 0 \
           or lka_icon_status != self.lka_icon_status_last:
+<<<<<<< HEAD
         can_sends.append(gmcan.create_lka_icon_command(canbus.sw_gmlan, lka_active, lka_critical))
+=======
+        can_sends.append(gmcan.create_lka_icon_command(canbus.sw_gmlan, lka_active, lka_critical, steer))
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         self.lka_icon_status_last = lka_icon_status
 
     # Send chimes
@@ -225,4 +306,8 @@ class CarController(object):
       # issued for the same chime type and duration
       self.chime = chime
 
+<<<<<<< HEAD
     sendcan.send(can_list_to_can_capnp(can_sends, msgtype='sendcan'))
+=======
+    return can_sends
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

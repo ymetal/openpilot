@@ -22,7 +22,10 @@ a.out
 *.vcd
 config.json
 clcache
+<<<<<<< HEAD
 gas-interceptor
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 board/obj/
 selfdrive/boardd/boardd
@@ -32,6 +35,7 @@ selfdrive/proclogd/proclogd
 selfdrive/ui/ui
 selfdrive/test/tests/plant/out
 selfdrive/visiond/visiond
+<<<<<<< HEAD
 selfdrive/visiond/visiond-normal
 /src/
 apk/ai.comma.plus.offroad.apk
@@ -40,3 +44,11 @@ selfdrive/data_collection/df-data
 selfdrive/data_collection/gps-data
 
 one
+=======
+/src/
+
+one
+openpilot
+xx
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

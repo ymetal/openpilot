@@ -72,7 +72,11 @@ int ubloxd_main(poll_ubloxraw_msg_func poll_func, send_gps_event_func send_func)
         // New message available
         if(parser.msg_class() == CLASS_NAV) {
           if(parser.msg_id() == MSG_NAV_PVT) {
+<<<<<<< HEAD
             LOGD("MSG_NAV_PVT");
+=======
+            //LOGD("MSG_NAV_PVT");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
             auto words = parser.gen_solution();
             if(words.size() > 0) {
               auto bytes = words.asBytes();
@@ -82,14 +86,22 @@ int ubloxd_main(poll_ubloxraw_msg_func poll_func, send_gps_event_func send_func)
             LOGW("Unknown nav msg id: 0x%02X", parser.msg_id());
         } else if(parser.msg_class() == CLASS_RXM) {
           if(parser.msg_id() == MSG_RXM_RAW) {
+<<<<<<< HEAD
             LOGD("MSG_RXM_RAW");
+=======
+            //LOGD("MSG_RXM_RAW");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
             auto words = parser.gen_raw();
             if(words.size() > 0) {
               auto bytes = words.asBytes();
               send_func(parser.msg_class(), parser.msg_id(), ubloxGnss, bytes.begin(), bytes.size(), 0);
             }
           } else if(parser.msg_id() == MSG_RXM_SFRBX) {
+<<<<<<< HEAD
             LOGD("MSG_RXM_SFRBX");
+=======
+            //LOGD("MSG_RXM_SFRBX");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
             auto words = parser.gen_nav_data();
             if(words.size() > 0) {
               auto bytes = words.asBytes();

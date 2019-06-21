@@ -5,6 +5,10 @@ from selfdrive.config import Conversions as CV
 from selfdrive.services import service_list
 from selfdrive.swaglog import cloudlog
 import selfdrive.messaging as messaging
+<<<<<<< HEAD
+=======
+from common.realtime import Ratekeeper
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # mocked car interface to work with chffrplus
 TS = 0.01  # 100Hz
@@ -14,9 +18,16 @@ LPG = 2 * 3.1415 * YAW_FR * TS / (1 + 2 * 3.1415 * YAW_FR * TS)
 
 
 class CarInterface(object):
+<<<<<<< HEAD
   def __init__(self, CP, sendcan=None):
 
     self.CP = CP
+=======
+  def __init__(self, CP, CarController):
+
+    self.CP = CP
+    self.CC = CarController
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     cloudlog.debug("Using Mock Car Interface")
     context = zmq.Context()
@@ -30,6 +41,11 @@ class CarInterface(object):
     self.yaw_rate = 0.
     self.yaw_rate_meas = 0.
 
+<<<<<<< HEAD
+=======
+    self.rk = Ratekeeper(100, print_delay_threshold=2. / 1000)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   @staticmethod
   def compute_gb(accel, speed):
     return accel
@@ -39,7 +55,11 @@ class CarInterface(object):
     return 1.0
 
   @staticmethod
+<<<<<<< HEAD
   def get_params(candidate, fingerprint):
+=======
+  def get_params(candidate, fingerprint, vin=""):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     ret = car.CarParams.new_message()
 
@@ -79,6 +99,10 @@ class CarInterface(object):
 
   # returns a car.CarState
   def update(self, c):
+<<<<<<< HEAD
+=======
+    self.rk.keep_time()
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # get basic data from phone and gps since CAN isn't connected
     sensors = messaging.recv_sock(self.sensor)
@@ -120,4 +144,8 @@ class CarInterface(object):
 
   def apply(self, c):
     # in mock no carcontrols
+<<<<<<< HEAD
     return False
+=======
+    return []
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

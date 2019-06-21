@@ -74,7 +74,11 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     invalidGiraffeHonda @49;
     vehicleModelInvalid @50;
     controlsFailed @51;
+<<<<<<< HEAD
     steerTempUnavailableNoCancel @52;
+=======
+    sensorDataInvalid @52;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
 }
 
@@ -119,6 +123,7 @@ struct CarState {
   leftBlinker @20 :Bool;
   rightBlinker @21 :Bool;
   genericToggle @23 :Bool;
+<<<<<<< HEAD
   blindspot @26 :Bool;
   distanceToggle @27 :Float32;
   laneDepartureToggle @28 :Bool;
@@ -127,6 +132,8 @@ struct CarState {
   readdistancelines @31 :Float32;
   gasbuttonstatus @32 :Float32;
   lkMode @33 :Bool;
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # lock info
   doorOpen @24 :Bool;
@@ -184,7 +191,11 @@ struct CarState {
 
 # ******* radar state @ 20hz *******
 
+<<<<<<< HEAD
 struct RadarState {
+=======
+struct RadarData @0x888ad6581cf0aacb {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   errors @0 :List(Error);
   points @1 :List(RadarPoint);
 
@@ -342,6 +353,10 @@ struct CarParams {
 
   steerActuatorDelay @36 :Float32; # Steering wheel actuator delay in seconds
   openpilotLongitudinalControl @37 :Bool; # is openpilot doing the longitudinal control?
+<<<<<<< HEAD
+=======
+  carVin @38 :Text; # VIN number queried during fingerprinting
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   struct LateralPIDTuning {
     kpBP @0 :List(Float32);

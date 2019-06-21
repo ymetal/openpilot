@@ -1,5 +1,30 @@
 // IRQs: USART1, USART2, USART3, UART5
 
+<<<<<<< HEAD
+=======
+#define FIFO_SIZE 0x400
+typedef struct uart_ring {
+  uint16_t w_ptr_tx;
+  uint16_t r_ptr_tx;
+  uint8_t elems_tx[FIFO_SIZE];
+  uint16_t w_ptr_rx;
+  uint16_t r_ptr_rx;
+  uint8_t elems_rx[FIFO_SIZE];
+  USART_TypeDef *uart;
+  void (*callback)(struct uart_ring*);
+} uart_ring;
+
+void uart_init(USART_TypeDef *u, int baud);
+
+int getc(uart_ring *q, char *elem);
+int putc(uart_ring *q, char elem);
+
+int puts(const char *a);
+void puth(unsigned int i);
+void hexdump(const void *a, int l);
+
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 // ***************************** serial port queues *****************************
 
 // esp = USART1

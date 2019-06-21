@@ -19,7 +19,11 @@ NUM_SLOTS = 20
 # messages that are present in DBC
 LAST_RADAR_MSG = RADAR_HEADER_MSG + NUM_SLOTS
 
+<<<<<<< HEAD
 def create_radard_can_parser(canbus, car_fingerprint):
+=======
+def create_radar_can_parser(canbus, car_fingerprint):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   dbc_f = DBC[car_fingerprint]['radar']
   if car_fingerprint in (CAR.VOLT, CAR.MALIBU, CAR.HOLDEN_ASTRA, CAR.ACADIA, CAR.CADILLAC_ATS):
@@ -53,14 +57,22 @@ class RadarInterface(object):
 
     canbus = CanBus()
     print "Using %d as obstacle CAN bus ID" % canbus.obstacle
+<<<<<<< HEAD
     self.rcp = create_radard_can_parser(canbus, CP.carFingerprint)
+=======
+    self.rcp = create_radar_can_parser(canbus, CP.carFingerprint)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     context = zmq.Context()
     self.logcan = messaging.sub_sock(context, service_list['can'].port)
 
   def update(self):
     updated_messages = set()
+<<<<<<< HEAD
     ret = car.RadarState.new_message()
+=======
+    ret = car.RadarData.new_message()
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     while 1:
 
       if self.rcp is None:
@@ -68,7 +80,12 @@ class RadarInterface(object):
         return ret
 
       tm = int(sec_since_boot() * 1e9)
+<<<<<<< HEAD
       updated_messages.update(self.rcp.update(tm, True))
+=======
+      _, vls = self.rcp.update(tm, True)
+      updated_messages.update(vls)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       if LAST_RADAR_MSG in updated_messages:
         break
 
@@ -101,7 +118,11 @@ class RadarInterface(object):
         targetId = cpt['TrkObjectID']
         currentTargets.add(targetId)
         if targetId not in self.pts:
+<<<<<<< HEAD
           self.pts[targetId] = car.RadarState.RadarPoint.new_message()
+=======
+          self.pts[targetId] = car.RadarData.RadarPoint.new_message()
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
           self.pts[targetId].trackId = targetId
         distance = cpt['TrkRange']
         self.pts[targetId].dRel = distance # from front of car

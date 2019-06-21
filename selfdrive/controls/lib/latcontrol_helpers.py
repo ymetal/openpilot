@@ -6,7 +6,11 @@ _K_CURV_V = [1., 0.6]
 _K_CURV_BP = [0., 0.002]
 
 # lane width http://safety.fhwa.dot.gov/geometric/pubs/mitigationstrategies/chapter3/3_lanewidth.cfm
+<<<<<<< HEAD
 _LANE_WIDTH_V = [2.7, 3.5]
+=======
+_LANE_WIDTH_V = [3., 3.8]
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # break points of speed
 _LANE_WIDTH_BP = [0., 31.]
@@ -74,7 +78,11 @@ def calc_desired_path(l_poly,
   if lane_width is None:
     lane_width = interp(speed, _LANE_WIDTH_BP, _LANE_WIDTH_V)
 
+<<<<<<< HEAD
   # lanes in Germany are ~2.75-3.5m wide
+=======
+  # lanes in US are ~3.6m wide
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   half_lane_poly = np.array([0., 0., 0., lane_width / 2.])
   if l_prob + r_prob > 0.01:
     c_poly = ((l_poly - half_lane_poly) * l_prob +

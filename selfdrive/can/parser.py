@@ -6,7 +6,11 @@ from selfdrive.can.libdbc_py import libdbc, ffi
 
 
 class CANParser(object):
+<<<<<<< HEAD
   def __init__(self, dbc_name, signals, checks=None, bus=0, sendcan=False, tcp_addr="127.0.0.1"):
+=======
+  def __init__(self, dbc_name, signals, checks=None, bus=0, sendcan=False, tcp_addr="127.0.0.1", timeout=-1):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if checks is None:
       checks = []
 
@@ -61,7 +65,11 @@ class CANParser(object):
       } for msg_address, freq in message_options.items()])
 
     self.can = libdbc.can_init(bus, dbc_name, len(message_options_c), message_options_c,
+<<<<<<< HEAD
                                len(signal_options_c), signal_options_c, sendcan, tcp_addr)
+=======
+                               len(signal_options_c), signal_options_c, sendcan, tcp_addr, timeout)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     self.p_can_valid = ffi.new("bool*")
 
@@ -94,8 +102,15 @@ class CANParser(object):
     return ret
 
   def update(self, sec, wait):
+<<<<<<< HEAD
     libdbc.can_update(self.can, sec, wait)
     return self.update_vl(sec)
+=======
+    """Returns if the update was successfull (e.g. no rcv timeout happened)"""
+    r = libdbc.can_update(self.can, sec, wait)
+    return bool(r >= 0), self.update_vl(sec)
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 class CANDefine(object):
   def __init__(self, dbc_name):

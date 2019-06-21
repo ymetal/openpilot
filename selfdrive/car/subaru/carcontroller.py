@@ -1,12 +1,18 @@
 #from common.numpy_fast import clip
 from common.realtime import sec_since_boot
+<<<<<<< HEAD
 from selfdrive.boardd.boardd import can_list_to_can_capnp
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.subaru import subarucan
 from selfdrive.car.subaru.values import CAR, DBC
 from selfdrive.can.packer import CANPacker
 
+<<<<<<< HEAD
 from selfdrive.car.modules.ALCA_module import ALCAController
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 class CarControllerParams():
   def __init__(self, car_fingerprint):
@@ -14,6 +20,7 @@ class CarControllerParams():
     self.STEER_STEP = 2                # how often we update the steer cmd
     self.STEER_DELTA_UP = 50           # torque increase per refresh, 0.8s to max
     self.STEER_DELTA_DOWN = 70         # torque decrease per refresh
+<<<<<<< HEAD
     if car_fingerprint == (CAR.IMPREZA, CAR.XV):
       self.STEER_DRIVER_ALLOWANCE = 60   # allowed driver torque before start limiting
       self.STEER_DRIVER_MULTIPLIER = 10   # weight driver torque heavily
@@ -23,6 +30,13 @@ class CarControllerParams():
       self.STEER_DRIVER_MULTIPLIER = 1   # weight driver torque heavily
       self.STEER_DRIVER_FACTOR = 1     # from dbc
       self.STEER_DELTA_DOWN = 60         # torque decrease per refresh
+=======
+    if car_fingerprint == CAR.IMPREZA:
+      self.STEER_DRIVER_ALLOWANCE = 60   # allowed driver torque before start limiting
+      self.STEER_DRIVER_MULTIPLIER = 10   # weight driver torque heavily
+      self.STEER_DRIVER_FACTOR = 1     # from dbc
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class CarController(object):
@@ -34,16 +48,21 @@ class CarController(object):
     self.car_fingerprint = car_fingerprint
     self.es_distance_cnt = -1
     self.es_lkas_cnt = -1
+<<<<<<< HEAD
     self.counter = 0
     
     self.ALCA = ALCAController(self,True,False) # Enabled  True and SteerByAngle only False
     
+=======
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     # Setup detection helper. Routes commands to
     # an appropriate CAN bus number.
     self.params = CarControllerParams(car_fingerprint)
     print(DBC)
     self.packer = CANPacker(DBC[car_fingerprint]['pt'])
 
+<<<<<<< HEAD
   def update(self, sendcan, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert):
     #update custom UI buttons and alerts
     CS.UE.update_custom_ui()
@@ -63,6 +82,9 @@ class CarController(object):
       self.ALCA.update_status(CS.cstm_btns.get_button_status("alca") > 0)
     # steer torque
     alca_angle, alca_steer, alca_enabled, turn_signal_needed = self.ALCA.update(enabled, CS, frame, actuators)
+=======
+  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert, left_line, right_line):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     """ Controls thread """
 
     P = self.params
@@ -74,7 +96,11 @@ class CarController(object):
 
     if (frame % P.STEER_STEP) == 0:
 
+<<<<<<< HEAD
       final_steer = alca_steer if enabled else 0.
+=======
+      final_steer = actuators.steer if enabled else 0.
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       apply_steer = int(round(final_steer * P.STEER_MAX))
 
       # limits due to driver torque
@@ -86,6 +112,7 @@ class CarController(object):
 
       if not lkas_enabled:
         apply_steer = 0
+<<<<<<< HEAD
         
       if self.car_fingerprint in (CAR.OUTBACK, CAR.LEGACY):
 
@@ -96,11 +123,14 @@ class CarController(object):
             apply_steer = round(int(apply_steer * 0.99))
         else:
           self.counter = 0
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
       can_sends.append(subarucan.create_steering_control(self.packer, CS.CP.carFingerprint, apply_steer, frame, P.STEER_STEP))
 
       self.apply_steer_last = apply_steer
 
+<<<<<<< HEAD
     if self.car_fingerprint not in (CAR.OUTBACK, CAR.LEGACY):
 
       if self.es_distance_cnt != CS.es_distance_msg["Counter"]:
@@ -115,3 +145,14 @@ class CarController(object):
       can_sends.append(subarucan.create_door_control(self.packer))
 
     sendcan.send(can_list_to_can_capnp(can_sends, msgtype='sendcan'))
+=======
+    if self.es_distance_cnt != CS.es_distance_msg["Counter"]:
+      can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg, pcm_cancel_cmd))
+      self.es_distance_cnt = CS.es_distance_msg["Counter"]
+
+    if self.es_lkas_cnt != CS.es_lkas_msg["Counter"]:
+      can_sends.append(subarucan.create_es_lkas(self.packer, CS.es_lkas_msg, visual_alert, left_line, right_line))
+      self.es_lkas_cnt = CS.es_lkas_msg["Counter"]
+
+    return can_sends
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a

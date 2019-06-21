@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 static void elm327_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {}
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 static int elm327_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   //All ELM traffic must appear on CAN0
   if(((to_send->RDTR >> 4) & 0xf) != 0) return 0;
@@ -27,6 +30,7 @@ static int elm327_tx_lin_hook(int lin_num, uint8_t *data, int len) {
   return true;
 }
 
+<<<<<<< HEAD
 static void elm327_init(int16_t param) {
   controls_allowed = 1;
 }
@@ -43,4 +47,13 @@ const safety_hooks elm327_hooks = {
   .ignition = default_ign_hook,
   .fwd = elm327_fwd_hook,
   .relay = nooutput_relay_hook,
+=======
+const safety_hooks elm327_hooks = {
+  .init = nooutput_init,
+  .rx = default_rx_hook,
+  .tx = elm327_tx_hook,
+  .tx_lin = elm327_tx_lin_hook,
+  .ignition = default_ign_hook,
+  .fwd = nooutput_fwd_hook,
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 };

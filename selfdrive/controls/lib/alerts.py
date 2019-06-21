@@ -9,8 +9,13 @@ class Priority:
   HIGH = 4
   HIGHEST = 5
 
+<<<<<<< HEAD
 AlertSize = log.Live100Data.AlertSize
 AlertStatus = log.Live100Data.AlertStatus
+=======
+AlertSize = log.ControlsState.AlertSize
+AlertStatus = log.ControlsState.AlertStatus
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -90,7 +95,11 @@ ALERTS = [
   Alert(
       "steerTempUnavailable",
       "TAKE CONTROL",
+<<<<<<< HEAD
       "Steering Unavailable",
+=======
+      "Steering Temporarily Unavailable",
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.chimeWarning1, .4, 2., 3.),
 
@@ -102,6 +111,7 @@ ALERTS = [
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .2, .2, .2),
 
   Alert(
+<<<<<<< HEAD
       "steerTempUnavailableNoCancel",
       "TAKE CONTROL SOON",
       "Steering Temporarily Unavailable",
@@ -109,6 +119,8 @@ ALERTS = [
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .4, 2., 3.),
 
   Alert(
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       "preDriverDistracted",
       "KEEP EYES ON ROAD: User Appears Distracted",
       "",
@@ -176,7 +188,25 @@ ALERTS = [
       "Be ready to take over at any time",
       "Always keep hands on wheel and eyes on road",
       AlertStatus.normal, AlertSize.mid,
+<<<<<<< HEAD
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 5.),
+=======
+      Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
+
+  Alert(
+      "startupNoControl",
+      "Dashcam mode",
+      "Always keep hands on wheel and eyes on road",
+      AlertStatus.normal, AlertSize.mid,
+      Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
+
+  Alert(
+      "startupNoCar",
+      "Dashcam mode with unsupported car",
+      "Always keep hands on wheel and eyes on road",
+      AlertStatus.normal, AlertSize.mid,
+      Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   Alert(
       "ethicalDilemma",
@@ -284,6 +314,16 @@ ALERTS = [
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),
 
+<<<<<<< HEAD
+=======
+  Alert(
+      "sensorDataInvalidNoEntry",
+      "openpilot Unavailable",
+      "No Data from EON Sensors",
+      AlertStatus.normal, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeError, .4, 2., 3.),
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   # Cancellation alerts causing soft disabling
   Alert(
       "overheat",
@@ -633,6 +673,16 @@ ALERTS = [
       Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
 
   Alert(
+<<<<<<< HEAD
+=======
+      "sensorDataInvalidPermanent",
+      "No Data from EON Sensors",
+      "Reboot your EON",
+      AlertStatus.normal, AlertSize.mid,
+      Priority.LOW_LOWEST, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
+
+  Alert(
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       "vehicleModelInvalid",
       "Vehicle Parameter Identification Failed",
       "",

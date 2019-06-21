@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 import os
 import sys
 import platform
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 import numpy as np
 
 from common.numpy_fast import clip, interp
@@ -121,6 +124,7 @@ class Track(object):
     return [self.dRel, self.yRel*2, self.vRel]
 
 
+<<<<<<< HEAD
 # ******************* Cluster *******************
 if platform.machine() == 'aarch64':
   for x in sys.path:
@@ -142,6 +146,8 @@ def fcluster(Z, t, criterion='inconsistent', depth=2, R=None, monocrit=None):
   return T
 
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 def mean(l):
   return sum(l) / len(l)
 
@@ -215,7 +221,11 @@ class Cluster(object):
   def oncoming(self):
     return all([t.oncoming for t in self.tracks])
 
+<<<<<<< HEAD
   def toLive20(self):
+=======
+  def toRadarState(self):
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     return {
       "dRel": float(self.dRel) - RDR_TO_LDR,
       "yRel": float(self.yRel),

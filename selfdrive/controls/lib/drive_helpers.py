@@ -5,10 +5,17 @@ from selfdrive.config import Conversions as CV
 DT = 0.01  # Controlsd runs at 100Hz
 
 # kph
+<<<<<<< HEAD
 V_CRUISE_MAX = 169
 V_CRUISE_MIN = 7
 V_CRUISE_DELTA = 7
 V_CRUISE_ENABLE_MIN = 7
+=======
+V_CRUISE_MAX = 144
+V_CRUISE_MIN = 8
+V_CRUISE_DELTA = 8
+V_CRUISE_ENABLE_MIN = 40
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class MPC_COST_LAT:

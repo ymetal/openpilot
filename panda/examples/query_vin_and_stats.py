@@ -3,7 +3,11 @@ import time
 import struct
 from panda import Panda
 from hexdump import hexdump
+<<<<<<< HEAD
 from panda.isotp import isotp_send, isotp_recv
+=======
+from panda.python.isotp import isotp_send, isotp_recv
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 # 0x7e0 = Toyota
 # 0x18DB33F1 for Honda?
@@ -33,7 +37,11 @@ if __name__ == "__main__":
   panda.can_clear(0)
 
   # 09 02 = Get VIN
+<<<<<<< HEAD
   isotp_send(panda, "\x09\x02", 0x7e0)
+=======
+  isotp_send(panda, "\x09\x02", 0x7df)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   ret = isotp_recv(panda, 0x7e8)
   hexdump(ret)
   print "VIN: %s" % ret[2:]

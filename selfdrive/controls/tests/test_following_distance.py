@@ -51,7 +51,11 @@ def run_following_distance_simulation(v_lead, t_end=200.0):
     CS.carState.aEgo = a_ego
 
     # Setup lead packet
+<<<<<<< HEAD
     lead = log.Live20Data.LeadData.new_message()
+=======
+    lead = log.RadarState.LeadData.new_message()
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     lead.status = True
     lead.dRel = x_lead - x_ego
     lead.vLead = v_lead

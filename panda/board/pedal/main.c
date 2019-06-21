@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //#define DEBUG
 //#define CAN_LOOPBACK_MODE
 //#define USE_INTERNAL_OSC
@@ -18,12 +19,35 @@
 #include "drivers/can.h"
 #include "drivers/timer.h"
 
+=======
+#include "../config.h"
+
+#include "drivers/llcan.h"
+#include "drivers/llgpio.h"
+#include "drivers/clock.h"
+#include "drivers/adc.h"
+#include "drivers/dac.h"
+#include "drivers/timer.h"
+
+#include "gpio.h"
+#include "libc.h"
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #define CAN CAN1
 
 //#define PEDAL_USB
 
 #ifdef PEDAL_USB
+<<<<<<< HEAD
   #include "drivers/usb.h"
+=======
+  #include "drivers/uart.h"
+  #include "drivers/usb.h"
+#else
+  // no serial either
+  int puts(const char *a) { return 0; }
+  void puth(unsigned int i) {}
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #endif
 
 #define ENTER_BOOTLOADER_MAGIC 0xdeadbeef
@@ -35,6 +59,11 @@ void __initialize_hardware_early() {
 
 // ********************* serial debugging *********************
 
+<<<<<<< HEAD
+=======
+#ifdef PEDAL_USB
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 void debug_ring_callback(uart_ring *ring) {
   char rcv;
   while (getc(ring, &rcv)) {
@@ -42,8 +71,11 @@ void debug_ring_callback(uart_ring *ring) {
   }
 }
 
+<<<<<<< HEAD
 #ifdef PEDAL_USB
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 int usb_cb_ep1_in(uint8_t *usbdata, int len, int hardwired) { return 0; }
 void usb_cb_ep2_out(uint8_t *usbdata, int len, int hardwired) {}
 void usb_cb_ep3_out(uint8_t *usbdata, int len, int hardwired) {}
@@ -185,7 +217,11 @@ void CAN1_RX0_IRQHandler() {
 
 void CAN1_SCE_IRQHandler() {
   state = FAULT_SCE;
+<<<<<<< HEAD
   can_sce(CAN);
+=======
+  llcan_clear_send(CAN);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 int pdl0 = 0, pdl1 = 0;
@@ -256,8 +292,12 @@ void pedal() {
     dac_set(1, pdl1);
   }
 
+<<<<<<< HEAD
   // feed the watchdog
   IWDG->KR = 0xAAAA;
+=======
+  watchdog_feed();
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 int main() {
@@ -278,24 +318,36 @@ int main() {
   adc_init();
 
   // init can
+<<<<<<< HEAD
   can_silent = ALL_CAN_LIVE;
   can_init(0);
+=======
+  llcan_set_speed(CAN1, 5000, false, false);
+  llcan_init(CAN1);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   // 48mhz / 65536 ~= 732
   timer_init(TIM3, 15);
   NVIC_EnableIRQ(TIM3_IRQn);
 
+<<<<<<< HEAD
   // setup watchdog
   IWDG->KR = 0x5555;
   IWDG->PR = 0;          // divider /4
   // 0 = 0.125 ms, let's have a 50ms watchdog
   IWDG->RLR = 400 - 1;
   IWDG->KR = 0xCCCC;
+=======
+  watchdog_init();
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   puts("**** INTERRUPTS ON ****\n");
   __enable_irq();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // main pedal loop
   while (1) {
     pedal();

@@ -41,7 +41,11 @@ def mkdirs_exists_ok(path):
 class TxType(Enum):
   PERSISTENT = 1
   CLEAR_ON_MANAGER_START = 2
+<<<<<<< HEAD
   CLEAR_ON_CAR_START = 3
+=======
+  CLEAR_ON_PANDA_DISCONNECT = 3
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 
 class UnknownKeyName(Exception):
@@ -49,6 +53,7 @@ class UnknownKeyName(Exception):
 
 
 keys = {
+<<<<<<< HEAD
   "AccessToken": TxType.PERSISTENT,
   "CalibrationParams": TxType.PERSISTENT,
   "CarParams": TxType.CLEAR_ON_CAR_START,
@@ -76,6 +81,35 @@ keys = {
   "TrainingVersion": TxType.PERSISTENT,
   "Version": TxType.PERSISTENT,
   "CachedFingerprint": TxType.PERSISTENT,
+=======
+  "AccessToken": [TxType.PERSISTENT],
+  "CalibrationParams": [TxType.PERSISTENT],
+  "CarParams": [TxType.CLEAR_ON_MANAGER_START, TxType.CLEAR_ON_PANDA_DISCONNECT],
+  "CompletedTrainingVersion": [TxType.PERSISTENT],
+  "ControlsParams": [TxType.PERSISTENT],
+  "DoUninstall": [TxType.CLEAR_ON_MANAGER_START],
+  "DongleId": [TxType.PERSISTENT],
+  "GitBranch": [TxType.PERSISTENT],
+  "GitCommit": [TxType.PERSISTENT],
+  "GitRemote": [TxType.PERSISTENT],
+  "HasAcceptedTerms": [TxType.PERSISTENT],
+  "IsDriverMonitoringEnabled": [TxType.PERSISTENT],
+  "IsFcwEnabled": [TxType.PERSISTENT],
+  "IsGeofenceEnabled": [TxType.PERSISTENT],
+  "IsMetric": [TxType.PERSISTENT],
+  "IsUpdateAvailable": [TxType.PERSISTENT],
+  "IsUploadVideoOverCellularEnabled": [TxType.PERSISTENT],
+  "LimitSetSpeed": [TxType.PERSISTENT],
+  "LiveParameters": [TxType.PERSISTENT],
+  "LongitudinalControl": [TxType.PERSISTENT],
+  "Passive": [TxType.PERSISTENT],
+  "RecordFront": [TxType.PERSISTENT],
+  "ShouldDoUpdate": [TxType.CLEAR_ON_MANAGER_START],
+  "SpeedLimitOffset": [TxType.PERSISTENT],
+  "SubscriberInfo": [TxType.PERSISTENT],
+  "TrainingVersion": [TxType.PERSISTENT],
+  "Version": [TxType.PERSISTENT],
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 
@@ -309,14 +343,23 @@ class Params(object):
   def _clear_keys_with_type(self, tx_type):
     with self.transaction(write=True) as txn:
       for key in keys:
+<<<<<<< HEAD
         if keys[key] == tx_type:
+=======
+        if tx_type in keys[key]:
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
           txn.delete(key)
 
   def manager_start(self):
     self._clear_keys_with_type(TxType.CLEAR_ON_MANAGER_START)
 
+<<<<<<< HEAD
   def car_start(self):
     self._clear_keys_with_type(TxType.CLEAR_ON_CAR_START)
+=======
+  def panda_disconnect(self):
+    self._clear_keys_with_type(TxType.CLEAR_ON_PANDA_DISCONNECT)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   def delete(self, key):
     with self.transaction(write=True) as txn:

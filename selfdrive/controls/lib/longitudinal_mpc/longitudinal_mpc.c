@@ -67,6 +67,7 @@ void init(double ttcCost, double distanceCost, double accelerationCost, double j
 
 }
 
+<<<<<<< HEAD
 void change_tr(double ttcCost, double distanceCost, double accelerationCost, double jerkCost){
   int    i;
   const int STEP_MULTIPLIER = 3;
@@ -87,6 +88,8 @@ void change_tr(double ttcCost, double distanceCost, double accelerationCost, dou
 }
 
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 void init_with_simulation(double v_ego, double x_l_0, double v_l_0, double a_l_0, double l){
   int i;
 
@@ -131,7 +134,11 @@ void init_with_simulation(double v_ego, double x_l_0, double v_l_0, double a_l_0
   for (i = 0; i < NYN; ++i)  acadoVariables.yN[ i ] = 0.0;
 }
 
+<<<<<<< HEAD
 int run_mpc(state_t * x0, log_t * solution, double l, double a_l_0, double TR){
+=======
+int run_mpc(state_t * x0, log_t * solution, double l, double a_l_0){
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // Calculate lead vehicle predictions
   int i;
   double t = 0.;
@@ -171,7 +178,11 @@ int run_mpc(state_t * x0, log_t * solution, double l, double a_l_0, double TR){
   acadoVariables.x[1] = acadoVariables.x0[1] = x0->v_ego;
   acadoVariables.x[2] = acadoVariables.x0[2] = x0->a_ego;
 
+<<<<<<< HEAD
   acado_preparationStep(TR);
+=======
+  acado_preparationStep();
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   acado_feedbackStep();
 
 	for (i = 0; i <= N; i++){
@@ -180,7 +191,11 @@ int run_mpc(state_t * x0, log_t * solution, double l, double a_l_0, double TR){
     solution->a_ego[i] = acadoVariables.x[i*NX+2];
     solution->j_ego[i] = acadoVariables.u[i];
 	}
+<<<<<<< HEAD
   solution->cost = acado_getObjective(TR);
+=======
+  solution->cost = acado_getObjective();
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   // Dont shift states here. Current solution is closer to next timestep than if
   // we shift by 0.2 seconds.

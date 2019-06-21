@@ -28,6 +28,10 @@ def main(gctx):
 
     if levelnum >= le_level:
       # push to logentries
+<<<<<<< HEAD
+=======
+      # TODO: push to athena instead
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
       le_handler.emit_raw(dat)
 
     # then we publish them

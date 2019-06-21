@@ -2,7 +2,13 @@
 uint32_t *prog_ptr = NULL;
 int unlocked = 0;
 
+<<<<<<< HEAD
 void debug_ring_callback(uart_ring *ring) {}
+=======
+#ifdef uart_ring
+void debug_ring_callback(uart_ring *ring) {}
+#endif
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, int hardwired) {
   int resp_len = 0;
@@ -46,7 +52,11 @@ int usb_cb_control_msg(USB_Setup_TypeDef *setup, uint8_t *resp, int hardwired) {
       break;
     // **** 0xd0: fetch serial number
     case 0xd0:
+<<<<<<< HEAD
       #ifdef PANDA
+=======
+      #ifdef STM32F4
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
         // addresses are OTP
         if (setup->b.wValue.w == 1) {
           memcpy(resp, (void *)0x1fff79c0, 0x10);
@@ -132,6 +142,10 @@ int spi_cb_rx(uint8_t *data, int len, uint8_t *data_out) {
 
 #ifdef PEDAL
 
+<<<<<<< HEAD
+=======
+#include "drivers/llcan.h"
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #define CAN CAN1
 
 #define CAN_BL_INPUT 0x1
@@ -239,7 +253,11 @@ void CAN1_RX0_IRQHandler() {
 }
 
 void CAN1_SCE_IRQHandler() {
+<<<<<<< HEAD
   can_sce(CAN);
+=======
+  llcan_clear_send(CAN);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 }
 
 #endif
@@ -264,8 +282,13 @@ void soft_flasher_start() {
   set_can_enable(CAN1, 1);
 
   // init can
+<<<<<<< HEAD
   can_silent = ALL_CAN_LIVE;
   can_init(0);
+=======
+  llcan_set_speed(CAN1, 5000, false, false);
+  llcan_init(CAN1);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #endif
 
   // A4,A5,A6,A7: setup SPI

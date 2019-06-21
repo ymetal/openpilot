@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import zmq
 from cereal import log
 from common.numpy_fast import clip, interp
@@ -7,6 +8,13 @@ import selfdrive.messaging as messaging
 from selfdrive.services import service_list
 
 LongCtrlState = log.Live100Data.LongControlState
+=======
+from cereal import log
+from common.numpy_fast import clip, interp
+from selfdrive.controls.lib.pid import PIController
+
+LongCtrlState = log.ControlsState.LongControlState
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 STOPPING_EGO_SPEED = 0.5
 MIN_CAN_SPEED = 0.3  # TODO: parametrize this in car interface
@@ -16,7 +24,11 @@ BRAKE_THRESHOLD_TO_PID = 0.2
 
 STOPPING_BRAKE_RATE = 0.2  # brake_travel/s while trying to stop
 STARTING_BRAKE_RATE = 0.8  # brake_travel/s while releasing on restart
+<<<<<<< HEAD
 BRAKE_STOPPING_TARGET = float(kegman.conf['brakeStoppingTarget'])  # apply at least this amount of brake to maintain the vehicle stationary
+=======
+BRAKE_STOPPING_TARGET = 0.5  # apply at least this amount of brake to maintain the vehicle stationary
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 _MAX_SPEED_ERROR_BP = [0., 30.]  # speed breakpoints
 _MAX_SPEED_ERROR_V = [1.5, .8]  # max positive v_pid error VS actual speed; this avoids controls windup due to slow pedal resp
@@ -70,15 +82,19 @@ class LongControl(object):
     self.v_pid = 0.0
     self.last_output_gb = 0.0
 
+<<<<<<< HEAD
     context = zmq.Context()
     self.poller = zmq.Poller()
     self.live20 = messaging.sub_sock(context, service_list['live20'].port, conflate=True, poller=self.poller)
 
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   def reset(self, v_pid):
     """Reset PID controller and change setpoint"""
     self.pid.reset()
     self.v_pid = v_pid
 
+<<<<<<< HEAD
   def dynamic_gas(self, v_ego, v_rel, gasinterceptor, gasbuttonstatus):
     dynamic = False
     if gasinterceptor:
@@ -137,6 +153,12 @@ class LongControl(object):
       
     #gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     gas_max = self.dynamic_gas(v_ego, vRel, gasinterceptor, gasbuttonstatus)
+=======
+  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP):
+    """Update longitudinal control. This updates the state machine and runs a PID loop"""
+    # Actuation limits
+    gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine

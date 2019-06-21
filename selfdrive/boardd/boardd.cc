@@ -21,6 +21,10 @@
 #include "cereal/gen/cpp/log.capnp.h"
 #include "cereal/gen/cpp/car.capnp.h"
 
+<<<<<<< HEAD
+=======
+#include "common/messaging.h"
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #include "common/params.h"
 #include "common/swaglog.h"
 #include "common/timing.h"
@@ -34,7 +38,10 @@
 #define SAFETY_NOOUTPUT  0
 #define SAFETY_HONDA 1
 #define SAFETY_TOYOTA 2
+<<<<<<< HEAD
 #define SAFETY_ELM327 0xE327
+=======
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 #define SAFETY_GM 3
 #define SAFETY_HONDA_BOSCH 4
 #define SAFETY_FORD 5
@@ -46,7 +53,11 @@
 #define SAFETY_TOYOTA_IPAS 0x1335
 #define SAFETY_TOYOTA_NOLIMITS 0x1336
 #define SAFETY_ALLOUTPUT 0x1337
+<<<<<<< HEAD
 #define SAFETY_ELM327 0xE327
+=======
+#define SAFETY_ELM327 0xE327     // diagnostic only
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
 namespace {
 
@@ -138,6 +149,12 @@ void *safety_setter_thread(void *s) {
   // set in the mutex to avoid race
   safety_setter_thread_handle = -1;
 
+<<<<<<< HEAD
+=======
+  // set if long_control is allowed by openpilot. Hardcoded to True for now
+  libusb_control_transfer(dev_handle, 0x40, 0xdf, 1, 0, NULL, 0, TIMEOUT);
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   libusb_control_transfer(dev_handle, 0x40, 0xdc, safety_setting, safety_param, NULL, 0, TIMEOUT);
 
   pthread_mutex_unlock(&usb_lock);
@@ -173,12 +190,17 @@ bool usb_connect() {
     LOGW("not enabling charging on x86_64");
   #endif
 
+<<<<<<< HEAD
   // no output is the default
   if (getenv("RECVMOCK")) {
     libusb_control_transfer(dev_handle, 0x40, 0xdc, SAFETY_ELM327, 0, NULL, 0, TIMEOUT);
   } else {
     libusb_control_transfer(dev_handle, 0x40, 0xdc, SAFETY_NOOUTPUT, 0, NULL, 0, TIMEOUT);
   }
+=======
+  // diagnostic only is the default, needed for VIN query
+  libusb_control_transfer(dev_handle, 0x40, 0xdc, SAFETY_ELM327, 0, NULL, 0, TIMEOUT);
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   if (safety_setter_thread_handle == -1) {
     err = pthread_create(&safety_setter_thread_handle, NULL, safety_setter_thread, NULL);
@@ -223,6 +245,11 @@ void can_recv(void *s) {
   int recv;
   uint32_t f1, f2;
 
+<<<<<<< HEAD
+=======
+  uint64_t start_time = nanos_since_boot();
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   // do recv
   pthread_mutex_lock(&usb_lock);
 
@@ -245,12 +272,22 @@ void can_recv(void *s) {
   // create message
   capnp::MallocMessageBuilder msg;
   cereal::Event::Builder event = msg.initRoot<cereal::Event>();
+<<<<<<< HEAD
   event.setLogMonoTime(nanos_since_boot());
 
   auto canData = event.initCan(recv/0x10);
 
   // populate message
   for (int i = 0; i<(recv/0x10); i++) {
+=======
+  event.setLogMonoTime(start_time);
+  size_t num_msg = recv / 0x10;
+
+  auto canData = event.initCan(num_msg);
+
+  // populate message
+  for (int i = 0; i < num_msg; i++) {
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     if (data[i*4] & 4) {
       // extended
       canData[i].setAddress(data[i*4] >> 3);
@@ -380,6 +417,7 @@ void can_send(void *s) {
   free(send);
 }
 
+<<<<<<< HEAD
 
 // **** threads ****
 
@@ -425,14 +463,22 @@ void *thermal_thread(void *crap) {
   return NULL;
 }
 
+=======
+// **** threads ****
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 void *can_send_thread(void *crap) {
   LOGD("start send thread");
 
   // sendcan = 8017
   void *context = zmq_ctx_new();
+<<<<<<< HEAD
   void *subscriber = zmq_socket(context, ZMQ_SUB);
   zmq_setsockopt(subscriber, ZMQ_SUBSCRIBE, "", 0);
   zmq_connect(subscriber, "tcp://127.0.0.1:8017");
+=======
+  void *subscriber = sub_sock(context, "tcp://127.0.0.1:8017");
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   // drain sendcan to delete any stale messages from previous runs
   zmq_msg_t msg;
@@ -457,11 +503,32 @@ void *can_recv_thread(void *crap) {
   void *publisher = zmq_socket(context, ZMQ_PUB);
   zmq_bind(publisher, "tcp://*:8006");
 
+<<<<<<< HEAD
   // run at ~200hz
   while (!do_exit) {
     can_recv(publisher);
     // 5ms
     usleep(5*1000);
+=======
+  // run at 100hz
+  const uint64_t dt = 10000000ULL;
+  uint64_t next_frame_time = nanos_since_boot() + dt;
+
+  while (!do_exit) {
+    can_recv(publisher);
+
+    uint64_t cur_time = nanos_since_boot();
+    int64_t remaining = next_frame_time - cur_time;
+    if (remaining > 0){
+      useconds_t sleep = remaining / 1000;
+      usleep(sleep);
+    } else {
+      LOGW("missed cycle");
+      next_frame_time = cur_time;
+    }
+
+    next_frame_time += dt;
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   }
   return NULL;
 }
@@ -686,6 +753,7 @@ int main() {
                        can_recv_thread, NULL);
   assert(err == 0);
 
+<<<<<<< HEAD
   pthread_t thermal_thread_handle;
   err = pthread_create(&thermal_thread_handle, NULL,
                        thermal_thread, NULL);
@@ -696,6 +764,10 @@ int main() {
   err = pthread_join(thermal_thread_handle, NULL);
   assert(err == 0);
 
+=======
+  // join threads
+
+>>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   err = pthread_join(can_recv_thread_handle, NULL);
   assert(err == 0);
 
