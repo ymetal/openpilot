@@ -87,10 +87,10 @@ class LongControl(object):
       lead_1 = radar_state.radarState.leadOne
       if lead_1 is not None and lead_1.status:
         x_lead = lead_1.dRel
-        v_lead = lead_1.vLead
+        v_lead = lead_1.vLead-2.0
         a_lead = lead_1.aLeadK
         model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-        return [True, clip((model_output - 0.55) * 3.5, -1.0, 1.0)]
+        return [True, clip((model_output - 0.54) * 4.0, -1.0, 1.0)]
 
     return [False]
 
