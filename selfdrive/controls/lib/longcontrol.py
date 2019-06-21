@@ -79,9 +79,9 @@ class LongControl(object):
   def df(self, radar_state, v_ego):
     v_ego_scale = [-0.2154252678155899, 41.05433654785156]
     #a_ego_scale = [-4.493537902832031, 3.710982322692871]
-    v_lead_scale = [0.0, 48.56089782714844]
-    x_lead_scale = [0.125, 144.375]
-    a_lead_scale = [-4.993380546569824, 4.991139888763428]
+    v_lead_scale = [0.0, 48.58272933959961]
+    x_lead_scale = [0.125, 144.125]
+    a_lead_scale = [-8.398388862609863, 9.994253158569336]
 
     if radar_state is not None:
       lead_1 = radar_state.radarState.leadOne
