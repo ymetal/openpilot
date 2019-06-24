@@ -305,21 +305,12 @@ struct LiveUI {
   awarenessStatus @3 :Float32;
 }
 
-<<<<<<< HEAD
-struct Live20Data {
-  canMonoTimes @10 :List(UInt64);
-  mdMonoTime @6 :UInt64;
-  ftMonoTimeDEPRECATED @7 :UInt64;
-  l100MonoTime @11 :UInt64;
-  radarErrors @12 :List(Car.RadarState.Error);
-=======
 struct RadarState @0x9a185389d6fdd05f {
   canMonoTimes @10 :List(UInt64);
   mdMonoTime @6 :UInt64;
   ftMonoTimeDEPRECATED @7 :UInt64;
   controlsStateMonoTime @11 :UInt64;
   radarErrors @12 :List(Car.RadarData.Error);
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
   # all deprecated
   warpMatrixDEPRECATED @0 :List(Float32);
@@ -377,26 +368,15 @@ struct LiveTracks {
   oncoming @9 :Bool;
 }
 
-<<<<<<< HEAD
-struct Live100Data {
-  canMonoTimeDEPRECATED @16 :UInt64;
-  canMonoTimes @21 :List(UInt64);
-  l20MonoTimeDEPRECATED @17 :UInt64;
-=======
 struct ControlsState @0x97ff69c53601abf1 {
   canMonoTimeDEPRECATED @16 :UInt64;
   canMonoTimes @21 :List(UInt64);
   radarStateMonoTimeDEPRECATED @17 :UInt64;
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   mdMonoTimeDEPRECATED @18 :UInt64;
   planMonoTime @28 :UInt64;
   pathPlanMonoTime @50 :UInt64;
 
-<<<<<<< HEAD
-  state @31 :ControlState;
-=======
   state @31 :OpenpilotState;
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   vEgo @0 :Float32;
   vEgoRaw @32 :Float32;
   aEgoDEPRECATED @1 :Float32;
@@ -411,13 +391,10 @@ struct ControlsState @0x97ff69c53601abf1 {
   upSteerDEPRECATED @8 :Float32;
   uiSteerDEPRECATED @9 :Float32;
   ufSteerDEPRECATED @34 :Float32;
-<<<<<<< HEAD
   angleFFRatio @52 :Float32;
   rateFFGain @53 :Float32;
   angleFFGain @54 :Float32;
 
-=======
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
   aTargetMinDEPRECATED @10 :Float32;
   aTargetMaxDEPRECATED @11 :Float32;
   aTarget @35 :Float32;

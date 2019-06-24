@@ -117,19 +117,12 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
 
 class Planner(object):
   def __init__(self, CP, fcw_enabled):
-<<<<<<< HEAD
 
     context = zmq.Context()
     self.CP = CP
     self.poller = zmq.Poller()
     self.lat_Control = messaging.sub_sock(context, service_list['latControl'].port, conflate=True, poller=self.poller)
-    
-=======
-    context = zmq.Context()
-    self.CP = CP
-    self.poller = zmq.Poller()
 
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.plan = messaging.pub_sock(context, service_list['plan'].port)
     self.live_longitudinal_mpc = messaging.pub_sock(context, service_list['liveLongitudinalMpc'].port)
 
@@ -149,11 +142,8 @@ class Planner(object):
     self.fcw_checker = FCWChecker()
     self.fcw_enabled = fcw_enabled
 
-<<<<<<< HEAD
     self.lastlat_Control = None
 
-=======
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
     self.params = Params()
 
   def choose_solution(self, v_cruise_setpoint, enabled):
@@ -181,29 +171,6 @@ class Planner(object):
 
     self.v_acc_future = min([self.mpc1.v_mpc_future, self.mpc2.v_mpc_future, v_cruise_setpoint])
 
-<<<<<<< HEAD
-
-  def update(self, rcv_times, CS, CP, VM, PP, live20, live100, md, live_map_data):
-    """Gets called when new live20 is available"""
-    cur_time = sec_since_boot()
-    v_ego = CS.carState.vEgo
-    gasbuttonstatus = CS.carState.gasbuttonstatus
-
-    long_control_state = live100.live100.longControlState
-    v_cruise_kph = live100.live100.vCruise
-    force_slow_decel = live100.live100.forceDecel
-    v_cruise_setpoint = v_cruise_kph * CV.KPH_TO_MS
-
-
-    for socket, event in self.poller.poll(0):
-      if socket is self.lat_Control:
-        self.lastlat_Control = messaging.recv_one(socket).latControl
-
-
-    lead_1 = live20.live20.leadOne
-    lead_2 = live20.live20.leadTwo
-
-=======
   def update(self, rcv_times, CS, CP, VM, PP, radar_state, controls_state, md, live_map_data):
     """Gets called when new radarState is available"""
     cur_time = sec_since_boot()
@@ -216,7 +183,6 @@ class Planner(object):
 
     lead_1 = radar_state.radarState.leadOne
     lead_2 = radar_state.radarState.leadTwo
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     enabled = (long_control_state == LongCtrlState.pid) or (long_control_state == LongCtrlState.stopping)
     following = lead_1.status and lead_1.dRel < 45.0 and lead_1.vLeadK > v_ego and lead_1.aLeadK > 0.0
@@ -374,31 +340,18 @@ class Planner(object):
     if fcw:
       cloudlog.info("FCW triggered %s", self.fcw_checker.counters)
 
-<<<<<<< HEAD
-    radar_dead = cur_time - rcv_times['live20'] > 0.5
-
-    radar_errors = list(live20.live20.radarErrors)
-    radar_fault = car.RadarState.Error.fault in radar_errors
-    radar_comm_issue = car.RadarState.Error.commIssue in radar_errors
-=======
     radar_dead = cur_time - rcv_times['radarState'] > 0.5
 
     radar_errors = list(radar_state.radarState.radarErrors)
     radar_fault = car.RadarData.Error.fault in radar_errors
     radar_comm_issue = car.RadarData.Error.commIssue in radar_errors
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # **** send the plan ****
     plan_send = messaging.new_message()
     plan_send.init('plan')
 
     plan_send.plan.mdMonoTime = md.logMonoTime
-<<<<<<< HEAD
-    plan_send.plan.l20MonoTime = live20.logMonoTime
-
-=======
     plan_send.plan.radarStateMonoTime = radar_state.logMonoTime
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # longitudal plan
     plan_send.plan.vCruise = self.v_cruise
@@ -428,11 +381,7 @@ class Planner(object):
     plan_send.plan.radarValid = bool(radar_valid)
     plan_send.plan.radarCommIssue = bool(radar_comm_issue)
 
-<<<<<<< HEAD
-    plan_send.plan.processingDelay = (plan_send.logMonoTime / 1e9) - rcv_times['live20']
-=======
     plan_send.plan.processingDelay = (plan_send.logMonoTime / 1e9) - rcv_times['radarState']
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
 
     # Send out fcw
     fcw = fcw and (self.fcw_enabled or long_control_state != LongCtrlState.off)

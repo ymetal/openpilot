@@ -213,7 +213,6 @@ class PathPlanner(object):
     dat.liveMpc.delta = list(self.mpc_solution[0].delta)
     dat.liveMpc.cost = self.mpc_solution[0].cost
     self.livempc.send(dat.to_bytes())
-<<<<<<< HEAD
     
     dat2 = messaging.new_message()
     dat2.init('latControl')
@@ -222,5 +221,3 @@ class PathPlanner(object):
     
     self.l_poly = l_poly
     self.r_poly = r_poly
-=======
->>>>>>> 7d5332833b11570db288f35657a963ed0d8cad0a
