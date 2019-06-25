@@ -76,23 +76,28 @@ class LongControl(object):
     self.model_wrapper = df_wrapper.get_wrapper()
     self.model_wrapper.init_model()
 
-  def df(self, radar_state, v_ego):
+  def df(self, radar_state, v_ego, a_ego, set_speed):
     v_ego_scale = [-0.2154252678155899, 41.05433654785156]
-    #a_ego_scale = [-4.493537902832031, 3.710982322692871]
-    v_lead_scale = [0.0, 48.58272933959961]
-    x_lead_scale = [0.125, 144.125]
-    a_lead_scale = [-8.398388862609863, 9.994253158569336]
+    a_ego_scale = [-6.315138339996338, 4.432629585266113]
+    v_lead_scale = [0.0, 48.66924285888672]
+    x_lead_scale = [0.125, 185.21875]
+    a_lead_scale = [-8.398388862609863, 14.781030654907227]
+
+    speed_offset = 1 # model offset
+    v_lead = set_speed - speed_offset
+    x_lead = 23.0
+    a_lead = 0.0
 
     if radar_state is not None:
       lead_1 = radar_state.radarState.leadOne
       if lead_1 is not None and lead_1.status:
-        x_lead = lead_1.dRel
-        v_lead = lead_1.vLead-1
-        a_lead = lead_1.aLeadK
-        model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-        return [True, clip((model_output - 0.51) * 4.0, -1.0, 1.0)]
+        x_lead, v_lead, a_lead = (lead_1.dRel, lead_1.vLead, lead_1.aLeadK) if lead_1.vLead < set_speed else (23.0, set_speed, 0.0)
+        v_lead -= speed_offset
 
-    return [False]
+    model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(a_ego, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
+    return clip((model_output - 0.5) * 2.5, -1.0, 1.0)
+
+
 
 
   def reset(self, v_pid):
@@ -100,14 +105,13 @@ class LongControl(object):
     self.pid.reset()
     self.v_pid = v_pid
 
-  def update(self, active, v_ego, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, radar_state):
+  def update(self, active, v_ego, a_ego, set_speed, brake_pressed, standstill, cruise_standstill, v_cruise, v_target, v_target_future, a_target, CP, radar_state):
     """Update longitudinal control. This updates the state machine and runs a PID loop"""
     # Actuation limits
-    df_output = self.df(radar_state, v_ego)
-    if df_output[0]:
-      return max(df_output[1], 0.0), -min(df_output[1], 0.0)
+    df_output = self.df(radar_state, v_ego, a_ego, set_speed)
+    return max(df_output[1], 0.0), -min(df_output[1], 0.0)
 
-    gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
+    '''gas_max = interp(v_ego, CP.gasMaxBP, CP.gasMaxV)
     brake_max = interp(v_ego, CP.brakeMaxBP, CP.brakeMaxV)
 
     # Update state machine
@@ -160,4 +164,4 @@ class LongControl(object):
     final_gas = clip(output_gb, 0., gas_max)
     final_brake = -clip(output_gb, -brake_max, 0.)
 
-    return final_gas, final_brake
+    return final_gas, final_brake'''
