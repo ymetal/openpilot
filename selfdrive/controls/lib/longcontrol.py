@@ -95,7 +95,7 @@ class LongControl(object):
         v_lead -= speed_offset
 
     model_output = float(self.model_wrapper.run_model(norm(v_ego, v_ego_scale), norm(a_ego, a_ego_scale), norm(v_lead, v_lead_scale), norm(x_lead, x_lead_scale), norm(a_lead, a_lead_scale)))
-    return clip((model_output - 0.53) * 2.7, -1.0, 1.0)
+    return clip((model_output - 0.50) * 2.0, -1.0, 1.0)
 
 
 
