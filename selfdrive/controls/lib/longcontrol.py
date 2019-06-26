@@ -77,14 +77,14 @@ class LongControl(object):
     self.model_wrapper.init_model()
 
   def df(self, radar_state, v_ego, a_ego, set_speed):
-    v_ego_scale = [0.0, 29.385902404785]
-    a_ego_scale = [-5.915311336517, 4.432629585266]
-    v_lead_scale = [0.0, 30.005355834961]
-    x_lead_scale = [0.125, 138.375]
-    a_lead_scale = [-5.21425151825, 14.781030654907]
+    v_ego_scale = [-0.2154252678155899, 41.05433654785156]
+    a_ego_scale = [-6.315138339996338, 4.432629585266113]
+    v_lead_scale = [0.0, 48.66924285888672]
+    x_lead_scale = [0.125, 185.21875]
+    a_lead_scale = [-8.398388862609863, 14.781030654907227]
 
     speed_offset = 1 # model offset
-    v_lead = set_speed - 7.0
+    v_lead = set_speed - speed_offset
     x_lead = 23.0
     a_lead = 0.0
 
