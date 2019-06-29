@@ -82,7 +82,7 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_input(int *array){
+  void test_input(int array[3]){
     std::cout << "hello!\n";
     std::cout << array[0];
     std::cout << array[1];
