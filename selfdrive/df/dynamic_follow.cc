@@ -89,12 +89,11 @@ extern "C" {
 
     std::vector<float> v(inputArray[0], inputArray[0] + sizeof inputArray[0] / sizeof inputArray[0][0]);
     inputVec.push_back(v);
-    for (std::vector<float>::const_iterator i = inputVec.begin(); i != inputVec.end(); ++i)
-      std::cout << *i << ' ';
+    inputVec.push_back(v);
 
-    /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << returnOutput(oTensor);*/
+    std::cout << returnOutput(oTensor);
   }
 
   int main(){
