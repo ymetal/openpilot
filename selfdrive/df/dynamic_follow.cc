@@ -83,9 +83,10 @@ extern "C" {
   }
 
   void test_input(int *array){
-    std::cout << "hello!";
-    for (int i = 3 - 1; i >= 0; i--)
-      std::cout << array[i];
+    std::cout << "hello!\n";
+    std::cout << array[0];
+    std::cout << array[1];
+    std::cout << array[2];
   }
 
 int main(){
