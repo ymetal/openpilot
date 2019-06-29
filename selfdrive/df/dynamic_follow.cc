@@ -89,7 +89,7 @@ extern "C" {
 
     std::vector<float> v(inputArray[0], inputArray[0] + sizeof inputArray[0] / sizeof inputArray[0][0]);
     inputVec.push_back(v);
-    for (std::vector<char>::const_iterator i = v.begin(); i != v.end(); ++i)
+    for (std::vector<std::vector<float>>::const_iterator i = v.begin(); i != v.end(); ++i)
       std::cout << *i << ' ';
 
     /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
