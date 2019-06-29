@@ -85,7 +85,7 @@ extern "C" {
   void test_input(float inputArray[20][5]){
     std::cout << "hello!\n";
 
-    std::vector<float> inputVec;
+    vector<vector<int>> inputVec;
     inputVec.push_back(inputArray[0]);
     inputVec.push_back(inputArray[1]);
     inputVec.push_back(inputArray[2]);
