@@ -32,7 +32,7 @@ void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
 
 
 
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, float inputVec[20][5]) {
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensor(std::unique_ptr<zdl::SNPE::SNPE> &snpe, std::vector<float> inputVec) {
   std::unique_ptr<zdl::DlSystem::ITensor> input;
   const auto &strList_opt = snpe->getInputTensorNames();
   if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
@@ -82,22 +82,14 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_input(float array[20][5]){
+  void test_input(float inputArray[20][5]){
     std::cout << "hello!\n";
-    /*std::cout << array[0];
-    printf("\n");
-    std::cout << array[0][0];
-    printf("\n");
-    std::cout << array[0][1];
-    printf("\n");
-    std::cout << array[0][2];
-    printf("\n");
-    std::cout << array[0][3];
-    printf("\n");
-    std::cout << array[0][4];*/
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, array);
+
+    for(const string &text : inputArray)
+      cout << "value of text: " << text << endl;
+    /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << returnOutput(oTensor);
+    std::cout << returnOutput(oTensor);*
   }
 
   int main(){
