@@ -19,7 +19,7 @@ zdl::DlSystem::Runtime_t checkRuntime()
 
 void initializeSNPE(zdl::DlSystem::Runtime_t runtime) {
   std::unique_ptr<zdl::DlContainer::IDlContainer> container;
-  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/holden.dlc");
+  container = zdl::DlContainer::IDlContainer::open("/data/openpilot/selfdrive/df/LSTM.dlc");
   //printf("loaded model\n");
   int counter = 0;
   zdl::SNPE::SNPEBuilder snpeBuilder(container.get());
@@ -66,8 +66,7 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 extern "C" {
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
-    std::vector<vector<float>> v2;
-    /*inputVec.push_back(v_ego);
+    inputVec.push_back(v_ego);
     inputVec.push_back(a_ego);
     inputVec.push_back(v_lead);
     inputVec.push_back(x_lead);
@@ -75,12 +74,16 @@ extern "C" {
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    return returnOutput(oTensor);*/
+    return returnOutput(oTensor);
   }
 
   void init_model(){
     zdl::DlSystem::Runtime_t runt=checkRuntime();
     initializeSNPE(runt);
+  }
+
+  void test_input(std::vector<float> inputList){
+    std::cout << inputList;
   }
 
 int main(){
