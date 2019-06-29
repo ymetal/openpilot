@@ -84,7 +84,7 @@ extern "C" {
 
   void test_input(int array[20][5]){
     std::cout << "hello!\n";
-    std::cout << array[0];
+    /*std::cout << array[0];
     printf("\n");
     std::cout << array[0][0];
     printf("\n");
@@ -94,12 +94,15 @@ extern "C" {
     printf("\n");
     std::cout << array[0][3];
     printf("\n");
-    std::cout << array[0][4];
+    std::cout << array[0][4];*/
+    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, array);
+    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
+    std::cout << returnOutput(oTensor);
   }
 
-int main(){
-  std::cout << "hello";
-  return 0;
-}
+  int main(){
+    std::cout << "hello";
+    return 0;
+  }
 
 }
