@@ -85,7 +85,7 @@ extern "C" {
   void test_input(float inputArray[20][5]){
     std::cout << "hello!\n";
 
-    for(const string &text : inputArray)
+    for(const array[5] &text : inputArray)
       cout << "value of text: " << text << endl;
     /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
