@@ -85,9 +85,12 @@ extern "C" {
   void test_input(float inputArray[20][5]){
     std::cout << "hello!\n";
 
-    for(const auto& text : inputArray) {   // Range-for!
-        std::cout << text << std::endl;
-    }
+    std::vector<float> inputVec;
+    inputVec.push_back(inputArray[0]);
+    inputVec.push_back(inputArray[1]);
+    inputVec.push_back(inputArray[2]);
+    inputVec.push_back(inputArray[3]);
+    inputVec.push_back(inputArray[5]);
     /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
     std::cout << returnOutput(oTensor);*/
