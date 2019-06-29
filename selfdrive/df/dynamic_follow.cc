@@ -89,7 +89,7 @@ extern "C" {
       cout << "value of text: " << text << endl;
     /*std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputArray);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << returnOutput(oTensor);*
+    std::cout << returnOutput(oTensor);*/
   }
 
   int main(){
