@@ -82,7 +82,7 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_input(std::vector<float> inputList){
+  void test_input(char[] inputList){
     std::cout << inputList;
   }
 
