@@ -83,7 +83,6 @@ extern "C" {
   }
 
   void test_input(float inputArray[20][5]){
-    loadInputTensorBatched(snpe);
     std::cout << "hello!\n";
 
     /*std::vector<std::vector<float>> inputVec;
