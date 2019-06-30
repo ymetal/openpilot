@@ -2,8 +2,8 @@ import time
 from selfdrive.df import df_wrapper
 df_model = df_wrapper.get_wrapper()
 df_model.test_input([[0,1,2,3,4] for i in range(20)])
-#df_model.init_model()
-#start = time.time()
+df_model.init_model()
+start = time.time()
 for i in range(100):
  model_output = df_model.run_model(0.8653078153514447,
   0.46805728618371273,
