@@ -32,7 +32,7 @@ inputData = [[29.02843475,  0.35738668, 30.92068291, 30.125     ,  0.31128621],
        [29.31727791,  0.31508622, 30.9133625 , 31.9375    ,  0.09394761]]
 data=[]
 for i in range(20):
-    data.append([1,2,3,4,5])
+    data.append([1.,2.,3.,4.,5.])
 #inputData = [j for i in inputData for j in i]
 model_output = df_model.run_model(inputData)
 print(model_output)
