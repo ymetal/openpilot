@@ -94,7 +94,7 @@ extern "C" {
     loadInputTensorBatched(snpe);
     std::cout << "hello!\n";
 
-    std::vector<std::vector<float>> inputVec;
+    /*std::vector<std::vector<float>> inputVec;
 
     std::vector<float> v(inputArray[0], inputArray[0] + sizeof inputArray[0] / sizeof inputArray[0][0]);
     inputVec.push_back(v);
@@ -102,7 +102,7 @@ extern "C" {
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << returnOutput(oTensor);
+    std::cout << returnOutput(oTensor);*/
   }
 
   int main(){
