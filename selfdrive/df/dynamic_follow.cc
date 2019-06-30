@@ -67,12 +67,12 @@ extern "C" {
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
     float b = 20;
-    for ( int i = 0; i < b; i++ ) {
-      inputVec.push_back(0.48);
-      inputVec.push_back(.48);
-      inputVec.push_back(.32);
-      inputVec.push_back(.15);
-      inputVec.push_back(.64);
+    for (int i = 0; i < b; i++) {
+      inputVec.push_back(50);
+      inputVec.push_back(-2);
+      inputVec.push_back(25);
+      inputVec.push_back(25);
+      inputVec.push_back(-5);
     }
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
