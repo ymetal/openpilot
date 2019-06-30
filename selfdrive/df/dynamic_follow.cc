@@ -63,7 +63,7 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   return tensorPtr;
 }
 
-std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorBatched (std::unique_ptr<zdl::SNPE::SNPE> & snpe)
+void loadInputTensorBatched (std::unique_ptr<zdl::SNPE::SNPE> & snpe)
 {
     std::unique_ptr<zdl::DlSystem::ITensor> input;
     const auto &strList_opt = snpe->getInputTensorNames();
