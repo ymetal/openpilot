@@ -66,17 +66,14 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 extern "C" {
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
-    inputVec.push_back(v_ego);
-    inputVec.push_back(a_ego);
-    inputVec.push_back(v_lead);
-    inputVec.push_back(x_lead);
-    inputVec.push_back(a_lead);
-
-    inputVec.push_back(.99);
-    inputVec.push_back(.45);
-    inputVec.push_back(.454212);
-    inputVec.push_back(.012242);
-    inputVec.push_back(1.0);
+    float b = 20;
+    for ( int i = 0; i < b; i++ ) {
+      inputVec.push_back(0.48);
+      inputVec.push_back(.48);
+      inputVec.push_back(.32);
+      inputVec.push_back(.15);
+      inputVec.push_back(.64);
+    }
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
