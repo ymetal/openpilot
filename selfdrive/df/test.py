@@ -34,5 +34,5 @@ data=[1.,2.,3.,4.,5.]*20
 #for i in range(20):
     #data.append([1.,2.,3.,4.,5.])
 #inputData = [j for i in inputData for j in i]
-model_output = df_model.run_model(inputData)
+model_output = df_model.run_model(data)
 print(model_output)
