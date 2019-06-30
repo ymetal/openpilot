@@ -1,7 +1,7 @@
 import time
 from selfdrive.df import df_wrapper
 df_model = df_wrapper.get_wrapper()
-df_model.test_input([[0,1,2,3,4] for i in range(20)])
+df_model.test_input()
 '''df_model.init_model()
 start = time.time()
 for i in range(100):

@@ -90,7 +90,7 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_input(float inputArray[20][5]){
+  void test_input(){
     loadInputTensorBatched(snpe);
     std::cout << "hello!\n";
 
