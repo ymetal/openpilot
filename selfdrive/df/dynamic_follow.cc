@@ -78,20 +78,6 @@ extern "C" {
     initializeSNPE(runt);
   }
 
-  void test_input(float inputArray[20][5]){
-    std::cout << "hello!\n";
-
-    /*std::vector<std::vector<float>> inputVec;
-
-    std::vector<float> v(inputArray[0], inputArray[0] + sizeof inputArray[0] / sizeof inputArray[0][0]);
-    inputVec.push_back(v);
-    inputVec.push_back(v);
-
-    std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
-    zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
-    std::cout << returnOutput(oTensor);*/
-  }
-
   int main(){
     std::cout << "hello";
     return 0;

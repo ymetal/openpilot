@@ -12,7 +12,6 @@ def get_wrapper():  # initialize df model and process long predictions
     ffi.cdef("""    
     float run_model(float inputArray[100]);
     void init_model();
-    void test_input(float array[20][5]);
     """)
 
     return ffi.dlopen(libmpc_fn)
