@@ -66,7 +66,28 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 extern "C" {
   float run_model(float inputArray[100]){
     int n = sizeof(inputArray) / sizeof(inputArray[0]);
-    std::vector<float> inputVec(inputArray, inputArray + n);
+    //std::vector<float> inputVec(inputArray, inputArray + n);
+    std::vector<float> inputVec;
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
+    inputVec.push_back([1., 2., 3., 4., 5.])
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
