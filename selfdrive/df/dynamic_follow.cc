@@ -70,7 +70,7 @@ extern "C" {
     for (int i = 0; i < b; i++) {
       inputVec.push_back(8.9408);
       inputVec.push_back(0);
-      inputVec.push_back(4.4704);
+      inputVec.push_back(2.4704);
       inputVec.push_back(10);
       inputVec.push_back(-.2);
     }
