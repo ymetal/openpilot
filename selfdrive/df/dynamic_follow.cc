@@ -63,6 +63,14 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
   return tensorPtr;
 }
 
+std::unique_ptr<zdl::DlSystem::ITensor> loadInputTensorBatched (std::unique_ptr<zdl::SNPE::SNPE> & snpe)
+{
+    std::unique_ptr<zdl::DlSystem::ITensor> input;
+    const auto &strList_opt = snpe->getInputTensorNames();
+    std::cout << &strList_opt;
+    if (!strList_opt) throw std::runtime_error("Error obtaining Input tensor names");
+}
+
 extern "C" {
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
@@ -83,6 +91,7 @@ extern "C" {
   }
 
   void test_input(float inputArray[20][5]){
+    loadInputTensorBatched(snpe);
     std::cout << "hello!\n";
 
     std::vector<std::vector<float>> inputVec;
