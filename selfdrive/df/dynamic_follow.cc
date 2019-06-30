@@ -79,7 +79,7 @@ extern "C" {
       inputVec.push_back(0);
       inputVec.push_back(2.4704);
       inputVec.push_back(10);
-      inputVec.push_back(-.2);
+      inputVec.push_back(-.8);
     }
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
