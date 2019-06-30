@@ -66,7 +66,14 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 extern "C" {
   float run_model(float v_ego, float a_ego, float v_lead, float x_lead, float a_lead){
     std::vector<float> inputVec;
-    float b = 20;
+    float b = 10;
+    for (int i = 0; i < b; i++) {
+      inputVec.push_back(8.9408);
+      inputVec.push_back(0);
+      inputVec.push_back(8.9);
+      inputVec.push_back(15);
+      inputVec.push_back(0);
+    }
     for (int i = 0; i < b; i++) {
       inputVec.push_back(8.9408);
       inputVec.push_back(0);
