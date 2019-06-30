@@ -65,7 +65,7 @@ zdl::DlSystem::ITensor* executeNetwork(std::unique_ptr<zdl::SNPE::SNPE>& snpe,
 
 extern "C" {
   float run_model(float inputArray[100]){
-    int n sizeof(inputArray) / sizeof(inputArray[0]);
+    int n = sizeof(inputArray) / sizeof(inputArray[0]);
     std::vector<float> inputVec(inputArray, inputArray + n);
 
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
