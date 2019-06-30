@@ -101,7 +101,7 @@ class LongControl(object):
           del self.model_hist[0]
         self.model_hist.append([v_ego, a_ego, v_lead, x_lead, a_lead])
 
-    input_data = [j for i in self.model_hist for j in i] if len(self.model_hist) > 19 else [v_ego, 0.0, set_speed, 20, 0.0]
+    input_data = [j for i in self.model_hist for j in i] if len(self.model_hist) > 19 else [v_ego, 0.0, set_speed, 20, 0.0]*20
     model_output = float(self.model_wrapper.run_model(input_data))
     #model_output = float(self.model_wrapper.run_model(norm(v_ego, v_scale), norm(a_ego, a_scale), norm(v_lead, v_scale), norm(x_lead, x_scale), norm(a_lead, a_scale)))
     #return clip(model_output, -1.0, 1.0)
