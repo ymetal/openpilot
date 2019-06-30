@@ -72,6 +72,12 @@ extern "C" {
     inputVec.push_back(x_lead);
     inputVec.push_back(a_lead);
 
+    inputVec.push_back(a_lead);
+    inputVec.push_back(a_lead);
+    inputVec.push_back(a_lead);
+    inputVec.push_back(a_lead);
+    inputVec.push_back(a_lead);
+
     std::unique_ptr<zdl::DlSystem::ITensor> inputTensor = loadInputTensor(snpe, inputVec);
     zdl::DlSystem::ITensor* oTensor = executeNetwork(snpe, inputTensor);
     return returnOutput(oTensor);
