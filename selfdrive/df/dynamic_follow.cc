@@ -71,7 +71,7 @@ extern "C" {
       inputVec.push_back(20);
       inputVec.push_back(0);
       inputVec.push_back(15);
-      inputVec.push_back(20);
+      inputVec.push_back(10);
       inputVec.push_back(0);
     }
 
