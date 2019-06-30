@@ -69,7 +69,7 @@ extern "C" {
     float b = 20;
     for (int i = 0; i < b; i++) {
       inputVec.push_back(20);
-      inputVec.push_back(0);
+      inputVec.push_back(-.4);
       inputVec.push_back(15);
       inputVec.push_back(10);
       inputVec.push_back(0);
