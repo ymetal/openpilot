@@ -396,7 +396,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   yDesDEPRECATED @7 :Float32;
   upSteerDEPRECATED @8 :Float32;
   uiSteerDEPRECATED @9 :Float32;
-  ufSteerDEPRECATED @34 :Float32;
+
   aTargetMinDEPRECATED @10 :Float32;
   aTargetMaxDEPRECATED @11 :Float32;
   aTarget @35 :Float32;
@@ -429,7 +429,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   gpsPlannerActive @40 :Bool;
   engageable @41 :Bool;  # can OP be engaged?
   driverMonitoringOn @43 :Bool;
-
+  brakeLights @34 :Bool;
   # maps
   vCurvature @46 :Float32;
   decelForTurn @47 :Bool;
@@ -1681,6 +1681,28 @@ struct LiveMapData {
   mapValid @11 :Bool;
 }
 
+struct LiveTrafficData {
+  speedLimitValid @0 :Bool;
+  speedLimit @1 :Float32;
+  speedAdvisoryValid @2 :Bool;
+  speedAdvisory @3 :Float32;
+}  
+
+struct LatControl {
+  anglelater @0 :Float32;
+}
+
+struct PhantomData {
+  status @0 :Bool;
+  speed @1 :Float32;
+  angle @2 :Float32;
+  time @3 :Float32;
+}
+
+struct ManagerData {
+  runningProcesses @0 :List(Text);
+}
+
 struct CameraOdometry {
   trans @0 :List(Float32); # m/s in device frame
   rot @1 :List(Float32); # rad/s in device frame
@@ -1769,5 +1791,9 @@ struct Event {
     thumbnail @66: Thumbnail;
     carEvents @68: List(Car.CarEvent);
     carParams @69: Car.CarParams;
+    liveTrafficData @70 :LiveTrafficData;
+    latControl @71 :LatControl;
+    phantomData @72 :PhantomData;
+    managerData @73 :ManagerData;
   }
 }
