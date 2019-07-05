@@ -28,7 +28,7 @@ class PathPlanner(object):
 
     self.last_cloudlog_t = 0
     
-    self.latControl_sock = messaging.pub_sock(context, service_list['latControl'].port)
+    self.latControl_sock = messaging.pub_sock(service_list['latControl'].port)
     self.plan = messaging.pub_sock(service_list['pathPlan'].port)
     self.livempc = messaging.pub_sock(service_list['liveMpc'].port)
 
