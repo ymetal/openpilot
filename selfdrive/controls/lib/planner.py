@@ -16,6 +16,8 @@ from selfdrive.controls.lib.longcontrol import LongCtrlState, MIN_CAN_SPEED
 from selfdrive.controls.lib.fcw import FCWChecker
 from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 
+import selfdrive.kegman_conf as kegman
+
 NO_CURVATURE_SPEED = 200. * CV.MPH_TO_MS
 
 LON_MPC_STEP = 0.2  # first step is 0.2s
@@ -24,49 +26,64 @@ AWARENESS_DECEL = -0.2     # car smoothly decel at .2m/s^2 when user is distract
 
 # lookup tables VS speed to determine min and max accels in cruise
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MIN_V  = [-1.0, -.8, -.67, -.5, -.30]
-_A_CRUISE_MIN_BP = [   0., 5.,  10., 20.,  40.]
+_A_CRUISE_MIN_V  = [-0.8, -0.7, -0.6, -0.5, -0.3]
+_A_CRUISE_MIN_BP = [0.0, 5.0, 10.0, 20.0, 55.0]
 
 # need fast accel at very low speed for stop and go
 # make sure these accelerations are smaller than mpc limits
-_A_CRUISE_MAX_V = [1.1, 1.1, .8, .5, .3]
-_A_CRUISE_MAX_V_FOLLOWING = [1.6, 1.6, 1.2, .7, .3]
-_A_CRUISE_MAX_BP = [0.,  5., 10., 20., 40.]
+_A_CRUISE_MAX_V = [3.5, 3.0, 1.5, .5, .3]
+_A_CRUISE_MAX_V_ECO = [1.0, 1.5, 1.0, 0.3, 0.1]
+_A_CRUISE_MAX_V_SPORT = [3.5, 3.5, 3.5, 3.5, 3.5]
+_A_CRUISE_MAX_V_FOLLOWING = [1.3, 1.6, 1.2, .7, .3]
+_A_CRUISE_MAX_BP = [0., 5., 10., 20., 55.]
+
 
 # Lookup table for turns
-_A_TOTAL_MAX_V = [1.5, 1.9, 3.2]
-_A_TOTAL_MAX_BP = [0., 20., 40.]
+_brake_factor = float(kegman.get("brakefactor"))
+_A_TOTAL_MAX_V = [2.3 * _brake_factor, 3.0 * _brake_factor, 3.9 * _brake_factor]
+_A_TOTAL_MAX_BP = [0., 25., 55.]
 
 
-def calc_cruise_accel_limits(v_ego, following):
+def calc_cruise_accel_limits(v_ego, following, gasbuttonstatus):
   a_cruise_min = interp(v_ego, _A_CRUISE_MIN_BP, _A_CRUISE_MIN_V)
 
   if following:
     a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_FOLLOWING)
   else:
-    a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V)
+    if gasbuttonstatus == 1:
+      a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_SPORT)
+    elif gasbuttonstatus == 2:
+      a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V_ECO)
+    else:
+      a_cruise_max = interp(v_ego, _A_CRUISE_MAX_BP, _A_CRUISE_MAX_V)
   return np.vstack([a_cruise_min, a_cruise_max])
 
 
-def limit_accel_in_turns(v_ego, angle_steers, a_target, CP):
+def limit_accel_in_turns(v_ego, angle_steers, a_target, CP, angle_later):
   """
   This function returns a limited long acceleration allowed, depending on the existing lateral acceleration
   this should avoid accelerating when losing the target in turns
   """
 
   a_total_max = interp(v_ego, _A_TOTAL_MAX_BP, _A_TOTAL_MAX_V)
-  a_y = v_ego**2 * angle_steers * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
-  a_x_allowed = math.sqrt(max(a_total_max**2 - a_y**2, 0.))
+  a_y = v_ego**2 * abs(angle_steers) * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
+  a_y2 = v_ego**2 * abs(angle_later) * CV.DEG_TO_RAD / (CP.steerRatio * CP.wheelbase)
+  a_x_allowed = a_total_max - a_y
+  a_x_allowed2 = a_total_max - a_y2
 
-  a_target[1] = min(a_target[1], a_x_allowed)
+  a_target[1] = min(a_target[1], a_x_allowed, a_x_allowed2)
+  a_target[0] = min(a_target[0], a_target[1])
+  #print a_target[1]
   return a_target
+
 
 
 class Planner(object):
   def __init__(self, CP, fcw_enabled):
     self.CP = CP
     self.poller = zmq.Poller()
-
+    self.lat_Control = messaging.sub_sock(context, service_list['latControl'].port, conflate=True, poller=self.poller)
+    
     self.plan = messaging.pub_sock(service_list['plan'].port)
     self.live_longitudinal_mpc = messaging.pub_sock(service_list['liveLongitudinalMpc'].port)
 
@@ -85,7 +102,9 @@ class Planner(object):
     self.longitudinalPlanSource = 'cruise'
     self.fcw_checker = FCWChecker()
     self.fcw_enabled = fcw_enabled
-
+    
+    self.lastlat_Control = None
+    
     self.params = Params()
 
   def choose_solution(self, v_cruise_setpoint, enabled):
@@ -117,12 +136,18 @@ class Planner(object):
     """Gets called when new radarState is available"""
     cur_time = sec_since_boot()
     v_ego = sm['carState'].vEgo
-
+    
+    gasbuttonstatus = 2
+    
     long_control_state = sm['controlsState'].longControlState
     v_cruise_kph = sm['controlsState'].vCruise
     force_slow_decel = sm['controlsState'].forceDecel
     v_cruise_setpoint = v_cruise_kph * CV.KPH_TO_MS
 
+    for socket, event in self.poller.poll(0):
+      if socket is self.lat_Control:
+        self.lastlat_Control = messaging.recv_one(socket).latControl
+    
     lead_1 = sm['radarState'].leadOne
     lead_2 = sm['radarState'].leadTwo
 
@@ -131,32 +156,62 @@ class Planner(object):
 
     v_speedlimit = NO_CURVATURE_SPEED
     v_curvature = NO_CURVATURE_SPEED
+    v_speedlimit_ahead = NO_CURVATURE_SPEED
 
-    #map_age = cur_time - rcv_times['liveMapData']
-    map_valid = False  # live_map_data.liveMapData.mapValid and map_age < 10.0
+    map_age = cur_time - rcv_times['liveMapData']
+    map_valid = True  # live_map_data.liveMapData.mapValid and map_age < 10.0
 
     # Speed limit and curvature
     set_speed_limit_active = self.params.get("LimitSetSpeed") == "1" and self.params.get("SpeedLimitOffset") is not None
     if set_speed_limit_active and map_valid:
+      offset = float(self.params.get("SpeedLimitOffset"))
       if live_map_data.liveMapData.speedLimitValid:
         speed_limit = live_map_data.liveMapData.speedLimit
         offset = float(self.params.get("SpeedLimitOffset"))
         v_speedlimit = speed_limit + offset
-
+        
+      if gasbuttonstatus == 1:
+        speed_ahead_distance = 100
+      elif gasbuttonstatus == 2:
+        speed_ahead_distance = 300
+      else:
+        speed_ahead_distance = 200
+      if live_map_data.liveMapData.speedLimitAheadValid and live_map_data.liveMapData.speedLimitAheadDistance < speed_ahead_distance:
+        speed_limit_ahead = live_map_data.liveMapData.speedLimitAhead
+        v_speedlimit_ahead = speed_limit_ahead + offset
+        
       if live_map_data.liveMapData.curvatureValid:
         curvature = abs(live_map_data.liveMapData.curvature)
         a_y_max = 2.975 - v_ego * 0.0375  # ~1.85 @ 75mph, ~2.6 @ 25mph
-        v_curvature = math.sqrt(a_y_max / max(1e-4, curvature))
+        v_curvature = math.sqrt(a_y_max / max(1e-4, curvature)) / 1.3 * _brake_factor
         v_curvature = min(NO_CURVATURE_SPEED, v_curvature)
 
     decel_for_turn = bool(v_curvature < min([v_cruise_setpoint, v_speedlimit, v_ego + 1.]))
-    v_cruise_setpoint = min([v_cruise_setpoint, v_curvature, v_speedlimit])
+    v_cruise_setpoint = min([v_cruise_setpoint, v_curvature, v_speedlimit, v_speedlimit_ahead])
 
     # Calculate speed for normal cruise control
     if enabled:
-      accel_limits = [float(x) for x in calc_cruise_accel_limits(v_ego, following)]
-      jerk_limits = [min(-0.1, accel_limits[0]), max(0.1, accel_limits[1])]  # TODO: make a separate lookup for jerk tuning
-      accel_limits = limit_accel_in_turns(v_ego, sm['carState'].steeringAngle, accel_limits, self.CP)
+      accel_limits = map(float, calc_cruise_accel_limits(v_ego, following, gasbuttonstatus))
+      if gasbuttonstatus == 0:
+        accellimitmaxdynamic = -0.0018*v_ego+0.2
+        jerk_limits = [min(-0.1, accel_limits[0]), max(accellimitmaxdynamic, accel_limits[1])]  # dynamic
+      elif gasbuttonstatus == 1:
+        accellimitmaxsport = -0.002*v_ego+0.4
+        jerk_limits = [min(-0.25, accel_limits[0]), max(accellimitmaxsport, accel_limits[1])]  # sport
+      elif gasbuttonstatus == 2:
+        accellimitmaxeco = -0.0015*v_ego+0.1
+        jerk_limits = [min(-0.1, accel_limits[0]), max(accellimitmaxeco, accel_limits[1])]  # eco
+
+      if not CS.carState.leftBlinker and not CS.carState.rightBlinker:
+        steering_angle = CS.carState.steeringAngle
+        if self.lastlat_Control and v_ego > 11:      
+          angle_later = self.lastlat_Control.anglelater
+        else:
+          angle_later = 0
+      else:
+        angle_later = 0
+        steering_angle = 0
+      accel_limits = limit_accel_in_turns(v_ego, steering_angle, accel_limits, self.CP, angle_later * self.CP.steerRatio)
 
       if force_slow_decel:
         # if required so, force a smooth deceleration
@@ -165,9 +220,15 @@ class Planner(object):
 
       # Change accel limits based on time remaining to turn
       if decel_for_turn:
-        time_to_turn = max(1.0, live_map_data.liveMapData.distToTurn / max(self.v_cruise, 1.))
-        required_decel = min(0, (v_curvature - self.v_cruise) / time_to_turn)
+        time_to_turn = max(1.0, live_map_data.liveMapData.distToTurn / max((v_ego + v_curvature)/2, 1.))
+        required_decel = min(0, (v_curvature - v_ego) / time_to_turn)*0.85
         accel_limits[0] = max(accel_limits[0], required_decel)
+
+      if v_speedlimit_ahead < v_speedlimit:
+        if live_map_data.liveMapData.speedLimitAheadDistance != 0:
+          required_decel = min(0, (v_speedlimit_ahead*v_speedlimit_ahead - v_ego*v_ego)/(live_map_data.liveMapData.speedLimitAheadDistance*2))
+        required_decel = max(required_decel*0.85, -3.0)
+        accel_limits[0] = min(accel_limits[0], required_decel)
 
       self.v_cruise, self.a_cruise = speed_smoother(self.v_acc_start, self.a_acc_start,
                                                     v_cruise_setpoint,
@@ -232,6 +293,8 @@ class Planner(object):
     plan_send.plan.aTarget = self.a_acc
     plan_send.plan.vTargetFuture = self.v_acc_future
     plan_send.plan.hasLead = self.mpc1.prev_lead_status
+    plan_send.plan.hasrightLaneDepart = bool(PP.r_poly[3] > -1.1 and not CS.carState.rightBlinker)
+    plan_send.plan.hasleftLaneDepart = bool(PP.l_poly[3] < 1.05 and not CS.carState.leftBlinker)
     plan_send.plan.longitudinalPlanSource = self.longitudinalPlanSource
 
     plan_send.plan.vCurvature = v_curvature
