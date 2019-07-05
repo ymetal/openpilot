@@ -2,7 +2,6 @@ from common.numpy_fast import interp
 import numpy as np
 from selfdrive.controls.lib.latcontrol_helpers import model_polyfit, calc_desired_path, compute_path_pinv
 import selfdrive.kegman_conf as kegman
-import numpy as np
 
 CAMERA_OFFSET = float(kegman.conf['cameraOffset'])  # m from center car to camera
 
