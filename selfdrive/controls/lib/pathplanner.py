@@ -27,7 +27,8 @@ class PathPlanner(object):
     self.r_poly = [0., 0., 0., 0.]
 
     self.last_cloudlog_t = 0
-
+    
+    self.latControl_sock = messaging.pub_sock(context, service_list['latControl'].port)
     self.plan = messaging.pub_sock(service_list['pathPlan'].port)
     self.livempc = messaging.pub_sock(service_list['liveMpc'].port)
 
@@ -138,3 +139,8 @@ class PathPlanner(object):
       dat.liveMpc.delta = list(self.mpc_solution[0].delta)
       dat.liveMpc.cost = self.mpc_solution[0].cost
       self.livempc.send(dat.to_bytes())
+      
+    dat2 = messaging.new_message()
+    dat2.init('latControl')
+    dat2.latControl.anglelater = math.degrees(list(self.mpc_solution[0].delta)[-1])
+    self.latControl_sock.send(dat2.to_bytes())
