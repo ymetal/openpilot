@@ -2,6 +2,7 @@
 import os
 import sys
 import threading
+import json
 import capnp
 from selfdrive.version import version, dirty
 
