@@ -81,6 +81,7 @@ def limit_accel_in_turns(v_ego, angle_steers, a_target, CP, angle_later):
 class Planner(object):
   def __init__(self, CP, fcw_enabled):
     self.CP = CP
+    context = zmq.Context()
     self.poller = zmq.Poller()
     self.lat_Control = messaging.sub_sock(context, service_list['latControl'].port, conflate=True, poller=self.poller)
     
@@ -158,7 +159,7 @@ class Planner(object):
     v_curvature = NO_CURVATURE_SPEED
     v_speedlimit_ahead = NO_CURVATURE_SPEED
 
-    map_age = cur_time - rcv_times['liveMapData']
+    #map_age = cur_time - rcv_times['liveMapData']
     map_valid = True  # live_map_data.liveMapData.mapValid and map_age < 10.0
 
     # Speed limit and curvature
@@ -202,8 +203,8 @@ class Planner(object):
         accellimitmaxeco = -0.0015*v_ego+0.1
         jerk_limits = [min(-0.1, accel_limits[0]), max(accellimitmaxeco, accel_limits[1])]  # eco
 
-      if not CS.carState.leftBlinker and not CS.carState.rightBlinker:
-        steering_angle = CS.carState.steeringAngle
+      if not sm['carState'].leftBlinker and not sm['carState'].rightBlinker:
+        steering_angle = sm['carState'].steeringAngle
         if self.lastlat_Control and v_ego > 11:      
           angle_later = self.lastlat_Control.anglelater
         else:
@@ -293,8 +294,6 @@ class Planner(object):
     plan_send.plan.aTarget = self.a_acc
     plan_send.plan.vTargetFuture = self.v_acc_future
     plan_send.plan.hasLead = self.mpc1.prev_lead_status
-    plan_send.plan.hasrightLaneDepart = bool(PP.r_poly[3] > -1.1 and not CS.carState.rightBlinker)
-    plan_send.plan.hasleftLaneDepart = bool(PP.l_poly[3] < 1.05 and not CS.carState.leftBlinker)
     plan_send.plan.longitudinalPlanSource = self.longitudinalPlanSource
 
     plan_send.plan.vCurvature = v_curvature
