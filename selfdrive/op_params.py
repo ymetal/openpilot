@@ -2,8 +2,8 @@ import os, json
 
 class opParams:
     def __init__(self):
-        self.params_file = "C:/Git/params-class/data/params.json"
-        self.kegman_file = "C:/Git/params-class/data/kegman.json"
+        self.params_file = "/data/params.json"
+        self.kegman_file = "/data/kegman.json"
         self.keys_written = []
         self.params = {}
         self.read_params()
