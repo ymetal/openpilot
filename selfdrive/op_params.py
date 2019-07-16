@@ -59,6 +59,3 @@ class opParams:
       return self.params
     else:
       return self.params[key] if key in self.params else default
-
-op_params = opParams()
-print(op_params.params)
