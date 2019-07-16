@@ -39,7 +39,7 @@ _A_CRUISE_MAX_BP = [0., 5., 10., 20., 55.]
 
 
 # Lookup table for turns
-_brake_factor = op_params.get("brakefactor", 1.2)
+_brake_factor = op_params.get("brakefactor", default=1.2)
 _A_TOTAL_MAX_V = [2.3 * _brake_factor, 3.0 * _brake_factor, 3.9 * _brake_factor]
 _A_TOTAL_MAX_BP = [0., 25., 55.]
 

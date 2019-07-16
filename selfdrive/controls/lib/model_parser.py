@@ -4,7 +4,7 @@ from selfdrive.controls.lib.latcontrol_helpers import model_polyfit, calc_desire
 from selfdrive import op_params
 op_params = op_params.opParams()
 
-CAMERA_OFFSET = op_params.get('cameraOffset', 0.06)  # m from center car to camera
+CAMERA_OFFSET = op_params.get('cameraOffset', default=0.06)  # m from center car to camera
 
 
 class ModelParser(object):
